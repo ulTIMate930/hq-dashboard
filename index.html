@@ -179,9 +179,9 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
 .show-done-btn.active{background:var(--surface2);border-style:solid;border-color:var(--border2);color:var(--muted);}
 
 .dump-table{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;animation:fadeUp 0.4s 0.18s ease both;}
-.dump-thead{display:grid;grid-template-columns:26px 1fr 100px 105px 90px 36px;padding:9px 16px;background:var(--surface2);border-bottom:1px solid var(--border);}
+.dump-thead{display:grid;grid-template-columns:26px 1fr 140px 140px 36px;padding:9px 16px;background:var(--surface2);border-bottom:1px solid var(--border);}
 .dump-th{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;}
-.dump-row{display:grid;grid-template-columns:26px 1fr 100px 105px 90px 36px;padding:10px 16px;border-bottom:1px solid var(--border);align-items:center;transition:background 0.1s;}
+.dump-row{display:grid;grid-template-columns:26px 1fr 140px 140px 36px;padding:10px 16px;border-bottom:1px solid var(--border);align-items:center;transition:background 0.1s;}
 .dump-row:last-child{border-bottom:none;}
 .dump-row:hover{background:var(--surface2);}
 .dump-row.done-row{opacity:0.38;}
@@ -215,6 +215,31 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
 .del-btn{width:24px;height:24px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--dim);cursor:pointer;border-radius:5px;font-size:0.68rem;transition:all 0.15s;opacity:0;}
 .dump-row:hover .del-btn{opacity:1;}
 .del-btn:hover{background:var(--red-d);color:var(--red);}
+.pill-selects{display:flex;flex-direction:column;gap:4px;}
+.pill-sel{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-family:'DM Mono',monospace;font-size:0.58rem;font-weight:700;border:1px solid transparent;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;width:fit-content;max-width:130px;}
+.pill-sel:focus{box-shadow:0 0 0 2px var(--purple-b);}
+/* type colors */
+.pill-sel.t-task    {background:var(--blue-d);  color:var(--blue);  border-color:var(--blue-b);}
+.pill-sel.t-project {background:var(--purple-d);color:var(--purple);border-color:var(--purple-b);}
+.pill-sel.t-idea    {background:var(--yellow-d);color:var(--yellow);border-color:var(--yellow-b);}
+.pill-sel.t-research{background:var(--orange-d);color:var(--orange);border-color:var(--orange-b);}
+.pill-sel.t-question{background:var(--pink-d);  color:var(--pink);  border-color:var(--pink-b);}
+.pill-sel.t-reminder{background:var(--green-d); color:var(--green); border-color:var(--green-b);}
+/* area colors */
+.pill-sel.a-abdjs  {background:var(--blue-d);  color:var(--blue);  border-color:var(--blue-b);}
+.pill-sel.a-crypto {background:var(--orange-d);color:var(--orange);border-color:var(--orange-b);}
+.pill-sel.a-tradfi {background:var(--yellow-d);color:var(--yellow);border-color:var(--yellow-b);}
+.pill-sel.a-rescue {background:var(--pink-d);  color:var(--pink);  border-color:var(--pink-b);}
+.pill-sel.a-life   {background:var(--green-d); color:var(--green); border-color:var(--green-b);}
+.pill-sel.a-camaro {background:var(--purple-d);color:var(--purple);border-color:var(--purple-b);}
+.pill-sel.a-general{background:var(--surface2);color:var(--muted); border-color:var(--border);}
+.pill-sel.a-fitness{background:var(--green-d); color:var(--green); border-color:var(--green-b);}
+/* priority colors */
+.pill-sel.p-thisweek{background:var(--red);    color:#fff;border:none;}
+.pill-sel.p-donow   {background:var(--orange); color:#fff;border:none;}
+.pill-sel.p-someday {background:var(--surface2);color:var(--muted);border-color:var(--border);}
+.pill-sel.p-drop    {background:var(--red-d);  color:var(--red);  border-color:var(--red-b);}
+.pill-sel.p-none    {background:transparent;   color:var(--dim);  border:1px dashed var(--border2);}
 
 .add-row{display:none;padding:12px 16px;background:var(--surface2);border-top:1px solid var(--border);gap:8px;align-items:center;flex-wrap:wrap;}
 .add-row.visible{display:flex;}
@@ -241,7 +266,7 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
   .split{grid-template-columns:1fr;}
   .hub-grid{grid-template-columns:1fr 1fr;}
   .cadence-grid{grid-template-columns:1fr;}
-  .dump-thead,.dump-row{grid-template-columns:26px 1fr 90px 36px;}
+  .dump-thead,.dump-row{grid-template-columns:26px 1fr 120px 36px;}
   .dump-th:nth-child(3),.dump-row>*:nth-child(3),
   .dump-th:nth-child(5),.dump-row>*:nth-child(5){display:none;}
 }
@@ -447,7 +472,6 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
         <div class="dump-th">Item</div>
         <div class="dump-th">Type · Area</div>
         <div class="dump-th">Priority</div>
-        <div class="dump-th">Week</div>
         <div class="dump-th"></div>
       </div>
       <div id="dump-body">
@@ -745,6 +769,9 @@ function renderRows(){
     return true;
   });
   document.getElementById('empty-state').style.display = filtered.length===0?'block':'none';
+  const AREAS = ['ABDJS','Crypto','TradFi','Rescue','Life','Fitness','Camaro','General'];
+  const TYPES = ['Task','Project','Idea','Research','Question','Reminder'];
+  const PRIS  = ['Do Now','This Week','Someday','Drop'];
   body.innerHTML = filtered.map(r=>`
     <div class="dump-row ${r.done?'done-row':''}" data-id="${r.id}">
       <div class="rcheck ${r.done?'checked':''}" onclick="toggleDone(${r.id})"></div>
@@ -753,17 +780,36 @@ function renderRows(){
            onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
            onclick="event.stopPropagation()"
       >${r.item}</div>
-      <div style="display:flex;gap:3px;flex-wrap:wrap;">
-        ${r.type?`<span class="pill ${TC[r.type]||'t-task'}">${r.type}</span>`:''}
-        ${r.area?`<span class="pill ${AC[r.area]||'a-general'}">${r.area}</span>`:''}
+      <div class="pill-selects">
+        <select class="pill-sel type-sel ${TC[r.type]||'t-task'}" onchange="saveRowField(${r.id},'type',this.value)">
+          ${TYPES.map(t=>`<option value="${t}" ${r.type===t?'selected':''}>${t}</option>`).join('')}
+        </select>
+        <select class="pill-sel area-sel ${AC[r.area]||'a-general'}" onchange="saveRowField(${r.id},'area',this.value)">
+          ${AREAS.map(a=>`<option value="${a}" ${r.area===a?'selected':''}>${a}</option>`).join('')}
+        </select>
       </div>
-      <div>${r.priority?`<span class="pill ${PC[r.priority]||'p-none'}">${r.priority}</span>`:'<span class="pill p-none">—</span>'}</div>
-      <div style="font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--dim);">${r.week}</div>
+      <div>
+        <select class="pill-sel pri-sel ${PC[r.priority]||'p-none'}" onchange="saveRowField(${r.id},'priority',this.value)">
+          ${PRIS.map(p=>`<option value="${p}" ${r.priority===p?'selected':''}>${p}</option>`).join('')}
+        </select>
+      </div>
       <button class="del-btn" onclick="deleteRow(${r.id})">✕</button>
     </div>`).join('');
 }
 
 function saveItemText(id,t){ const r=rows.find(r=>r.id===id); if(r&&t.trim()){r.item=t.trim();save('saveDump',rows);} }
+function saveRowField(id,field,val){
+  const r=rows.find(r=>r.id===id);
+  if(r){ r[field]=val; save('saveDump',rows);
+    // re-style the select to match new value
+    const row=document.querySelector(`.dump-row[data-id='${id}']`);
+    if(row){
+      if(field==='type'){const s=row.querySelector('.type-sel'); if(s){s.className='pill-sel type-sel '+(TC[val]||'t-task');}}
+      if(field==='area'){const s=row.querySelector('.area-sel'); if(s){s.className='pill-sel area-sel '+(AC[val]||'a-general');}}
+      if(field==='priority'){const s=row.querySelector('.pri-sel'); if(s){s.className='pill-sel pri-sel '+(PC[val]||'p-none');}}
+    }
+  }
+}
 function toggleDone(id){ const r=rows.find(r=>r.id===id); if(r){r.done=!r.done;save('saveDump',rows);renderRows();} }
 function deleteRow(id){ rows=rows.filter(r=>r.id!==id); save('saveDump',rows); renderRows(); }
 
