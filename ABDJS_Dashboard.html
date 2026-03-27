@@ -534,6 +534,9 @@ const BC = {id:0,date:1,name:2,type:3,location:4,amount:5,status:6,services:7,ma
 const LC = {id:0,source:1,date:2,name:3,status:4,type:5,amount:6,services:7,priority:8};
 
 function parseBooking(row, idx) {
+  // Skip summary/total rows — must have a numeric ID and a string event name
+  if (!row[BC.name] || typeof row[BC.name] !== 'string') return null;
+  if (isNaN(parseInt(row[BC.id])) && typeof row[BC.id] !== 'number') return null;
   const rawDate = row[BC.date]||'';
   let date = '';
   if (rawDate) { const d=new Date(rawDate); if(!isNaN(d)) date=d.toISOString().split('T')[0]; }
@@ -541,20 +544,27 @@ function parseBooking(row, idx) {
                'deposit paid':'deposit',lead:'lead',inquiry:'inquiry',
                unconfirmed:'inquiry',cancelled:'cancelled',maybe:'inquiry'};
   const sr = (row[BC.status]||'').toLowerCase().replace(/\s+/g,'');
+  // Amount may come back as number or string
+  const rawAmt = row[BC.amount];
+  const amount = typeof rawAmt === 'number' ? rawAmt
+               : parseFloat(String(rawAmt||'0').replace(/[$,]/g,''))||0;
   return {
-    id:parseInt(row[BC.id])||idx+1, name:row[BC.name]||'', date,
-    amount:parseFloat((row[BC.amount]||'0').replace(/[$,]/g,''))||0,
-    type:row[BC.type]||'Other', services:row[BC.services]||'DJ Only',
+    id:parseInt(row[BC.id])||idx+1, name:row[BC.name].trim(), date,
+    amount, type:row[BC.type]||'Other', services:row[BC.services]||'DJ Only',
     status:sm[sr]||'inquiry', market:row[BC.market]||'',
-    worker:row[BC.worker]||'', notes:''
+    worker:row[BC.worker]||'', notes:row[13]||''
   };
 }
 function parseLead(row) {
+  if (!row[LC.name] || typeof row[LC.name] !== 'string') return null;
   const sm={open:'open',contacted:'contacted',quoted:'quoted',won:'won',lost:'lost'};
+  const rawAmt = row[LC.amount];
+  const amount = typeof rawAmt === 'number' ? rawAmt
+               : parseFloat(String(rawAmt||'0').replace(/[$,]/g,''))||0;
   return {
     id:parseInt(row[LC.id])||0, source:row[LC.source]||'', date:row[LC.date]||'',
-    name:row[LC.name]||'', status:sm[(row[LC.status]||'').toLowerCase()]||'open',
-    type:row[LC.type]||'', amount:parseFloat((row[LC.amount]||'0').replace(/[$,]/g,''))||0,
+    name:row[LC.name].trim(), status:sm[(row[LC.status]||'').toLowerCase()]||'open',
+    type:row[LC.type]||'', amount,
     services:row[LC.services]||'', priority:row[LC.priority]||''
   };
 }
@@ -577,10 +587,10 @@ async function loadBookings() {
     const bRows = json.data.bookings || [];
     const lRows = json.data.leads    || [];
     if (bRows.length) {
-      bookings = bRows.filter(r=>r[BC.name]?.trim()).map(parseBooking);
+      bookings = bRows.map(parseBooking).filter(Boolean);
       nextId   = Math.max(...bookings.map(b=>b.id), 0)+1;
     }
-    if (lRows.length) leads = lRows.filter(r=>r[LC.name]?.trim()).map(parseLead);
+    if (lRows.length) leads = lRows.map(parseLead).filter(Boolean);
     setConn('ok', 'Live · Sheets');
   } catch(e) {
     setConn('err', 'Offline — local data');
