@@ -100,7 +100,13 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
 .hub-note{padding:10px 18px 14px;flex:1;}
 .hub-note-text{font-size:0.77rem;color:var(--muted);line-height:1.55;font-style:italic;}
 .hub-note-text.empty{color:var(--dim);font-style:normal;}
-.hub-note-date{font-family:'DM Mono',monospace;font-size:0.57rem;color:var(--dim);margin-top:6px;}
+.hub-note-date{font-family:'DM Mono',monospace;font-size:0.57rem;color:var(--dim);}
+.hub-note-footer{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
+.hub-note-edit{font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--dim);background:transparent;border:1px solid var(--border);border-radius:6px;padding:1px 7px;cursor:pointer;transition:all 0.15s;flex-shrink:0;}
+.hub-note-edit:hover{border-color:var(--hc);color:var(--hc);}
+.hub-top-link{text-decoration:none;display:block;color:inherit;}
+.hub-top-link .hub-title{color:var(--text);transition:color 0.15s;}
+.hub-top-link:hover .hub-title{color:var(--hc);}
 .hub-color-bar{position:absolute;top:0;left:0;right:0;height:3px;background:var(--hc);}
 
 /* hub card color themes */
@@ -321,19 +327,24 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
 
   <!-- HUB CARDS -->
   <div class="hub-grid">
-    <div class="hub-card abdjs" onclick="openNoteModal('ABDJS')">
+    <div class="hub-card abdjs">
       <div class="hub-color-bar"></div>
-      <div class="hub-top">
-        <div class="hub-icon-row">
-          <div class="hub-icon">🎙️</div>
-          <span class="hub-arrow">↗</span>
+      <a class="hub-top-link" href="ABDJS_Dashboard.html">
+        <div class="hub-top">
+          <div class="hub-icon-row">
+            <div class="hub-icon">🎙️</div>
+            <span class="hub-arrow">↗</span>
+          </div>
+          <div class="hub-title">Answer Back DJ</div>
+          <div class="hub-sub">Bookings · Leads · Subcontractors</div>
         </div>
-        <div class="hub-title">Answer Back DJ</div>
-        <div class="hub-sub">Bookings · Leads · Subcontractors</div>
-      </div>
-      <div class="hub-note">
+      </a>
+      <div class="hub-note" onclick="openNoteModal('ABDJS')" style="cursor:pointer;">
         <div class="hub-note-text" id="note-ABDJS">—</div>
-        <div class="hub-note-date" id="note-date-ABDJS"></div>
+        <div class="hub-note-footer">
+          <div class="hub-note-date" id="note-date-ABDJS"></div>
+          <button class="hub-note-edit" onclick="event.stopPropagation();openNoteModal('ABDJS')">✏ note</button>
+        </div>
       </div>
     </div>
 
@@ -349,7 +360,10 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
       </div>
       <div class="hub-note">
         <div class="hub-note-text" id="note-Crypto">—</div>
-        <div class="hub-note-date" id="note-date-Crypto"></div>
+        <div class="hub-note-footer">
+          <div class="hub-note-date" id="note-date-Crypto"></div>
+          <button class="hub-note-edit" onclick="event.stopPropagation();openNoteModal('Crypto')">✏ note</button>
+        </div>
       </div>
     </div>
 
@@ -365,7 +379,10 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
       </div>
       <div class="hub-note">
         <div class="hub-note-text" id="note-TradFi">—</div>
-        <div class="hub-note-date" id="note-date-TradFi"></div>
+        <div class="hub-note-footer">
+          <div class="hub-note-date" id="note-date-TradFi"></div>
+          <button class="hub-note-edit" onclick="event.stopPropagation();openNoteModal('TradFi')">✏ note</button>
+        </div>
       </div>
     </div>
 
@@ -381,7 +398,10 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
       </div>
       <div class="hub-note">
         <div class="hub-note-text" id="note-Rescue">—</div>
-        <div class="hub-note-date" id="note-date-Rescue"></div>
+        <div class="hub-note-footer">
+          <div class="hub-note-date" id="note-date-Rescue"></div>
+          <button class="hub-note-edit" onclick="event.stopPropagation();openNoteModal('Rescue')">✏ note</button>
+        </div>
       </div>
     </div>
 
@@ -397,7 +417,10 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
       </div>
       <div class="hub-note">
         <div class="hub-note-text" id="note-Fitness">—</div>
-        <div class="hub-note-date" id="note-date-Fitness"></div>
+        <div class="hub-note-footer">
+          <div class="hub-note-date" id="note-date-Fitness"></div>
+          <button class="hub-note-edit" onclick="event.stopPropagation();openNoteModal('Fitness')">✏ note</button>
+        </div>
       </div>
     </div>
 
@@ -413,7 +436,10 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
       </div>
       <div class="hub-note">
         <div class="hub-note-text" id="note-Life">—</div>
-        <div class="hub-note-date" id="note-date-Life"></div>
+        <div class="hub-note-footer">
+          <div class="hub-note-date" id="note-date-Life"></div>
+          <button class="hub-note-edit" onclick="event.stopPropagation();openNoteModal('Life')">✏ note</button>
+        </div>
       </div>
     </div>
   </div>
