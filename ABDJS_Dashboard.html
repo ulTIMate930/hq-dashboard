@@ -480,15 +480,7 @@ function setTaskStatus(state, msg) {
   document.getElementById('task-status').textContent = msg;
 }
 
-// ── SHEETS API (read bookings) ─────────────────────
-function sheetsURL(tab, range) {
-  return `https://sheets.googleapis.com/v4/spreadsheets/${ABDJS_CFG.SHEET_ID}/values/${encodeURIComponent(tab+'!'+range)}?key=${ABDJS_CFG.API_KEY}`;
-}
-async function fetchSheet(tab, range) {
-  const res = await fetch(sheetsURL(tab, range));
-  if (!res.ok) throw new Error(`Sheets ${res.status}`);
-  return (await res.json()).values || [];
-}
+// Bookings/leads loaded via ABDJS Apps Script (no API key needed)
 
 // ── HQ SCRIPT API (read + write tasks) ────────────
 async function hqGet() {
@@ -579,12 +571,15 @@ async function init() {
 
 async function loadBookings() {
   try {
-    const bRows = await fetchSheet(ABDJS_CFG.BOOKINGS_TAB, 'A3:P200');
+    const res  = await fetch(ABDJS_SCRIPT_URL + '?action=loadABDJS', {redirect:'follow'});
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error);
+    const bRows = json.data.bookings || [];
+    const lRows = json.data.leads    || [];
     if (bRows.length) {
       bookings = bRows.filter(r=>r[BC.name]?.trim()).map(parseBooking);
       nextId   = Math.max(...bookings.map(b=>b.id), 0)+1;
     }
-    const lRows = await fetchSheet(ABDJS_CFG.LEADS_TAB, 'A3:M200');
     if (lRows.length) leads = lRows.filter(r=>r[LC.name]?.trim()).map(parseLead);
     setConn('ok', 'Live · Sheets');
   } catch(e) {
