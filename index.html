@@ -386,17 +386,19 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
       </div>
     </div>
 
-    <div class="hub-card rescue" onclick="openNoteModal('Rescue')">
+    <div class="hub-card rescue">
       <div class="hub-color-bar"></div>
-      <div class="hub-top">
-        <div class="hub-icon-row">
-          <div class="hub-icon">🐶</div>
-          <span class="hub-arrow">↗</span>
+      <a class="hub-top-link" href="Rescue_Dashboard.html">
+        <div class="hub-top">
+          <div class="hub-icon-row">
+            <div class="hub-icon">🐶</div>
+            <span class="hub-arrow">↗</span>
+          </div>
+          <div class="hub-title">A&B Rescue</div>
+          <div class="hub-sub">Intakes · Foster Network</div>
         </div>
-        <div class="hub-title">A&B Rescue</div>
-        <div class="hub-sub">Intakes · Foster Network</div>
-      </div>
-      <div class="hub-note">
+      </a>
+      <div class="hub-note" onclick="openNoteModal('Rescue')" style="cursor:pointer;">
         <div class="hub-note-text" id="note-Rescue">—</div>
         <div class="hub-note-footer">
           <div class="hub-note-date" id="note-date-Rescue"></div>

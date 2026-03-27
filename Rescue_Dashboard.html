@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐶 A&B English Setter Rescue</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Playfair+Display:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Warm cream base — matches the logo's soft, approachable feel */
+  --bg:       #FAF7F2;
+  --surface:  #FFFFFF;
+  --surface2: #F3EEE6;
+  --surface3: #EBE3D5;
+  --border:   #DDD4C0;
+  --border2:  #C8BAAA;
+
+  --text:  #1E2044;   /* navy from logo */
+  --muted: #6B6F8A;
+  --dim:   #A8A8BC;
+
+  /* Logo navy */
+  --navy:   #1E2044;
+  --nvy-d:  #1E204414;
+  --nvy-b:  #1E204430;
+
+  /* Logo pink */
+  --pink:   #E8527A;
+  --pnk-d:  #E8527A14;
+  --pnk-b:  #E8527A30;
+
+  /* Logo tan/olive accent */
+  --tan:    #8B7355;
+  --tan-d:  #8B735514;
+  --tan-b:  #8B735530;
+
+  /* Supporting colors */
+  --green:  #2A9D60;
+  --grn-d:  #2A9D6014;
+  --grn-b:  #2A9D6030;
+  --orange: #D4760A;
+  --org-d:  #D4760A14;
+  --org-b:  #D4760A30;
+  --red:    #C8304A;
+  --red-d:  #C8304A14;
+  --red-b:  #C8304A30;
+  --teal:   #1A8A80;
+  --tel-d:  #1A8A8014;
+  --tel-b:  #1A8A8030;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* Subtle paw-print texture overlay */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:radial-gradient(circle at 20% 50%, rgba(232,82,122,0.04) 0%, transparent 50%),
+                   radial-gradient(circle at 80% 20%, rgba(30,32,68,0.03) 0%, transparent 40%);
+  pointer-events:none;z-index:0;
+}
+
+.wrap{max-width:1020px;margin:0 auto;padding:24px 28px 80px;position:relative;z-index:1;}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
+.topbar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);text-decoration:none;padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);transition:all 0.2s;}
+.back-link:hover{color:var(--navy);border-color:var(--nvy-b);background:var(--nvy-d);}
+
+.ext-chip{display:inline-flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:0.61rem;font-weight:600;padding:5px 11px;border-radius:20px;text-decoration:none;transition:all 0.2s;white-space:nowrap;}
+.chip-navy  {color:var(--navy);background:var(--nvy-d);border:1px solid var(--nvy-b);}
+.chip-navy:hover{background:var(--navy);color:#fff;}
+.chip-pink  {color:var(--pink);background:var(--pnk-d);border:1px solid var(--pnk-b);}
+.chip-pink:hover{background:var(--pink);color:#fff;}
+.chip-tan   {color:var(--tan);background:var(--tan-d);border:1px solid var(--tan-b);}
+.chip-tan:hover{background:var(--tan);color:#fff;}
+.chip-teal  {color:var(--teal);background:var(--tel-d);border:1px solid var(--tel-b);}
+.chip-teal:hover{background:var(--teal);color:#fff;}
+
+.conn-chip{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:0.61rem;padding:5px 11px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);color:var(--muted);}
+.conn-chip.ok {color:var(--green);background:var(--grn-d);border-color:var(--grn-b);}
+.conn-chip.err{color:var(--orange);background:var(--org-d);border-color:var(--org-b);}
+.conn-chip.syn{color:var(--tan);background:var(--tan-d);border-color:var(--tan-b);}
+.cdot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.conn-chip.ok .cdot{box-shadow:0 0 5px currentColor;animation:pulse 2s infinite;}
+.refresh-btn{padding:5px 12px;background:transparent;color:var(--muted);border:1px solid var(--border2);border-radius:20px;font-family:'DM Mono',monospace;font-size:0.62rem;cursor:pointer;transition:all 0.15s;}
+.refresh-btn:hover{border-color:var(--pink);color:var(--pink);}
+
+/* ── HEADER ── */
+.page-header{margin-bottom:26px;animation:fadeUp 0.35s ease both;}
+.breadcrumb{font-family:'DM Mono',monospace;font-size:0.63rem;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:12px;}
+.breadcrumb a{color:var(--muted);text-decoration:none;}
+.breadcrumb a:hover{color:var(--pink);}
+.breadcrumb .sep{color:var(--dim);}
+.breadcrumb .cur{color:var(--pink);}
+
+.hero{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+.hero-logo{height:70px;width:auto;flex-shrink:0;filter:drop-shadow(0 2px 8px rgba(30,32,68,0.12));}
+.hero-text h1{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700;letter-spacing:-0.5px;line-height:1.1;color:var(--navy);}
+.hero-text h1 .hl{color:var(--pink);}
+.hero-text .tagline{font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--muted);margin-top:6px;letter-spacing:1px;text-transform:uppercase;}
+.date-row{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.dtag{font-family:'DM Mono',monospace;font-size:0.67rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:3px 10px;border-radius:20px;}
+.dtag.active{background:var(--pnk-d);border-color:var(--pnk-b);color:var(--pink);}
+
+/* ── STAT CARDS ── */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;animation:fadeUp 0.35s 0.05s ease both;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 20px;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(30,32,68,0.05);}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.sc-navy::before  {background:linear-gradient(90deg,var(--navy),transparent);}
+.sc-pink::before  {background:linear-gradient(90deg,var(--pink),transparent);}
+.sc-green::before {background:linear-gradient(90deg,var(--green),transparent);}
+.sc-tan::before   {background:linear-gradient(90deg,var(--tan),transparent);}
+.stat-label{font-family:'DM Mono',monospace;font-size:0.57rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;}
+.stat-value{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;letter-spacing:-1px;line-height:1;margin-bottom:4px;}
+.sc-navy  .stat-value{color:var(--navy);}
+.sc-pink  .stat-value{color:var(--pink);}
+.sc-green .stat-value{color:var(--green);}
+.sc-tan   .stat-value{color:var(--tan);}
+.stat-sub{font-family:'DM Mono',monospace;font-size:0.59rem;color:var(--muted);}
+
+/* ── BLOCKS ── */
+.block{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:18px;box-shadow:0 1px 4px rgba(30,32,68,0.05);}
+.block-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);}
+.block-title{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;display:flex;align-items:center;gap:8px;}
+.bdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.block-body{padding:16px 20px;}
+.add-btn{display:flex;align-items:center;gap:5px;padding:6px 13px;background:var(--pink);color:#fff;border:none;border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.add-btn:hover{background:#D4406A;transform:translateY(-1px);}
+.navy-btn{background:var(--navy);}
+.navy-btn:hover{background:#161830;}
+
+/* ── TWO COL ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;}
+
+/* ── DOG CARDS ── */
+.dog-list{display:flex;flex-direction:column;gap:0;}
+.dog-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);transition:padding 0.15s;}
+.dog-item:last-child{border-bottom:none;padding-bottom:0;}
+.dog-item:first-child{padding-top:0;}
+.dog-item:hover{padding-left:5px;}
+.dog-avatar{width:42px;height:42px;min-width:42px;border-radius:12px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+.dog-info{flex:1;min-width:0;}
+.dog-name{font-size:0.88rem;font-weight:800;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dog-meta{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.dog-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+.status-pill{font-family:'DM Mono',monospace;font-size:0.56rem;font-weight:700;padding:2px 8px;border-radius:10px;}
+.s-available {background:var(--grn-d);color:var(--green);border:1px solid var(--grn-b);}
+.s-fostered  {background:var(--nvy-d);color:var(--navy);border:1px solid var(--nvy-b);}
+.s-pending   {background:var(--tan-d);color:var(--tan);border:1px solid var(--tan-b);}
+.s-adopted   {background:#2A9D6014;color:#2A9D60;border:1px solid #2A9D6030;}
+.s-medical   {background:var(--red-d);color:var(--red);border:1px solid var(--red-b);}
+.s-intake    {background:var(--pnk-d);color:var(--pink);border:1px solid var(--pnk-b);}
+.s-transport {background:var(--tel-d);color:var(--teal);border:1px solid var(--tel-b);}
+.days-pill{font-family:'DM Mono',monospace;font-size:0.54rem;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:1px 7px;border-radius:8px;}
+.days-pill.long{color:var(--orange);background:var(--org-d);border-color:var(--org-b);}
+.days-pill.urgent{color:var(--red);background:var(--red-d);border-color:var(--red-b);}
+
+/* ── TASKS ── */
+.task-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.task-item:last-child{border-bottom:none;padding-bottom:0;}
+.task-item:first-child{padding-top:0;}
+.task-item.done .task-text{text-decoration:line-through;color:var(--dim);}
+.task-item.done .tcheck{background:var(--green);border-color:var(--green);}
+.task-item.done .tcheck::after{content:'✓';font-size:0.52rem;color:#fff;font-weight:700;}
+.tcheck{width:16px;height:16px;min-width:16px;border:1.5px solid var(--border2);border-radius:4px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;margin-top:2px;cursor:pointer;flex-shrink:0;}
+.tcheck:hover{border-color:var(--pink);}
+.task-content{flex:1;min-width:0;}
+.task-text{font-size:0.83rem;color:var(--text);line-height:1.4;outline:none;background:transparent;border-radius:4px;padding:1px 3px;margin:-1px -3px;display:block;width:100%;}
+.task-text:focus{background:var(--surface2);color:var(--navy);}
+.task-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+.priority-tag{font-family:'DM Mono',monospace;font-size:0.56rem;font-weight:700;padding:2px 7px;border-radius:8px;cursor:pointer;border:none;outline:none;appearance:none;-webkit-appearance:none;}
+.pt-donow   {background:var(--org-d);color:var(--orange);border:1px solid var(--org-b);}
+.pt-thisweek{background:var(--red-d);color:var(--red);border:1px solid var(--red-b);}
+.pt-someday {background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
+.del-task{width:20px;height:20px;background:transparent;border:none;color:var(--border2);cursor:pointer;border-radius:4px;font-size:0.65rem;display:flex;align-items:center;justify-content:center;transition:all 0.15s;opacity:0;margin-top:2px;}
+.task-item:hover .del-task{opacity:1;}
+.del-task:hover{color:var(--red);background:var(--red-d);}
+
+/* Add task row */
+.add-task-row{display:flex;align-items:center;gap:8px;padding:10px 0 0;border-top:1px solid var(--border);margin-top:4px;}
+.add-task-input{flex:1;background:transparent;border:none;outline:none;font-family:'Nunito',sans-serif;font-size:0.83rem;color:var(--text);}
+.add-task-input::placeholder{color:var(--muted);}
+.add-task-pri{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:4px 8px;font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--text);outline:none;cursor:pointer;}
+.add-task-btn{padding:4px 12px;background:var(--pink);color:#fff;border:none;border-radius:8px;font-family:'DM Mono',monospace;font-size:0.62rem;font-weight:700;cursor:pointer;}
+.add-task-btn:hover{background:#D4406A;}
+
+.hq-sync-note{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--muted);margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.hq-sync-note a{color:var(--pink);text-decoration:none;}
+.hq-sync-note a:hover{text-decoration:underline;}
+.sync-dot{width:5px;height:5px;border-radius:50%;background:var(--green);display:inline-block;margin-right:4px;box-shadow:0 0 4px var(--green);}
+
+/* ── NOTES ── */
+.notes-ta{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.85rem;padding:16px 20px;min-height:100px;resize:vertical;line-height:1.6;}
+.notes-ta::placeholder{color:var(--dim);}
+
+/* ── UPCOMING SECTION ── */
+.upcoming-item{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);}
+.upcoming-item:last-child{border-bottom:none;padding-bottom:0;}
+.upcoming-item:first-child{padding-top:0;}
+.up-date{width:44px;height:44px;min-width:44px;background:var(--pnk-d);border:1px solid var(--pnk-b);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.up-month{font-family:'DM Mono',monospace;font-size:0.48rem;color:var(--pink);text-transform:uppercase;letter-spacing:1px;line-height:1;}
+.up-day{font-size:1rem;font-weight:800;color:var(--pink);line-height:1.1;letter-spacing:-1px;font-family:'Playfair Display',serif;}
+.up-info{flex:1;min-width:0;}
+.up-name{font-size:0.85rem;font-weight:700;color:var(--navy);}
+.up-meta{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--muted);margin-top:2px;}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(30,32,68,0.35);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:26px 28px;max-width:480px;width:92%;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(30,32,68,0.15);}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:18px;color:var(--navy);}
+.modal-close{position:absolute;top:18px;right:18px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:0.75rem;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{color:var(--navy);}
+.form-group{margin-bottom:12px;}
+.form-label{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:5px;}
+.form-input,.form-select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:9px;padding:9px 12px;font-family:'Nunito',sans-serif;font-size:0.85rem;color:var(--text);outline:none;transition:border-color 0.15s;}
+.form-input:focus,.form-select:focus{border-color:var(--pink);}
+.form-input::placeholder{color:var(--dim);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.modal-actions{display:flex;gap:10px;margin-top:18px;}
+.btn-primary{flex:1;padding:10px;background:var(--pink);color:#fff;border:none;border-radius:9px;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.btn-primary:hover{background:#D4406A;transform:translateY(-1px);}
+.btn-cancel{padding:10px 16px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:9px;font-family:'Nunito',sans-serif;font-size:0.85rem;cursor:pointer;}
+
+.empty-msg{font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--muted);padding:8px 0;font-style:italic;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+
+@media(max-width:700px){
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  .two-col{grid-template-columns:1fr;}
+  .hero-logo{height:52px;}
+  .hero-text h1{font-size:1.5rem;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <a class="back-link" href="index.html">← HQ</a>
+      <div class="conn-chip" id="conn-chip"><div class="cdot"></div><span id="conn-text">Loading...</span></div>
+      <div class="conn-chip syn" id="task-chip"><div class="cdot"></div><span id="task-status">Tasks loading...</span></div>
+    </div>
+    <button class="refresh-btn" onclick="init()">↺ Refresh</button>
+  </div>
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="breadcrumb">
+      <a href="index.html">⚡ HQ</a>
+      <span class="sep">›</span>
+      <span class="cur">🐶 A&amp;B Rescue</span>
+    </div>
+    <div class="hero">
+      <img class="hero-logo" src="Logo_Long_Ways.png" alt="Above & Beyond English Setter Rescue">
+      <div class="hero-text">
+        <h1>Above &amp; Beyond<br><span class="hl">Setter Rescue</span></h1>
+        <div class="tagline">Intake Coordinator · Jamie Scanlin</div>
+        <div class="date-row">
+          <span class="dtag" id="live-date">Loading...</span>
+          <span class="dtag active">🐾 Active</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK LINKS -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;animation:fadeUp 0.35s 0.04s ease both;">
+    <a class="ext-chip chip-pink" href="https://above-and-beyond-intake-app.netlify.app" target="_blank">🐾 Intake App ↗</a>
+    <a class="ext-chip chip-navy" href="https://www.petstablished.com" target="_blank">🏠 Petstablished ↗</a>
+    <a class="ext-chip chip-tan" href="https://docs.google.com/spreadsheets/d/1-vAOstbjx16Qym2cna2vfwGYOLYBPDUY46zoMpthH90/edit?gid=1243713754#gid=1243713754" target="_blank">📋 Master Dog File ↗</a>
+    <a class="ext-chip chip-teal" href="https://drive.google.com/drive/u/2/folders/0AJUFhg5RaKoQUk9PVA" target="_blank">📁 Google Drive ↗</a>
+  </div>
+
+  <!-- STATS -->
+  <div class="stat-grid">
+    <div class="stat-card sc-pink">
+      <div class="stat-label">In System</div>
+      <div class="stat-value" id="stat-in-system">—</div>
+      <div class="stat-sub">active dogs tracked</div>
+    </div>
+    <div class="stat-card sc-navy">
+      <div class="stat-label">In Foster</div>
+      <div class="stat-value" id="stat-fostered">—</div>
+      <div class="stat-sub">currently fostered</div>
+    </div>
+    <div class="stat-card sc-green">
+      <div class="stat-label">Adopted</div>
+      <div class="stat-value" id="stat-adopted">—</div>
+      <div class="stat-sub">2026 to date</div>
+    </div>
+    <div class="stat-card sc-tan">
+      <div class="stat-label">Avg. Days</div>
+      <div class="stat-value" id="stat-avg-days">—</div>
+      <div class="stat-sub">in system (active)</div>
+    </div>
+  </div>
+
+  <!-- DOGS IN SYSTEM + UPCOMING -->
+  <div class="two-col" style="animation:fadeUp 0.35s 0.08s ease both;">
+    <div class="block">
+      <div class="block-header">
+        <div class="block-title"><div class="bdot" style="background:var(--pink)"></div>Dogs in System</div>
+        <button class="add-btn" onclick="openDogModal()">+ Add Dog</button>
+      </div>
+      <div class="block-body">
+        <div id="dog-list"><div class="empty-msg">Loading dogs...</div></div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-header">
+        <div class="block-title"><div class="bdot" style="background:var(--teal)"></div>Upcoming / Watch</div>
+      </div>
+      <div class="block-body">
+        <div id="upcoming-list"><div class="empty-msg">No upcoming items.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TASKS — synced from HQ BrainDump area=Rescue -->
+  <div class="block" style="animation:fadeUp 0.35s 0.12s ease both;">
+    <div class="block-header">
+      <div class="block-title"><div class="bdot" style="background:var(--green)"></div>Open Tasks — Rescue</div>
+    </div>
+    <div class="block-body">
+      <div id="task-list"><div class="empty-msg">Loading tasks...</div></div>
+      <div class="add-task-row">
+        <span style="color:var(--muted);font-size:0.85rem;">+</span>
+        <input class="add-task-input" id="new-task-text" placeholder="Add a rescue task..." onkeydown="handleTaskKey(event)">
+        <select class="add-task-pri" id="new-task-pri">
+          <option value="Do Now">Do Now</option>
+          <option value="This Week" selected>This Week</option>
+          <option value="Someday">Someday</option>
+        </select>
+        <button class="add-task-btn" onclick="addTask()">Add</button>
+      </div>
+      <div class="hq-sync-note">
+        <span><span class="sync-dot"></span>Synced with HQ BrainDump · area = Rescue</span>
+        <a href="index.html">Edit in HQ →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="block" style="animation:fadeUp 0.35s 0.16s ease both;">
+    <div class="block-header">
+      <div class="block-title"><div class="bdot" style="background:var(--tan)"></div>Rescue Notes & Scratch</div>
+    </div>
+    <textarea class="notes-ta" id="rescue-notes" placeholder="Dog updates, transport plans, foster notes, board items...
+
+→ Skeeter, Willy, Arnold — AZ transport window closes before summer heat
+→ Call Helen re: her dogs
+→ Reach out to William B regarding Allie
+→ Coreane paperwork coming"></textarea>
+  </div>
+
+</div>
+
+<!-- ADD DOG MODAL -->
+<div class="modal-overlay" id="dog-modal">
+  <div class="modal">
+    <div class="modal-title">🐾 Add Dog to System</div>
+    <button class="modal-close" onclick="closeDogModal()">✕</button>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Dog Name</label>
+        <input class="form-input" id="d-name" placeholder="e.g. Skeeter">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Breed / Age</label>
+        <input class="form-input" id="d-breed" placeholder="e.g. English Setter · 8yr">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="d-status">
+          <option value="intake">Intake Pending</option>
+          <option value="available">Available</option>
+          <option value="fostered">In Foster</option>
+          <option value="pending">Adoption Pending</option>
+          <option value="medical">Medical Hold</option>
+          <option value="transport">Transport Needed</option>
+          <option value="adopted">Adopted</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date Entered</label>
+        <input class="form-input" id="d-date" type="date">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Foster / Location</label>
+      <input class="form-input" id="d-foster" placeholder="e.g. Debbie K · Arizona">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <input class="form-input" id="d-notes" placeholder="Medical notes, transport needs, etc.">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="addDog()">Add Dog</button>
+      <button class="btn-cancel" onclick="closeDogModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════
+// HQ Apps Script — reads AND writes BrainDump tasks (area=Rescue)
+const HQ_URL = 'https://script.google.com/macros/s/AKfycbw6fGdCZnZHBfpQaHs03_3xWkuxunC08aaCoE40iLY03Q6CVcb6f5_bWYUk_3YKGH20/exec';
+
+// ── DATE ──────────────────────────────────────────
+const now    = new Date();
+const today  = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function isoWeek(d) {
+  const dt = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = dt.getUTCDay()||7; dt.setUTCDate(dt.getUTCDate()+4-day);
+  const y = new Date(Date.UTC(dt.getUTCFullYear(),0,1));
+  return 'W'+Math.ceil((((dt-y)/86400000)+1)/7);
+}
+
+document.getElementById('live-date').textContent =
+  `${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()} · ${now.getFullYear()}`;
+
+// ── STATE ─────────────────────────────────────────
+let dogs = [
+  {id:1, name:'Skeeter',  breed:'English Setter · Sr.',  status:'transport', foster:'AZ Transport Needed', dateIn:'2025-10-01', notes:'In system since Oct 2025. AZ transport needed before summer heat.'},
+  {id:2, name:'Willy',    breed:'English Setter · Sr.',  status:'transport', foster:'AZ Transport Needed', dateIn:'2025-10-01', notes:'In system since Oct 2025. AZ transport needed before summer heat.'},
+  {id:3, name:'Arnold',   breed:'English Setter · Sr.',  status:'transport', foster:'AZ Transport Needed', dateIn:'2025-10-01', notes:'In system since Oct 2025. AZ transport needed before summer heat.'},
+  {id:4, name:'Fergus',   breed:'English Setter',        status:'available', foster:'',                    dateIn:'2026-02-01', notes:'Foster videos ready — male dog, female dog, cats.'},
+];
+let nextDogId = 5;
+
+let allRows    = [];   // full HQ BrainDump
+let rescueTasks = []; // filtered area=Rescue, undone
+let nextTaskId = 1000;
+let saveTimer  = null;
+
+// ── CONNECTION STATUS ─────────────────────────────
+function setConn(state, msg) {
+  const c = document.getElementById('conn-chip');
+  c.className = 'conn-chip'+(state==='ok'?' ok':state==='err'?' err':state==='syn'?' syn':'');
+  document.getElementById('conn-text').textContent = msg;
+}
+function setTaskStatus(state, msg) {
+  const c = document.getElementById('task-chip');
+  c.className = 'conn-chip'+(state==='ok'?' ok':state==='err'?' err':state==='syn'?' syn':'');
+  document.getElementById('task-status').textContent = msg;
+}
+
+// ── HQ SCRIPT API ─────────────────────────────────
+async function hqGet() {
+  const res  = await fetch(HQ_URL+'?action=load', {redirect:'follow'});
+  const json = await res.json();
+  if (!json.ok) throw new Error(json.error);
+  return json.data;
+}
+async function hqPost(action, data) {
+  const res = await fetch(HQ_URL, {
+    method:'POST', redirect:'follow',
+    headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify({action, data})
+  });
+  const json = await res.json();
+  if (!json.ok) throw new Error(json.error||'HQ save failed');
+}
+
+// ── SAVE TASKS BACK TO HQ (debounced 1.5s) ────────
+function scheduleSave() {
+  setTaskStatus('syn','Syncing...');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try {
+      const merged = allRows
+        .filter(r => r.area !== 'Rescue')
+        .concat(rescueTasks);
+      merged.sort((a,b) => (a.id||0)-(b.id||0));
+      await hqPost('saveDump', merged);
+      setTaskStatus('ok', `Synced · ${MONTHS[now.getMonth()]} ${now.getDate()}`);
+    } catch(e) {
+      setTaskStatus('err','Sync failed — local only');
+    }
+  }, 1500);
+}
+
+// ── INIT ──────────────────────────────────────────
+async function init() {
+  setConn('syn','Loading...');
+  setTaskStatus('syn','Loading tasks...');
+  renderAll();
+  await loadTasks();
+  setConn('ok','Connected');
+}
+
+async function loadTasks() {
+  try {
+    const data = await hqGet();
+    allRows = data.rows || [];
+    const maxId = allRows.reduce((m,r)=>Math.max(m,r.id||0),0);
+    nextTaskId = Math.max(nextTaskId, maxId+1);
+    const order = {'Do Now':0,'This Week':1,'Someday':2};
+    rescueTasks = allRows
+      .filter(r => r.area === 'Rescue' && !r.done)
+      .sort((a,b) => (order[a.priority]||2)-(order[b.priority]||2));
+    setTaskStatus('ok', `${rescueTasks.length} open · HQ synced`);
+  } catch(e) {
+    setTaskStatus('err','HQ offline');
+    rescueTasks = [];
+  }
+  renderTasks();
+}
+
+// ── RENDER ALL ─────────────────────────────────────
+function renderAll() { renderDogs(); renderUpcoming(); renderStats(); renderTasks(); }
+
+// ── DOGS ──────────────────────────────────────────
+function daysInSystem(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr+'T12:00:00');
+  return isNaN(d) ? null : Math.floor((today - d) / 86400000);
+}
+
+function daysPillClass(days) {
+  if (days === null) return '';
+  if (days > 180) return 'urgent';
+  if (days > 60)  return 'long';
+  return '';
+}
+
+const STATUS_LABELS = {
+  available:'Available', fostered:'In Foster', pending:'Adoption Pending',
+  medical:'Medical Hold', intake:'Intake Pending', transport:'Transport Needed', adopted:'Adopted'
+};
+const DOG_EMOJIS = ['🐕','🦮','🐶','🐩','🐾'];
+
+function renderDogs() {
+  const active = dogs.filter(d => d.status !== 'adopted');
+  document.getElementById('dog-list').innerHTML = active.length
+    ? active.map((d,i) => {
+        const days = daysInSystem(d.dateIn);
+        const dpClass = daysPillClass(days);
+        return `
+        <div class="dog-item">
+          <div class="dog-avatar">${DOG_EMOJIS[i % DOG_EMOJIS.length]}</div>
+          <div class="dog-info">
+            <div class="dog-name">${d.name}</div>
+            <div class="dog-meta">
+              <span>${d.breed||''}</span>
+              ${d.foster?`<span>${d.foster}</span>`:''}
+            </div>
+          </div>
+          <div class="dog-right">
+            <span class="status-pill s-${d.status}">${STATUS_LABELS[d.status]||d.status}</span>
+            ${days!==null?`<span class="days-pill ${dpClass}">${days}d</span>`:''}
+          </div>
+        </div>`;
+      }).join('')
+    : '<div class="empty-msg">No active dogs in system.</div>';
+}
+
+// ── UPCOMING ──────────────────────────────────────
+function renderUpcoming() {
+  // Static upcoming items — can be made dynamic later
+  const items = [
+    {date:'2026-04-15', label:'AZ Transport Window', sub:'Skeeter · Willy · Arnold — before summer heat'},
+    {date:'2026-03-28', label:'Call Helen re: dogs', sub:'Regarding her 2 English Setters'},
+    {date:'2026-03-30', label:'Coreane paperwork', sub:'Waiting on documents'},
+  ].filter(i => new Date(i.date+'T12:00:00') >= today)
+   .sort((a,b) => new Date(a.date) - new Date(b.date));
+
+  document.getElementById('upcoming-list').innerHTML = items.length
+    ? items.map(i => {
+        const d = new Date(i.date+'T12:00:00');
+        return `
+        <div class="upcoming-item">
+          <div class="up-date">
+            <div class="up-month">${MONTHS[d.getMonth()]}</div>
+            <div class="up-day">${d.getDate()}</div>
+          </div>
+          <div class="up-info">
+            <div class="up-name">${i.label}</div>
+            <div class="up-meta">${i.sub}</div>
+          </div>
+        </div>`;
+      }).join('')
+    : '<div class="empty-msg">Nothing upcoming — all clear! 🐾</div>';
+}
+
+// ── STATS ─────────────────────────────────────────
+function renderStats() {
+  const active  = dogs.filter(d => d.status !== 'adopted');
+  const foster  = dogs.filter(d => d.status === 'fostered').length;
+  const adopted = dogs.filter(d => d.status === 'adopted').length;
+  const days    = active.map(d => daysInSystem(d.dateIn)).filter(x => x !== null);
+  const avg     = days.length ? Math.round(days.reduce((a,b)=>a+b,0)/days.length) : 0;
+  document.getElementById('stat-in-system').textContent = active.length;
+  document.getElementById('stat-fostered').textContent  = foster;
+  document.getElementById('stat-adopted').textContent   = adopted;
+  document.getElementById('stat-avg-days').textContent  = avg || '—';
+}
+
+// ── TASKS ─────────────────────────────────────────
+function priClass(p) {
+  return {'Do Now':'pt-donow','This Week':'pt-thisweek','Someday':'pt-someday'}[p]||'pt-someday';
+}
+
+function renderTasks() {
+  document.getElementById('task-list').innerHTML = rescueTasks.length
+    ? rescueTasks.map((t,i) => `
+      <div class="task-item ${t.done?'done':''}">
+        <div class="tcheck ${t.done?'checked':''}" onclick="toggleTask(${i})"></div>
+        <div class="task-content">
+          <div class="task-text"
+               contenteditable="true"
+               onblur="saveTaskText(${i}, this.textContent)"
+               onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+               onclick="event.stopPropagation()"
+          >${t.item}</div>
+        </div>
+        <div class="task-meta">
+          <select class="priority-tag ${priClass(t.priority)}"
+                  onchange="saveTaskPriority(${i}, this.value)"
+                  style="appearance:none;-webkit-appearance:none;cursor:pointer;font-family:'DM Mono',monospace;font-size:0.56rem;font-weight:700;padding:2px 7px;border-radius:8px;">
+            <option value="Do Now"    ${t.priority==='Do Now'   ?'selected':''}>Do Now</option>
+            <option value="This Week" ${t.priority==='This Week'?'selected':''}>This Week</option>
+            <option value="Someday"   ${t.priority==='Someday'  ?'selected':''}>Someday</option>
+          </select>
+          <button class="del-task" onclick="deleteTask(${i})" title="Delete">✕</button>
+        </div>
+      </div>`).join('')
+    : '<div class="empty-msg">No open rescue tasks — great work! 🐾</div>';
+}
+
+function toggleTask(i) {
+  rescueTasks[i].done = !rescueTasks[i].done;
+  const row = allRows.find(r => r.id === rescueTasks[i].id);
+  if (row) row.done = rescueTasks[i].done;
+  scheduleSave();
+  renderTasks();
+}
+function saveTaskText(i, text) {
+  const t = text.trim();
+  if (!t || t === rescueTasks[i].item) return;
+  rescueTasks[i].item = t;
+  const row = allRows.find(r => r.id === rescueTasks[i].id);
+  if (row) row.item = t;
+  scheduleSave();
+}
+function saveTaskPriority(i, priority) {
+  rescueTasks[i].priority = priority;
+  const selects = document.querySelectorAll('#task-list .task-meta select');
+  if (selects[i]) selects[i].className = `priority-tag ${priClass(priority)}`;
+  const row = allRows.find(r => r.id === rescueTasks[i].id);
+  if (row) row.priority = priority;
+  scheduleSave();
+}
+function deleteTask(i) {
+  const id = rescueTasks[i].id;
+  rescueTasks.splice(i, 1);
+  const row = allRows.find(r => r.id === id);
+  if (row) row.done = true;
+  scheduleSave();
+  renderTasks();
+}
+function addTask() {
+  const text = document.getElementById('new-task-text').value.trim();
+  if (!text) return;
+  const priority = document.getElementById('new-task-pri').value;
+  const newTask = {
+    id:       nextTaskId++,
+    item:     text,
+    type:     'Task',
+    area:     'Rescue',
+    priority: priority,
+    week:     isoWeek(now),
+    done:     false
+  };
+  rescueTasks.unshift(newTask);
+  allRows.unshift(newTask);
+  document.getElementById('new-task-text').value = '';
+  scheduleSave();
+  renderTasks();
+}
+function handleTaskKey(e) { if (e.key==='Enter') addTask(); }
+
+// ── DOG MODAL ─────────────────────────────────────
+function openDogModal() {
+  document.getElementById('dog-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('d-name').focus(),100);
+}
+function closeDogModal() { document.getElementById('dog-modal').classList.remove('open'); }
+document.getElementById('dog-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeDogModal();});
+
+function addDog() {
+  const name = document.getElementById('d-name').value.trim();
+  if (!name) return;
+  dogs.push({
+    id:      nextDogId++,
+    name,
+    breed:   document.getElementById('d-breed').value.trim(),
+    status:  document.getElementById('d-status').value,
+    foster:  document.getElementById('d-foster').value.trim(),
+    dateIn:  document.getElementById('d-date').value || new Date().toISOString().split('T')[0],
+    notes:   document.getElementById('d-notes').value.trim(),
+  });
+  ['d-name','d-breed','d-foster','d-notes'].forEach(id=>document.getElementById(id).value='');
+  closeDogModal();
+  renderAll();
+}
+
+// ── GO ─────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
