@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ABDJS Email Launcher</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0d0d0f;--bg2:#131318;--bg3:#1a1a22;--border:rgba(255,255,255,0.07);--border-hi:rgba(255,255,255,0.15);--text:#e8e8f0;--muted:#6b6b80;--purple:#8b5cf6;--purple-lt:#a78bfa;--pink:#ec4899;--gold:#f59e0b;--green:#10b981;--blue:#3b82f6;--yellow:#eab308;--radius:10px;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;top:-30vh;left:-20vw;width:70vw;height:70vh;background:radial-gradient(ellipse,rgba(139,92,246,0.08) 0%,transparent 65%);pointer-events:none;z-index:0;}
+body::after{content:'';position:fixed;bottom:-20vh;right:-10vw;width:50vw;height:50vh;background:radial-gradient(ellipse,rgba(236,72,153,0.06) 0%,transparent 65%);pointer-events:none;z-index:0;}
+.shell{position:relative;z-index:1;display:grid;grid-template-columns:240px 1fr;grid-template-rows:56px 1fr;min-height:100vh;}
+.topbar{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:0 24px;border-bottom:1px solid var(--border);background:rgba(13,13,15,0.85);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;}
+.topbar-logo{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;letter-spacing:0.08em;background:linear-gradient(135deg,var(--purple-lt),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.topbar-sep{width:1px;height:20px;background:var(--border);}
+.topbar-sub{font-size:11px;color:var(--muted);letter-spacing:0.06em;}
+.topbar-badge{margin-left:auto;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border);padding:3px 10px;border-radius:20px;}
+.sidebar{border-right:1px solid var(--border);background:var(--bg2);padding:20px 0;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;}
+.sidebar::-webkit-scrollbar{width:4px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.sidebar-section{padding:6px 16px 2px;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-top:14px;}
+.sidebar-btn{display:flex;align-items:center;gap:10px;width:100%;padding:9px 16px;background:none;border:none;cursor:pointer;color:var(--muted);font-family:'DM Mono',monospace;font-size:11.5px;text-align:left;border-left:2px solid transparent;transition:all 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sidebar-btn:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+.sidebar-btn.active{color:var(--text);border-left-color:var(--purple);background:rgba(139,92,246,0.08);}
+.sidebar-btn[data-group="thumbtack"].active{border-left-color:var(--yellow);background:rgba(234,179,8,0.08);}
+.sidebar-btn .num{font-size:9px;color:var(--muted);background:var(--bg3);padding:1px 5px;border-radius:4px;min-width:18px;text-align:center;flex-shrink:0;}
+.sidebar-btn.active .num{background:rgba(139,92,246,0.2);color:var(--purple-lt);}
+.sidebar-btn[data-group="thumbtack"].active .num{background:rgba(234,179,8,0.15);color:var(--yellow);}
+.main{padding:28px 32px;overflow-y:auto;}
+.template-card{display:none;animation:fadeSlide 0.2s ease;}
+.template-card.active{display:block;}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.card-meta{flex:1;}
+.card-flow{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;}
+.card-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:6px;}
+.card-desc{font-size:11px;color:var(--muted);font-style:italic;font-family:'Instrument Serif',serif;}
+.card-actions{display:flex;gap:8px;flex-shrink:0;align-items:flex-start;flex-wrap:wrap;justify-content:flex-end;}
+.subject-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.subject-label{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);flex-shrink:0;}
+.subject-text{font-size:12px;color:var(--text);font-family:'DM Mono',monospace;}
+.email-body{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;line-height:1.75;font-size:13px;color:#c8c8d8;white-space:pre-wrap;font-family:'DM Mono',monospace;min-height:120px;}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:8px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.05em;cursor:pointer;border:none;transition:all 0.15s;white-space:nowrap;}
+.btn-copy{background:var(--purple);color:#fff;}
+.btn-copy:hover{background:var(--purple-lt);transform:translateY(-1px);}
+.btn-copy.copied{background:var(--green);}
+.btn-subject{background:var(--bg3);color:var(--text);border:1px solid var(--border);}
+.btn-subject:hover{border-color:var(--border-hi);}
+.btn-mail{background:var(--bg3);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);}
+.btn-mail:hover{background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.6);transform:translateY(-1px);}
+.btn svg{width:13px;height:13px;}
+.flow-dj{color:var(--purple-lt);}
+.flow-booth{color:var(--pink);}
+.flow-special{color:var(--gold);}
+.flow-thumbtack{color:var(--yellow);}
+.vars-strip{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.var-chip{font-size:10px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);color:var(--gold);padding:3px 9px;border-radius:20px;}
+.step-indicator{display:flex;gap:4px;margin-bottom:20px;align-items:center;}
+.step-dot{width:24px;height:3px;border-radius:2px;background:var(--border);}
+.step-dot.active{background:var(--purple);}
+.step-label{font-size:10px;color:var(--muted);margin-left:6px;}
+.search-wrap{padding:0 12px 12px;}
+.search-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text);outline:none;transition:border-color 0.15s;}
+.search-input::placeholder{color:var(--muted);}
+.search-input:focus{border-color:var(--purple);}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--green);color:var(--green);padding:10px 18px;border-radius:8px;font-size:12px;display:flex;align-items:center;gap:8px;transform:translateY(80px);opacity:0;transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);z-index:999;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.card-notes{margin-top:14px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:8px;padding:12px 16px;font-size:11px;color:#93c5fd;line-height:1.6;}
+.mail-tip{margin-top:14px;background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.12);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--muted);line-height:1.6;display:flex;align-items:flex-start;gap:8px;}
+.mail-tip-icon{font-size:14px;flex-shrink:0;}
+@media(max-width:768px){
+  .shell{grid-template-columns:1fr;grid-template-rows:56px auto 1fr;}
+  .sidebar{position:relative;height:auto;display:flex;flex-wrap:wrap;padding:8px;gap:4px;}
+  .sidebar-section{display:none;}
+  .sidebar-btn{width:auto;padding:6px 12px;border-left:none;border-radius:6px;font-size:10px;}
+  .main{padding:16px;}
+  .card-actions{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <span class="topbar-logo">ABDJS</span>
+    <div class="topbar-sep"></div>
+    <span class="topbar-sub">Email Launcher</span>
+    <span class="topbar-badge">16 Templates · Mail.app Ready</span>
+  </header>
+  <nav class="sidebar">
+    <div class="search-wrap">
+      <input class="search-input" type="text" placeholder="Search templates…" id="searchInput" oninput="filterTemplates(this.value)">
+    </div>
+    <div class="sidebar-section" data-group="dj">🎧 DJ Wedding Flow</div>
+    <button class="sidebar-btn active" onclick="show('t1')" id="btn-t1" data-group="dj" data-label="First Contact">
+      <span class="num">1</span> First Contact
+    </button>
+    <button class="sidebar-btn" onclick="show('t2')" id="btn-t2" data-group="dj" data-label="Contract Info Form">
+      <span class="num">2</span> Contract Info Form
+    </button>
+    <button class="sidebar-btn" onclick="show('t3')" id="btn-t3" data-group="dj" data-label="Contract Sent">
+      <span class="num">3</span> Contract Sent
+    </button>
+    <button class="sidebar-btn" onclick="show('t4')" id="btn-t4" data-group="dj" data-label="Deposit Received">
+      <span class="num">4</span> Deposit Received
+    </button>
+    <button class="sidebar-btn" onclick="show('t5')" id="btn-t5" data-group="dj" data-label="Final Planning Mtg">
+      <span class="num">5</span> Final Planning Mtg
+    </button>
+    <button class="sidebar-btn" onclick="show('t6')" id="btn-t6" data-group="dj" data-label="Post-Event Thanks">
+      <span class="num">6</span> Post-Event Thanks
+    </button>
+    <div class="sidebar-section" data-group="booth">📸 Photo Booth</div>
+    <button class="sidebar-btn" onclick="show('t7')" id="btn-t7" data-group="booth" data-label="Wedding Quote">
+      <span class="num">7</span> Wedding Quote
+    </button>
+    <button class="sidebar-btn" onclick="show('t8')" id="btn-t8" data-group="booth" data-label="Birthday / Sweet 16">
+      <span class="num">8</span> Birthday / Sweet 16
+    </button>
+    <button class="sidebar-btn" onclick="show('t9')" id="btn-t9" data-group="booth" data-label="Deposit + Print Design">
+      <span class="num">9</span> Deposit + Print Design
+    </button>
+    <button class="sidebar-btn" onclick="show('t10')" id="btn-t10" data-group="booth" data-label="Post-Event Gallery">
+      <span class="num">10</span> Post-Event Gallery
+    </button>
+    <div class="sidebar-section" data-group="thumbtack">👍 Thumbtack</div>
+    <button class="sidebar-btn" onclick="show('tt1')" id="btn-tt1" data-group="thumbtack" data-label="Wedding / Reception">
+      <span class="num">1</span> Wedding / Reception
+    </button>
+    <button class="sidebar-btn" onclick="show('tt2')" id="btn-tt2" data-group="thumbtack" data-label="Birthday / Sweet 16">
+      <span class="num">2</span> Birthday / Sweet 16
+    </button>
+    <button class="sidebar-btn" onclick="show('tt3')" id="btn-tt3" data-group="thumbtack" data-label="School Event">
+      <span class="num">3</span> School Event
+    </button>
+    <div class="sidebar-section" data-group="special">🔁 Special</div>
+    <button class="sidebar-btn" onclick="show('t11')" id="btn-t11" data-group="special" data-label="Unavailable – Booth">
+      <span class="num">★</span> Unavailable – Booth
+    </button>
+    <button class="sidebar-btn" onclick="show('t12')" id="btn-t12" data-group="special" data-label="Unavailable – DJ">
+      <span class="num">★</span> Unavailable – DJ
+    </button>
+    <button class="sidebar-btn" onclick="show('t13')" id="btn-t13" data-group="special" data-label="Demo Links">
+      <span class="num">★</span> Demo Links
+    </button>
+    <div class="sidebar-section" data-group="assets">🔗 Assets</div>
+    <button class="sidebar-btn" onclick="show('assets')" id="btn-assets" data-group="assets" data-label="Links & Assets">
+      <span class="num">🔗</span> Links & Assets
+    </button>
+  </nav>
+  <main class="main">
+
+    <div class="template-card active" id="t1">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-dj">🎧 DJ Wedding · Step 1 of 6</div>
+          <div class="card-title">First Contact</div>
+          <div class="card-desc">Confirm availability → ask venue</div>
+        </div>
+        <div class="card-actions">          <button class="btn btn-subject" onclick="copySubject('Re: [Event Date] – Answer Back Entertainment')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Copy Subject
+          </button>
+          <button class="btn btn-copy" onclick="copyTemplate('body-t1', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Body
+          </button>
+          <button class="btn btn-mail" onclick="openInMail('t1')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Open in Mail
+          </button></div>
+      </div>
+      <div class="step-indicator">
+        <div class="step-dot  active"></div>        <div class="step-dot"></div>        <div class="step-dot"></div>        <div class="step-dot"></div>        <div class="step-dot"></div>        <div class="step-dot"></div>
+        <span class="step-label">Send this first</span>
+      </div>
+            <div class="subject-box">
+        <span class="subject-label">Subject</span>
+        <span class="subject-text">Re: [Event Date] – Answer Back Entertainment</span>
+      </div>
+      <div class="vars-strip"><span class="var-chip">[Name]</span><span class="var-chip">[Event Date]</span></div>
+      <div class="email-body" id="body-t1">Hi [Name],
+
+Congratulations — and thanks for reaching out!
+
+[Event Date] looks open on our end, and we'd love to be part of your celebration. Which venue are you working with?
+
+Our Basic Package includes up to 6 hours of coverage and starts at $1,095. I've attached our brochure so you can review packages and add-ons. You can also see photos, videos, and reviews at www.abdjs.com.
+
+If you'd prefer to connect by phone or Zoom, I'm happy to set that up — just let me know.</div>
+      <div class="mail-tip"><span class="mail-tip-icon">✉️</span><span><strong style="color:#93c5fd;">Open in Mail</strong> launches Apple Mail with subject + body pre-filled. Just add the recipient and send.</span></div>
+      <div class="card-notes"><strong>💡 Next step:</strong> After they reply with venue → send <strong>Step 2 → Contract Info Form</strong></div>
+    </div>
+
+    <div class="template-card" id="t2">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-dj">🎧 DJ Wedding · Step 2 of 6</div>
+          <div class="card-title">Contract Info Form</div>
+          <div class="card-desc">Single action → keeps momentum</div>
+        </div>
+        <div class="card-actions">          <button class="btn btn-subject" onclick="copySubject('Next Step: Contract Info – [Event Date]')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Copy Subject
+          </button>
+          <button class="btn btn-copy" onclick="copyTemplate('body-t2', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Body
+          </button>
+          <button class="btn btn-mail" onclick="openInMail('t2')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Open in Mail
+          </button></div>
+      </div>
+      <div class="step-indicator">
+        <div class="step-dot"></div>        <div class="step-dot  active"></div>        <div class="step-dot"></div>        <div class="step-dot"></div>        <div class="step-dot"></div>        <div class="step-dot"></div>
+        <span class="step-label">Step 2 of 6</span>
+      </div>
+            <div class="subject-box">
+        <span class="subject-label">Subject</span>
+        <span class="subject-text">Next Step: Contract Info – [Event Date]</span>
+      </div>
+      <div class="vars-strip"><span class="var-chip">[Name]</span></div>
+      <div class="email-body" id="body-t2">Hi [Name],
+
+Perfect — let's move things forward.
+
+To prepare your contract, please complete the form below:
+
+https://www.abdjs.com/contract-fillout
+
+Once submitted, I'll send over a draft contract along with deposit details to officially reserve your date.
+
+Let me know if any questions come up.</div>
+      <div class="card-notes"><strong>💡 Next step:</strong> After form submitted → send <strong>Step 3 → Contract Sent</strong></div>
+    </div>
+
+    <div class="template-card" id="t3">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-dj">🎧 DJ Wedding · Step 3 of 6</div>
+          <div class="card-title">Contract Sent</div>
+          <div class="card-desc">Fill in [$$$] deposit. Attach contract PDF.</div>
+        </div>
+        <div class="card-actions">          <button class="btn btn-subject" onclick="copySubject('Your Contract + Next Steps – [Event Date]')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Copy Subject
+          </button>
+          <button class="btn btn-copy" onclick="copyTemplate('body-t3', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Body
+          </button>
+          <button class="btn btn-mail" onclick="openInMail('t3')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Open in Mail
+          </button></div>
+      </div>
+      <div class="step-indicator">
+        <div class="step-dot"></div>        <div class="step-dot"></div>        <div class="step-dot  active"></div>        <div class="step-dot"></div>        <div class="step-dot"></div>        <div class="step-dot"></div>
+        <span class="step-label">Step 3 of 6</span>
+      </div>
+            <div class="subject-box">
+        <span class="subject-label">Subject</span>
+        <span class="subject-text">Your Contract + Next Steps – [Event Date]</span>
+      </div>
+      <div class="vars-strip"><span class="var-chip">[Name]</span><span class="var-chip">[$$$]</span></div>
+      <div class="email-body" id="body-t3">Hi [Name],
+
+Your draft contract is attached — please review and let me know if any adjustments are needed.
+
+To officially hold the date, a [$$$] deposit is required. We accept cash, check, Venmo, or Zelle.
+
+Just let me know your preferred method and I'll send the payment details.</div>
+      <div class="card-notes"><strong>💡 Next step:</strong> After deposit received → send <strong>Step 4 → Deposit Received</strong></div>
+      <div class="card-notes" style="background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.2);color:#fcd34d;">⚠️ Fill in <strong>[$$$]</strong> deposit amount and attach the contract PDF.</div>
+    </div>
+
+    <div class="template-card" id="t4">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-dj">🎧 DJ Wedding · Step 4 of 6</div>
+          <div class="card-title">Deposit Received — Booked!</div>
+          <div class="card-desc">Celebratory → sets next touchpoint</div>
+        </div>
+        <div class="card-actions">          <button class="btn btn-subject" onclick="copySubject('You\'re officially booked! 🎉')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Copy Subject
+          </button>
+          <button class="btn btn-copy" onclick="copyTemplate('body-t4', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Body
+          </button>
+          <button class="btn btn-mail" onclick="openInMail('t4')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Open in Mail
+          </button></div>
+      </div>
+      <div class="step-indicator">
+        <div class="step-dot"></div>        <div class="step-dot"></div>        <div class="step-dot"></div>        <div class="step-dot  active"></div>        <div class="step-dot"></div>        <div class="step-dot"></div>
+        <span class="step-label">Step 4 of 6</span>
+      </div>
+            <div class="subject-box">
+        <span class="subject-label">Subject</span>
+        <span class="subject-text">You're officially booked! 🎉</span>
+      </div>
+      <div class="vars-strip"><span class="var-chip">[Name]</span></div>
+      <div class="email-body" id="body-t4">Hi [Name],
+
+Deposit received — your date is officially reserved!
+
+An updated contract reflecting the deposit is attached for your records.
+
+No action needed right now — just continue working through your planning paperwork at your pace. I'll reach out about a month before the event to schedule our final planning meeting.
+
+Looking forward to it!</div>
+      <div class="card-notes"><strong>💡 Next step:</strong> Set reminder ~4 weeks out → send <strong>Step 5 → Final Planning Meeting</strong></div>
+      <div class="card-notes" style="background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.2);color:#fcd34d;">⚠️ Attach the updated contract with deposit noted.</div>
+    </div>
+
+    <div class="template-card" id="t5">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-dj">🎧 DJ Wedding · Step 5 of 6</div>
+          <div class="card-title">Final Planning Meeting</div>
+          <div class="card-desc">~4 weeks before event. Attach paperwork.</div>
+        </div>
+        <div class="card-actions">          <button class="btn btn-subject" onclick="copySubject('Time to Plan! Final Meeting – [Event Date]')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Copy Subject
+          </button>
+          <button class="btn btn-copy" onclick="copyTemplate('body-t5', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Body
+          </button>
+          <button class="btn btn-mail" onclick="openInMail('t5')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Open in Mail
+          </button></div>
+      </div>
+      <div class="step-indicator">
+        <div class="step-dot"></div>        <div class="step-dot"></div>        <div class="step-dot"></div>        <div class="step-dot"></div>        <div class="step-dot  active"></div>        <div class="step-dot"></div>
+        <span class="step-label">Step 5 of 6</span>
+      </div>
+            <div class="subject-box">
+        <span class="subject-label">Subject</span>
+        <span class="subject-text">Time to Plan! Final Meeting – [Event Date]</span>
+      </div>
+      <div class="vars-strip"><span class="var-chip">[Name]</span></div>
+      <div class="email-body" id="body-t5">Hi [Name],
+
+It's hard to believe your wedding is almost here!
+
+Let's schedule our final meeting. If your paperwork isn't complete yet, no problem — I've attached it again for convenience. Please send it over before our meeting so we can make the most of our time together.
+
+What does your schedule look like in the coming days?</div>
+      <div class="card-notes"><strong>💡 Next step:</strong> After event within 48hrs → send <strong>Step 6 → Post-Event Thank You</strong></div>
+      <div class="card-notes" style="background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.2);color:#fcd34d;">⚠️ Attach planning paperwork before sending.</div>
+    </div>
+
+    <div class="template-card" id="t6">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-dj">🎧 DJ Wedding · Step 6 of 6</div>
+          <div class="card-title">Post-Event Thank You</div>
+          <div class="card-desc">Within 48hrs. Google review link included.</div>
+        </div>
+        <div class="card-actions">          <button class="btn btn-subject" onclick="copySubject('Thank you — it was an honor! 🙏')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Copy Subject
+          </button>
+          <button class="btn btn-copy" onclick="copyTemplate('body-t6', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Body
+          </button>
+          <button class="btn btn-mail" onclick="openInMail('t6')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Open in Mail
+          </button></div>
+      </div>
+      <div class="step-indicator">
+        <div class="step-dot"></div>        <div class="step-dot"></div>        <div class="step-dot"></div>        <div class="step-dot"></div>        <div class="step-dot"></div>        <div class="step-dot  active"></div>
+        <span class="step-label">Step 6 of 6</span>
+      </div>
+            <div class="subject-box">
+        <span class="subject-label">Subject</span>
+        <span class="subject-text">Thank you — it was an honor! 🙏</span>
+      </div>
+      <div class="vars-strip"><span class="var-chip">[Name]</span></div>
+      <div class="email-body" id="body-t6">Hi [Name],
+
+What a night — it was truly an honor being part of your celebration. I hope everyone had an incredible time.
+
+If you have a moment, a quick review would mean a great deal to us. It's one of the most impactful ways you can support a small business.
+
+Google:
+https://g.page/r/CXFe2JV20fHLEAg/review
+
+Wishing you both a lifetime of happiness — congratulations again!</div>
+    </div>
+
+    <div class="template-card" id="t7">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-booth">📸 Photo Booth · Wedding</div>
+          <div class="card-title">Wedding Quote</div>
+          <div class="card-desc">Fill in [#] hours and [$$$] price.</div>
+        </div>
+        <div class="card-actions">          <button class="btn btn-subject" onclick="copySubject('Photo Booth Quote – [Event Date]')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Copy Subject
+          </button>
+          <button class="btn btn-copy" onclick="copyTemplate('body-t7', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Body
+          </button>
+          <button class="btn btn-mail" onclick="openInMail('t7')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Open in Mail
+          </button></div>
+      </div>
+            <div class="subject-box">
+        <span class="subject-label">Subject</span>
+        <span class="subject-text">Photo Booth Quote – [Event Date]</span>
+      </div>
+      <div class="vars-strip"><span class="var-chip">[Name]</span><span class="var-chip">[Event Date]</span><span class="var-chip">[#]</span><span class="var-chip">[$$$]</span></div>
+      <div class="email-body" id="body-t7">Hi [Name],
+
+Thanks for reaching out!
+
+[Event Date] is available. Our [#]-hour package is [$$$] and includes unlimited prints, props, a professional attendant, and a sharable online gallery.
+
+You can view a sample gallery here:
+https://www.nick-and-erika.abdjs.com
+
+More photos, videos, and reviews are available at www.abdjs.com.
+
+Let me know if you'd like to connect to go over details.</div>
+      <div class="card-notes" style="background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.2);color:#fcd34d;">⚠️ Fill in <strong>[#]</strong> hours and <strong>[$$$]</strong> price before sending.</div>
+    </div>
+
+    <div class="template-card" id="t8">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-booth">📸 Photo Booth · Birthday</div>
+          <div class="card-title">Birthday / Sweet 16</div>
+          <div class="card-desc">Fill in [#] hours and [$$$] price. DJ upsell included.</div>
+        </div>
+        <div class="card-actions">          <button class="btn btn-subject" onclick="copySubject('Photo Booth Quote – [Event Date]')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Copy Subject
+          </button>
+          <button class="btn btn-copy" onclick="copyTemplate('body-t8', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Body
+          </button>
+          <button class="btn btn-mail" onclick="openInMail('t8')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Open in Mail
+          </button></div>
+      </div>
+            <div class="subject-box">
+        <span class="subject-label">Subject</span>
+        <span class="subject-text">Photo Booth Quote – [Event Date]</span>
+      </div>
+      <div class="vars-strip"><span class="var-chip">[Name]</span><span class="var-chip">[Event Date]</span><span class="var-chip">[#]</span><span class="var-chip">[$$$]</span></div>
+      <div class="email-body" id="body-t8">Hi [Name],
+
+Thanks for reaching out — sounds like a great event!
+
+[Event Date] is available. Our [#]-hour package is [$$$] and includes unlimited prints, props, a professional attendant, and a private online gallery.
+
+If you're also considering a DJ, we can bundle services and offer preferred pricing.
+
+You can view demos and reviews at www.abdjs.com.
+
+Happy to answer any questions.</div>
+      <div class="card-notes" style="background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.2);color:#fcd34d;">⚠️ Fill in <strong>[#]</strong> hours and <strong>[$$$]</strong> price. 💡 DJ bundle upsell already in body.</div>
+    </div>
+
+    <div class="template-card" id="t9">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-booth">📸 Photo Booth · Booking</div>
+          <div class="card-title">Deposit Received + Print Design</div>
+          <div class="card-desc">Attach updated contract + layout examples.</div>
+        </div>
+        <div class="card-actions">          <button class="btn btn-subject" onclick="copySubject('Photo Booth Print Design – [Event Date]')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Copy Subject
+          </button>
+          <button class="btn btn-copy" onclick="copyTemplate('body-t9', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Body
+          </button>
+          <button class="btn btn-mail" onclick="openInMail('t9')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Open in Mail
+          </button></div>
+      </div>
+            <div class="subject-box">
+        <span class="subject-label">Subject</span>
+        <span class="subject-text">Photo Booth Print Design – [Event Date]</span>
+      </div>
+      <div class="vars-strip"><span class="var-chip">[Name]</span></div>
+      <div class="email-body" id="body-t9">Hi [Name],
+
+Deposit received — your date is officially reserved!
+
+An updated contract reflecting the deposit is attached for your records.
+
+Did you have a particular design in mind for the photo booth print? I've attached a few example layouts for inspiration, but I'm happy to customize something specifically for you. Just let me know any text, colors, theme elements, or overall vibe you'd like included.</div>
+      <div class="card-notes" style="background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.2);color:#fcd34d;">⚠️ Attach updated contract + sample layout examples.</div>
+    </div>
+
+    <div class="template-card" id="t10">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-booth">📸 Photo Booth · Post-Event</div>
+          <div class="card-title">Post-Event Gallery + Review</div>
+          <div class="card-desc">Within 48hrs. Add [GALLERY LINK].</div>
+        </div>
+        <div class="card-actions">          <button class="btn btn-subject" onclick="copySubject('Your photo booth gallery is live! 📸')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Copy Subject
+          </button>
+          <button class="btn btn-copy" onclick="copyTemplate('body-t10', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Body
+          </button>
+          <button class="btn btn-mail" onclick="openInMail('t10')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Open in Mail
+          </button></div>
+      </div>
+            <div class="subject-box">
+        <span class="subject-label">Subject</span>
+        <span class="subject-text">Your photo booth gallery is live! 📸</span>
+      </div>
+      <div class="vars-strip"><span class="var-chip">[Name]</span><span class="var-chip">[GALLERY LINK]</span></div>
+      <div class="email-body" id="body-t10">Hi [Name],
+
+Your gallery is live — here's the link:
+
+[GALLERY LINK]
+
+It was a pleasure being part of your event. If you have a moment, we'd truly appreciate a quick review — it makes a big difference for us:
+
+Google:
+https://g.page/r/CXFe2JV20fHLEAg/review
+
+Thanks again for having us!</div>
+      <div class="card-notes" style="background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.2);color:#fcd34d;">⚠️ Add <strong>[GALLERY LINK]</strong> before sending.</div>
+    </div>
+
+    <div class="template-card" id="t11">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-special">🔁 Special</div>
+          <div class="card-title">Unavailable – Booth Referral</div>
+          <div class="card-desc">Refers to Rick Butkus / Photos by Rick</div>
+        </div>
+        <div class="card-actions">          <button class="btn btn-subject" onclick="copySubject('Re: [Event Date] – Availability')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Copy Subject
+          </button>
+          <button class="btn btn-copy" onclick="copyTemplate('body-t11', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Body
+          </button>
+          <button class="btn btn-mail" onclick="openInMail('t11')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Open in Mail
+          </button></div>
+      </div>
+            <div class="subject-box">
+        <span class="subject-label">Subject</span>
+        <span class="subject-text">Re: [Event Date] – Availability</span>
+      </div>
+      <div class="vars-strip"><span class="var-chip">[Name]</span><span class="var-chip">[Event Date]</span></div>
+      <div class="email-body" id="body-t11">Hi [Name],
+
+Thank you for thinking of us. Unfortunately, [Event Date] is already booked.
+
+I'd recommend reaching out to:
+
+Rick Butkus | Photos by Rick
+<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6d04030b022d1d050219021e0f141f040e06430e0200">[email&#160;protected]</a>
+708.429.7555
+
+Rick does excellent work and should be able to assist.
+
+Wishing you a wonderful event!
+
+Best,
+Tim</div>
+    </div>
+
+    <div class="template-card" id="t12">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-special">🔁 Special</div>
+          <div class="card-title">Unavailable – DJ Referral</div>
+          <div class="card-desc">Refers to Mark at Southtown Entertainment</div>
+        </div>
+        <div class="card-actions">          <button class="btn btn-subject" onclick="copySubject('Re: [Event Date] – Availability')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Copy Subject
+          </button>
+          <button class="btn btn-copy" onclick="copyTemplate('body-t12', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Body
+          </button>
+          <button class="btn btn-mail" onclick="openInMail('t12')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Open in Mail
+          </button></div>
+      </div>
+            <div class="subject-box">
+        <span class="subject-label">Subject</span>
+        <span class="subject-text">Re: [Event Date] – Availability</span>
+      </div>
+      <div class="vars-strip"><span class="var-chip">[Name]</span><span class="var-chip">[Event Date]</span></div>
+      <div class="email-body" id="body-t12">Hi [Name],
+
+Thank you for thinking of us. Unfortunately, [Event Date] is already booked.
+
+I'd recommend reaching out to:
+
+Mark | Southtown Entertainment
+<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3851565e57786b574d4c504c574f567d564c5d4a4c595156555d564c16565d4c">[email&#160;protected]</a>
+815.200.9070
+
+They do excellent work and should be able to assist.
+
+Wishing you a wonderful event!
+
+Best,
+Tim</div>
+    </div>
+
+    <div class="template-card" id="t13">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-special">🔁 Special</div>
+          <div class="card-title">Demo Links</div>
+          <div class="card-desc">Send when prospect wants to see the booth.</div>
+        </div>
+        <div class="card-actions">          <button class="btn btn-subject" onclick="copySubject('Answer Back – Photo Booth Demo Links')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Copy Subject
+          </button>
+          <button class="btn btn-copy" onclick="copyTemplate('body-t13', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Body
+          </button>
+          <button class="btn btn-mail" onclick="openInMail('t13')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Open in Mail
+          </button></div>
+      </div>
+            <div class="subject-box">
+        <span class="subject-label">Subject</span>
+        <span class="subject-text">Answer Back – Photo Booth Demo Links</span>
+      </div>
+      <div class="vars-strip"><span class="var-chip">[Name]</span></div>
+      <div class="email-body" id="body-t13">Hi [Name],
+
+Here's everything you need to get a feel for the booth:
+
+Sample Wedding Gallery:
+https://www.nick-and-erika.abdjs.com
+
+Short Wedding Demo (2 min):
+https://vimeo.com/310371645
+
+Full Wedding Demo:
+https://vimeo.com/48877304
+
+Let me know what you think, or if you'd like to talk through details — happy to help.</div>
+    </div>
+
+    <div class="template-card" id="tt1">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-thumbtack">👍 Thumbtack · Wedding</div>
+          <div class="card-title">Wedding / Reception</div>
+          <div class="card-desc">Paste into Thumbtack. Fill in [Name], [Event Date], [#], [$$$].</div>
+        </div>
+        <div class="card-actions">          <button class="btn btn-copy" onclick="copyTemplate('body-tt1', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Message
+          </button></div>
+      </div>
+            <div class="subject-box" style="background:rgba(234,179,8,0.06);border-color:rgba(234,179,8,0.2);">
+        <span class="subject-label" style="color:#ca8a04;">Platform</span>
+        <span class="subject-text" style="color:#fde68a;">Thumbtack — copy &amp; paste into message box</span>
+      </div>
+      <div class="vars-strip"><span class="var-chip">[Name]</span><span class="var-chip">[Event Date]</span><span class="var-chip">[#]</span><span class="var-chip">[$$$]</span></div>
+      <div class="email-body" id="body-tt1">Congratulations [Name]!
+
+I have availability on [Event Date] and would be honored to be part of your reception.
+
+A [#]-hour package is [$$$] and includes unlimited prints, props, a professional attendant, and a sharable online gallery.
+
+Here's a sample gallery so you can see what to expect:
+https://www.nick-and-erika.abdjs.com
+
+You can also visit www.abdjs.com for a full demo of our booth and reviews from past clients.
+
+I've attached our brochure for reference. Happy to answer any questions — feel free to reach out at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="75011c18351417111f065b161a18">[email&#160;protected]</a> or 708.710.0480 (text works too).
+
+Thanks,
+Tim Scanlin
+Answer Back Entertainment
+www.abdjs.com
+708.710.0480
+<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bbcfd2d6fbdad9dfd1c895d8d4d6">[email&#160;protected]</a></div>
+      <div class="card-notes" style="background:rgba(234,179,8,0.06);border-color:rgba(234,179,8,0.25);color:#fde68a;">⚠️ Fill in <strong>[Name]</strong>, <strong>[Event Date]</strong>, <strong>[#]</strong>, <strong>[$$$]</strong> — then paste into Thumbtack.</div>
+    </div>
+
+    <div class="template-card" id="tt2">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-thumbtack">👍 Thumbtack · Birthday</div>
+          <div class="card-title">Birthday / Sweet 16</div>
+          <div class="card-desc">Paste into Thumbtack. DJ bundle upsell included.</div>
+        </div>
+        <div class="card-actions">          <button class="btn btn-copy" onclick="copyTemplate('body-tt2', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Message
+          </button></div>
+      </div>
+            <div class="subject-box" style="background:rgba(234,179,8,0.06);border-color:rgba(234,179,8,0.2);">
+        <span class="subject-label" style="color:#ca8a04;">Platform</span>
+        <span class="subject-text" style="color:#fde68a;">Thumbtack — copy &amp; paste into message box</span>
+      </div>
+      <div class="vars-strip"><span class="var-chip">[Name]</span><span class="var-chip">[Event Date]</span><span class="var-chip">[#]</span><span class="var-chip">[$$$]</span></div>
+      <div class="email-body" id="body-tt2">Hi [Name]!
+
+Thanks for reaching out — sounds like a fun celebration!
+
+I have availability on [Event Date]. A [#]-hour package is [$$$] and includes unlimited prints, props, a professional attendant, and a private online gallery.
+
+If you're also looking for a DJ, we can bundle both services and offer preferred pricing.
+
+More info and reviews at www.abdjs.com. Feel free to reach me at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c4b0ada984a5a6a0aeb7eaa7aba9">[email&#160;protected]</a> or 708.710.0480 (text works too).
+
+Thanks,
+Tim Scanlin
+Answer Back Entertainment
+www.abdjs.com
+708.710.0480
+<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="24504d49644546404e570a474b49">[email&#160;protected]</a></div>
+      <div class="card-notes" style="background:rgba(234,179,8,0.06);border-color:rgba(234,179,8,0.25);color:#fde68a;">⚠️ Fill in <strong>[Name]</strong>, <strong>[Event Date]</strong>, <strong>[#]</strong>, <strong>[$$$]</strong> — DJ bundle upsell already included.</div>
+    </div>
+
+    <div class="template-card" id="tt3">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-thumbtack">👍 Thumbtack · School</div>
+          <div class="card-title">School Event</div>
+          <div class="card-desc">Paste into Thumbtack. Fill in [Name], [Event Date], [#], [$$$].</div>
+        </div>
+        <div class="card-actions">          <button class="btn btn-copy" onclick="copyTemplate('body-tt3', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Message
+          </button></div>
+      </div>
+            <div class="subject-box" style="background:rgba(234,179,8,0.06);border-color:rgba(234,179,8,0.2);">
+        <span class="subject-label" style="color:#ca8a04;">Platform</span>
+        <span class="subject-text" style="color:#fde68a;">Thumbtack — copy &amp; paste into message box</span>
+      </div>
+      <div class="vars-strip"><span class="var-chip">[Name]</span><span class="var-chip">[Event Date]</span><span class="var-chip">[#]</span><span class="var-chip">[$$$]</span></div>
+      <div class="email-body" id="body-tt3">Hi [Name],
+
+Thanks for reaching out!
+
+I have availability on [Event Date]. A [#]-hour package is [$$$] and includes unlimited prints, props, a professional attendant, and a sharable online gallery the kids and families can access after the event.
+
+Full details and reviews at www.abdjs.com. Happy to answer any questions at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cebaa7a38eafacaaa4bde0ada1a3">[email&#160;protected]</a> or 708.710.0480 (text works too).
+
+Thanks,
+Tim Scanlin
+Answer Back Entertainment
+www.abdjs.com
+708.710.0480
+<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aadec3c7eacbc8cec0d984c9c5c7">[email&#160;protected]</a></div>
+      <div class="card-notes" style="background:rgba(234,179,8,0.06);border-color:rgba(234,179,8,0.25);color:#fde68a;">⚠️ Fill in <strong>[Name]</strong>, <strong>[Event Date]</strong>, <strong>[#]</strong>, <strong>[$$$]</strong> — then paste into Thumbtack.</div>
+    </div>
+
+    <div class="template-card" id="assets">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-flow flow-special">🔗 Assets &amp; Links</div>
+          <div class="card-title">Quick Reference</div>
+          <div class="card-desc">All links in one place — click Copy to grab any individually</div>
+        </div>
+      </div>
+      <div style="display:grid;gap:14px;">
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:16px 18px;">
+          <div style="font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">📸 Photo Booth Demos</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+              <span style="font-size:11px;color:var(--text);">Sample Wedding Gallery</span>
+              <button class="btn btn-copy" style="padding:5px 10px;font-size:10px;" onclick="copyText('https://www.nick-and-erika.abdjs.com',this)">Copy</button>
+            </div>
+            <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;word-break:break-all;">https://www.nick-and-erika.abdjs.com</div>
+            <div style="height:1px;background:var(--border);"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+              <span style="font-size:11px;color:var(--text);">Short Wedding Demo (2 min)</span>
+              <button class="btn btn-copy" style="padding:5px 10px;font-size:10px;" onclick="copyText('https://vimeo.com/310371645',this)">Copy</button>
+            </div>
+            <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;word-break:break-all;">https://vimeo.com/310371645</div>
+            <div style="height:1px;background:var(--border);"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+              <span style="font-size:11px;color:var(--text);">Full Wedding Demo</span>
+              <button class="btn btn-copy" style="padding:5px 10px;font-size:10px;" onclick="copyText('https://vimeo.com/48877304',this)">Copy</button>
+            </div>
+            <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;word-break:break-all;">https://vimeo.com/48877304</div></div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:16px 18px;">
+          <div style="font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">⭐ Review Links</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+              <span style="font-size:11px;color:var(--text);">WeddingWire</span>
+              <button class="btn btn-copy" style="padding:5px 10px;font-size:10px;" onclick="copyText('https://www.weddingwire.com/shared/rate/new?vid=92a15cac0e045cc9',this)">Copy</button>
+            </div>
+            <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;word-break:break-all;">https://www.weddingwire.com/shared/rate/new?vid=92a15cac0e045cc9</div>
+            <div style="height:1px;background:var(--border);"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+              <span style="font-size:11px;color:var(--text);">Google</span>
+              <button class="btn btn-copy" style="padding:5px 10px;font-size:10px;" onclick="copyText('https://g.page/r/CXFe2JV20fHLEAg/review',this)">Copy</button>
+            </div>
+            <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;word-break:break-all;">https://g.page/r/CXFe2JV20fHLEAg/review</div>
+            <div style="height:1px;background:var(--border);"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+              <span style="font-size:11px;color:var(--text);">Thumbtack</span>
+              <button class="btn btn-copy" style="padding:5px 10px;font-size:10px;" onclick="copyText('https://www.thumbtack.com/reviews/services/127790478145905795/write',this)">Copy</button>
+            </div>
+            <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;word-break:break-all;">https://www.thumbtack.com/reviews/services/127790478145905795/write</div></div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:16px 18px;">
+          <div style="font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">🎨 Backdrop Options</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+              <span style="font-size:11px;color:var(--text);">Kate Backdrop Store</span>
+              <button class="btn btn-copy" style="padding:5px 10px;font-size:10px;" onclick="copyText('https://www.amazon.com/stores/KateBackdropforPhotography/page/1B68311B-B2D5-4E0A-B880-5B0721B9AD42',this)">Copy</button>
+            </div>
+            <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;word-break:break-all;">https://www.amazon.com/stores/KateBackdropforPhotography/page/1B68311B-B2D5-4E0A-B880-5B0721B9AD42</div></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<div class="toast" id="toast">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg">Copied!</span>
+</div>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    const mailtoLinks = {
+    "t1": "mailto:?subject=Re%3A%20%5BEvent%20Date%5D%20%E2%80%93%20Answer%20Back%20Entertainment&body=Hi%20%5BName%5D%2C%0A%0ACongratulations%20%E2%80%94%20and%20thanks%20for%20reaching%20out%21%0A%0A%5BEvent%20Date%5D%20looks%20open%20on%20our%20end%2C%20and%20we%27d%20love%20to%20be%20part%20of%20your%20celebration.%20Which%20venue%20are%20you%20working%20with%3F%0A%0AOur%20Basic%20Package%20includes%20up%20to%206%20hours%20of%20coverage%20and%20starts%20at%20%241%2C095.%20I%27ve%20attached%20our%20brochure%20so%20you%20can%20review%20packages%20and%20add-ons.%20You%20can%20also%20see%20photos%2C%20videos%2C%20and%20reviews%20at%20www.abdjs.com.%0A%0AIf%20you%27d%20prefer%20to%20connect%20by%20phone%20or%20Zoom%2C%20I%27m%20happy%20to%20set%20that%20up%20%E2%80%94%20just%20let%20me%20know.",
+    "t2": "mailto:?subject=Next%20Step%3A%20Contract%20Info%20%E2%80%93%20%5BEvent%20Date%5D&body=Hi%20%5BName%5D%2C%0A%0APerfect%20%E2%80%94%20let%27s%20move%20things%20forward.%0A%0ATo%20prepare%20your%20contract%2C%20please%20complete%20the%20form%20below%3A%0A%0Ahttps%3A//www.abdjs.com/contract-fillout%0A%0AOnce%20submitted%2C%20I%27ll%20send%20over%20a%20draft%20contract%20along%20with%20deposit%20details%20to%20officially%20reserve%20your%20date.%0A%0ALet%20me%20know%20if%20any%20questions%20come%20up.",
+    "t3": "mailto:?subject=Your%20Contract%20%2B%20Next%20Steps%20%E2%80%93%20%5BEvent%20Date%5D&body=Hi%20%5BName%5D%2C%0A%0AYour%20draft%20contract%20is%20attached%20%E2%80%94%20please%20review%20and%20let%20me%20know%20if%20any%20adjustments%20are%20needed.%0A%0ATo%20officially%20hold%20the%20date%2C%20a%20%5B%24%24%24%5D%20deposit%20is%20required.%20We%20accept%20cash%2C%20check%2C%20Venmo%2C%20or%20Zelle.%0A%0AJust%20let%20me%20know%20your%20preferred%20method%20and%20I%27ll%20send%20the%20payment%20details.",
+    "t4": "mailto:?subject=You%27re%20officially%20booked%21%20%F0%9F%8E%89&body=Hi%20%5BName%5D%2C%0A%0ADeposit%20received%20%E2%80%94%20your%20date%20is%20officially%20reserved%21%0A%0AAn%20updated%20contract%20reflecting%20the%20deposit%20is%20attached%20for%20your%20records.%0A%0ANo%20action%20needed%20right%20now%20%E2%80%94%20just%20continue%20working%20through%20your%20planning%20paperwork%20at%20your%20pace.%20I%27ll%20reach%20out%20about%20a%20month%20before%20the%20event%20to%20schedule%20our%20final%20planning%20meeting.%0A%0ALooking%20forward%20to%20it%21",
+    "t5": "mailto:?subject=Time%20to%20Plan%21%20Final%20Meeting%20%E2%80%93%20%5BEvent%20Date%5D&body=Hi%20%5BName%5D%2C%0A%0AIt%27s%20hard%20to%20believe%20your%20wedding%20is%20almost%20here%21%0A%0ALet%27s%20schedule%20our%20final%20meeting.%20If%20your%20paperwork%20isn%27t%20complete%20yet%2C%20no%20problem%20%E2%80%94%20I%27ve%20attached%20it%20again%20for%20convenience.%20Please%20send%20it%20over%20before%20our%20meeting%20so%20we%20can%20make%20the%20most%20of%20our%20time%20together.%0A%0AWhat%20does%20your%20schedule%20look%20like%20in%20the%20coming%20days%3F",
+    "t6": "mailto:?subject=Thank%20you%20%E2%80%94%20it%20was%20an%20honor%21%20%F0%9F%99%8F&body=Hi%20%5BName%5D%2C%0A%0AWhat%20a%20night%20%E2%80%94%20it%20was%20truly%20an%20honor%20being%20part%20of%20your%20celebration.%20I%20hope%20everyone%20had%20an%20incredible%20time.%0A%0AIf%20you%20have%20a%20moment%2C%20a%20quick%20review%20would%20mean%20a%20great%20deal%20to%20us.%20It%27s%20one%20of%20the%20most%20impactful%20ways%20you%20can%20support%20a%20small%20business.%0A%0AGoogle%3A%0Ahttps%3A//g.page/r/CXFe2JV20fHLEAg/review%0A%0AWishing%20you%20both%20a%20lifetime%20of%20happiness%20%E2%80%94%20congratulations%20again%21",
+    "t7": "mailto:?subject=Photo%20Booth%20Quote%20%E2%80%93%20%5BEvent%20Date%5D&body=Hi%20%5BName%5D%2C%0A%0AThanks%20for%20reaching%20out%21%0A%0A%5BEvent%20Date%5D%20is%20available.%20Our%20%5B%23%5D-hour%20package%20is%20%5B%24%24%24%5D%20and%20includes%20unlimited%20prints%2C%20props%2C%20a%20professional%20attendant%2C%20and%20a%20sharable%20online%20gallery.%0A%0AYou%20can%20view%20a%20sample%20gallery%20here%3A%0Ahttps%3A//www.nick-and-erika.abdjs.com%0A%0AMore%20photos%2C%20videos%2C%20and%20reviews%20are%20available%20at%20www.abdjs.com.%0A%0ALet%20me%20know%20if%20you%27d%20like%20to%20connect%20to%20go%20over%20details.",
+    "t8": "mailto:?subject=Photo%20Booth%20Quote%20%E2%80%93%20%5BEvent%20Date%5D&body=Hi%20%5BName%5D%2C%0A%0AThanks%20for%20reaching%20out%20%E2%80%94%20sounds%20like%20a%20great%20event%21%0A%0A%5BEvent%20Date%5D%20is%20available.%20Our%20%5B%23%5D-hour%20package%20is%20%5B%24%24%24%5D%20and%20includes%20unlimited%20prints%2C%20props%2C%20a%20professional%20attendant%2C%20and%20a%20private%20online%20gallery.%0A%0AIf%20you%27re%20also%20considering%20a%20DJ%2C%20we%20can%20bundle%20services%20and%20offer%20preferred%20pricing.%0A%0AYou%20can%20view%20demos%20and%20reviews%20at%20www.abdjs.com.%0A%0AHappy%20to%20answer%20any%20questions.",
+    "t9": "mailto:?subject=Photo%20Booth%20Print%20Design%20%E2%80%93%20%5BEvent%20Date%5D&body=Hi%20%5BName%5D%2C%0A%0ADeposit%20received%20%E2%80%94%20your%20date%20is%20officially%20reserved%21%0A%0AAn%20updated%20contract%20reflecting%20the%20deposit%20is%20attached%20for%20your%20records.%0A%0ADid%20you%20have%20a%20particular%20design%20in%20mind%20for%20the%20photo%20booth%20print%3F%20I%27ve%20attached%20a%20few%20example%20layouts%20for%20inspiration%2C%20but%20I%27m%20happy%20to%20customize%20something%20specifically%20for%20you.%20Just%20let%20me%20know%20any%20text%2C%20colors%2C%20theme%20elements%2C%20or%20overall%20vibe%20you%27d%20like%20included.",
+    "t10": "mailto:?subject=Your%20photo%20booth%20gallery%20is%20live%21%20%F0%9F%93%B8&body=Hi%20%5BName%5D%2C%0A%0AYour%20gallery%20is%20live%20%E2%80%94%20here%27s%20the%20link%3A%0A%0A%5BGALLERY%20LINK%5D%0A%0AIt%20was%20a%20pleasure%20being%20part%20of%20your%20event.%20If%20you%20have%20a%20moment%2C%20we%27d%20truly%20appreciate%20a%20quick%20review%20%E2%80%94%20it%20makes%20a%20big%20difference%20for%20us%3A%0A%0AGoogle%3A%0Ahttps%3A//g.page/r/CXFe2JV20fHLEAg/review%0A%0AThanks%20again%20for%20having%20us%21",
+    "t11": "mailto:?subject=Re%3A%20%5BEvent%20Date%5D%20%E2%80%93%20Availability&body=Hi%20%5BName%5D%2C%0A%0AThank%20you%20for%20thinking%20of%20us.%20Unfortunately%2C%20%5BEvent%20Date%5D%20is%20already%20booked.%0A%0AI%27d%20recommend%20reaching%20out%20to%3A%0A%0ARick%20Butkus%20%7C%20Photos%20by%20Rick%0Ainfo%40photosbyrick.com%0A708.429.7555%0A%0ARick%20does%20excellent%20work%20and%20should%20be%20able%20to%20assist.%0A%0AWishing%20you%20a%20wonderful%20event%21%0A%0ABest%2C%0ATim",
+    "t12": "mailto:?subject=Re%3A%20%5BEvent%20Date%5D%20%E2%80%93%20Availability&body=Hi%20%5BName%5D%2C%0A%0AThank%20you%20for%20thinking%20of%20us.%20Unfortunately%2C%20%5BEvent%20Date%5D%20is%20already%20booked.%0A%0AI%27d%20recommend%20reaching%20out%20to%3A%0A%0AMark%20%7C%20Southtown%20Entertainment%0Ainfo%40SouthtownEntertainment.net%0A815.200.9070%0A%0AThey%20do%20excellent%20work%20and%20should%20be%20able%20to%20assist.%0A%0AWishing%20you%20a%20wonderful%20event%21%0A%0ABest%2C%0ATim",
+    "t13": "mailto:?subject=Answer%20Back%20%E2%80%93%20Photo%20Booth%20Demo%20Links&body=Hi%20%5BName%5D%2C%0A%0AHere%27s%20everything%20you%20need%20to%20get%20a%20feel%20for%20the%20booth%3A%0A%0ASample%20Wedding%20Gallery%3A%0Ahttps%3A//www.nick-and-erika.abdjs.com%0A%0AShort%20Wedding%20Demo%20%282%20min%29%3A%0Ahttps%3A//vimeo.com/310371645%0A%0AFull%20Wedding%20Demo%3A%0Ahttps%3A//vimeo.com/48877304%0A%0ALet%20me%20know%20what%20you%20think%2C%20or%20if%20you%27d%20like%20to%20talk%20through%20details%20%E2%80%94%20happy%20to%20help.",
+  };
+  function openInMail(id){const u=mailtoLinks[id];if(u)window.location.href=u;}
+  function show(id){
+    document.querySelectorAll('.template-card').forEach(c=>c.classList.remove('active'));
+    document.querySelectorAll('.sidebar-btn').forEach(b=>b.classList.remove('active'));
+    const card=document.getElementById(id),btn=document.getElementById('btn-'+id);
+    if(card)card.classList.add('active');if(btn)btn.classList.add('active');
+  }
+  function copyTemplate(bodyId,btn){
+    const text=document.getElementById(bodyId).innerText;
+    navigator.clipboard.writeText(text).then(()=>{
+      const orig=btn.innerHTML;btn.classList.add('copied');
+      btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+      showToast('Copied to clipboard!');
+      setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML=orig;},2000);
+    });
+  }
+  function copySubject(s){navigator.clipboard.writeText(s).the
