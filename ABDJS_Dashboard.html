@@ -221,7 +221,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div class="topbar-left">
       <a class="back-link" href="index.html">← HQ</a>
       <div class="chip" id="conn-chip"><div class="cdot"></div><span id="conn-text">Loading...</span></div>
-      <a class="sheet-chip" href="https://docs.google.com/spreadsheets/d/1niDk3tsRYJ4me_d9axiuM0R4QzxJDCGBBPM_UR87TuA/edit" target="_blank">📊 ABDJS Sheet ↗</a>
+      <a class="sheet-chip" href="https://docs.google.com/spreadsheets/d/1nfUCV7hWOg5bsG35VlbCuDWoZQtQ5JiOGJDi3vB8vrU/edit?gid=128562998#gid=128562998" target="_blank">📊 ABDJS Sheet ↗</a>
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
       <a class="sheet-chip" href="https://www.abdjs.com" target="_blank" style="color:var(--purple);background:var(--pur-d);border-color:var(--pur-b);">🌐 abdjs.com ↗</a>
@@ -402,6 +402,20 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <option>Photo Booth Only</option>
       </select>
     </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input class="form-input" id="f-phone" placeholder="e.g. 708-555-1234">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="f-email" placeholder="e.g. client@email.com">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <input class="form-input" id="f-notes-modal" placeholder="Any relevant notes...">
+    </div>
     <div class="modal-actions">
       <button class="btn-primary" onclick="addBooking()">Add to Dashboard</button>
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
@@ -414,7 +428,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 // CONFIG
 // ═══════════════════════════════════════════════════
 const ABDJS_CFG = {
-  SHEET_ID:     '1niDk3tsRYJ4me_d9axiuM0R4QzxJDCGBBPM_UR87TuA',
+  SHEET_ID:     '1nfUCV7hWOg5bsG35VlbCuDWoZQtQ5JiOGJDi3vB8vrU',
   API_KEY:      'AIzaSyC7TGm19pc1vNzFIq7fPBRcfjA-QtLbOdc',
   BOOKINGS_TAB: '📋 Bookings',
   LEADS_TAB:    '🔀 Leads',
@@ -422,6 +436,7 @@ const ABDJS_CFG = {
 
 // HQ Apps Script — reads AND writes BrainDump tasks
 const HQ_URL = 'https://script.google.com/macros/s/AKfycbw6fGdCZnZHBfpQaHs03_3xWkuxunC08aaCoE40iLY03Q6CVcb6f5_bWYUk_3YKGH20/exec';
+const ABDJS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRw46FfGJjUyw_R5rnnSEynAgF_yz2O6QAoZGLsNeFtcgGnvUVSyVSkr1c69CiII_nPg/exec'; // ABDJS Sheet script — bookings/leads write-back
 
 // ── DATE ──────────────────────────────────────────
 const now    = new Date();
@@ -482,6 +497,16 @@ async function hqGet() {
   if (!json.ok) throw new Error(json.error);
   return json.data;
 }
+async function abdjsPost(action, data) {
+  const res = await fetch(ABDJS_SCRIPT_URL, {
+    method:'POST', redirect:'follow',
+    headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify({action, data})
+  });
+  const json = await res.json();
+  if (!json.ok) throw new Error(json.error || 'ABDJS save failed');
+  return json;
+}
 async function hqPost(action, data) {
   const res = await fetch(HQ_URL, {
     method:'POST', redirect:'follow',
@@ -521,7 +546,8 @@ function parseBooking(row, idx) {
   let date = '';
   if (rawDate) { const d=new Date(rawDate); if(!isNaN(d)) date=d.toISOString().split('T')[0]; }
   const sm = {confirmed:'confirmed',completed:'completed',depositpaid:'deposit',
-               'deposit paid':'deposit',lead:'lead',inquiry:'inquiry',cancelled:'cancelled'};
+               'deposit paid':'deposit',lead:'lead',inquiry:'inquiry',
+               unconfirmed:'inquiry',cancelled:'cancelled',maybe:'inquiry'};
   const sr = (row[BC.status]||'').toLowerCase().replace(/\s+/g,'');
   return {
     id:parseInt(row[BC.id])||idx+1, name:row[BC.name]||'', date,
@@ -780,11 +806,13 @@ function openModal(defaultStatus) {
 function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
 document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
 
-function addBooking() {
+async function addBooking() {
   const name = document.getElementById('f-name').value.trim();
   if (!name) return;
-  bookings.push({
-    id:nextId++, name,
+
+  const isLead   = ['lead','inquiry','contacted','quoted'].includes(document.getElementById('f-status').value);
+  const payload  = {
+    name,
     date:     document.getElementById('f-date').value||'',
     amount:   parseInt(document.getElementById('f-amount').value)||0,
     type:     document.getElementById('f-type').value,
@@ -792,10 +820,37 @@ function addBooking() {
     status:   document.getElementById('f-status').value,
     market:   document.getElementById('f-market').value,
     worker:   document.getElementById('f-worker').value,
-    notes:    ''
-  });
-  ['f-name','f-date','f-amount'].forEach(id=>document.getElementById(id).value='');
-  closeModal(); renderAll();
+    phone:    document.getElementById('f-phone').value.trim(),
+    email:    document.getElementById('f-email').value.trim(),
+    notes:    document.getElementById('f-notes-modal').value.trim(),
+    source:   'Dashboard',
+    priority: 'Medium',
+  };
+
+  // Add to local state immediately so UI updates instantly
+  const localEntry = {...payload, id: nextId++};
+  if (isLead) {
+    leads.push(localEntry);
+  } else {
+    bookings.push(localEntry);
+  }
+
+  // Clear form + close
+  ['f-name','f-date','f-amount','f-phone','f-email','f-notes-modal'].forEach(id=>document.getElementById(id).value='');
+  closeModal();
+  renderAll();
+
+  // Save to Sheet via Apps Script
+  setConn('syn','Saving...');
+  try {
+    const action = isLead ? 'appendLead' : 'appendBooking';
+    const result = await abdjsPost(action, payload);
+    setConn('ok','Saved · ' + (isLead ? 'Lead' : 'Booking') + ' added to Sheet');
+    // Reload from sheet to get the proper ID back
+    setTimeout(loadBookings, 1500);
+  } catch(e) {
+    setConn('err','Save failed — entry is local only');
+  }
 }
 
 // ── GO ────────────────────────────────────────────
