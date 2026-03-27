@@ -84,7 +84,6 @@ body::before{content:'';position:fixed;inset:0;
 .breadcrumb .cur{color:var(--blue);}
 
 .hero{display:flex;align-items:center;gap:22px;flex-wrap:wrap;}
-.hero-logo{height:68px;width:auto;flex-shrink:0;filter:drop-shadow(0 2px 10px rgba(15,36,68,0.15));}
 .hero-text{}
 .hero-text h1{font-family:'Playfair Display',serif;font-size:1.85rem;font-weight:700;letter-spacing:-0.5px;line-height:1.1;color:var(--navy);}
 .hero-text h1 .hl{color:var(--blue);}
@@ -146,15 +145,6 @@ body::before{content:'';position:fixed;inset:0;
 .sync-footer a:hover{text-decoration:underline;}
 .sync-dot{width:5px;height:5px;border-radius:50%;background:var(--green);display:inline-block;margin-right:5px;box-shadow:0 0 4px var(--green);}
 
-/* ── NOTES — saved to HQ Notes tab ── */
-.notes-header-sub{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--green);display:flex;align-items:center;gap:5px;}
-.notes-ta{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.85rem;padding:16px 20px;min-height:130px;resize:vertical;line-height:1.65;}
-.notes-ta::placeholder{color:var(--dim);}
-.notes-save-row{display:flex;align-items:center;justify-content:space-between;padding:10px 20px 14px;border-top:1px solid var(--border);}
-.notes-save-btn{padding:5px 14px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-family:'DM Mono',monospace;font-size:0.61rem;font-weight:700;cursor:pointer;transition:all 0.15s;}
-.notes-save-btn:hover{background:#245A8C;}
-.notes-status{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--muted);}
-
 .empty-msg{font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--muted);padding:8px 0;font-style:italic;}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -162,7 +152,6 @@ body::before{content:'';position:fixed;inset:0;
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.15}}
 
 @media(max-width:640px){
-  .hero-logo{height:50px;}
   .hero-text h1{font-size:1.45rem;}
   .links-row{gap:6px;}
 }
@@ -188,8 +177,7 @@ body::before{content:'';position:fixed;inset:0;
       <span class="cur">🐶 A&amp;B Rescue</span>
     </div>
     <div class="hero">
-      <img class="hero-logo" src="Logo_Long_Ways.png" alt="Above & Beyond English Setter Rescue" onerror="this.style.display='none'">
-      <div class="hero-text">
+            <div class="hero-text">
         <h1>Above &amp; Beyond<br><span class="hl">Setter Rescue</span></h1>
         <div class="hero-sub">Intake Coordinator · Tim Scanlin</div>
         <div class="date-row">
@@ -238,31 +226,6 @@ body::before{content:'';position:fixed;inset:0;
     </div>
   </div>
 
-  <!-- NOTES — saved to HQ Notes tab (area=Rescue) -->
-  <div class="block" style="animation:fadeUp 0.35s 0.12s ease both;">
-    <div class="block-header">
-      <div class="block-title">
-        <div class="bdot" style="background:var(--pink)"></div>
-        Notes &amp; Scratch
-      </div>
-      <div class="notes-header-sub" id="notes-sync-label">
-        <span class="sync-dot"></span>Saved to HQ Sheet
-      </div>
-    </div>
-    <textarea class="notes-ta" id="rescue-notes"
-      placeholder="Dog updates, transport plans, foster notes, board items...
-
-→ Skeeter, Willy, Arnold — AZ transport before summer heat
-→ Call Helen re: her dogs
-→ Reach out to William B regarding Allie
-→ Coreane paperwork coming
-→ Eddy Claros (Canine Clarity) — (571) 210-0807"></textarea>
-    <div class="notes-save-row">
-      <span class="notes-status" id="notes-status">—</span>
-      <button class="notes-save-btn" onclick="saveNotes()">Save Notes</button>
-    </div>
-  </div>
-
 </div>
 
 <script>
@@ -288,10 +251,8 @@ function isoWeek(d) {
 // ── STATE ─────────────────────────────
 let allRows     = [];
 let rescueTasks = [];
-let allNotes    = {};   // full notes object from HQ (all areas)
 let nextId      = 2000;
 let taskTimer   = null;
-let notesTimer  = null;
 
 // ── CHIP HELPERS ─────────────────────
 function setTaskChip(state, msg) {
@@ -303,9 +264,6 @@ function setCountChip(state, msg) {
   const c = document.getElementById('task-count-chip');
   c.className = 'conn-chip'+(state==='ok'?' ok':state==='err'?' err':' syn');
   document.getElementById('task-count').textContent = msg;
-}
-function setNotesStatus(msg) {
-  document.getElementById('notes-status').textContent = msg;
 }
 
 // ── HQ API ────────────────────────────
@@ -340,21 +298,9 @@ async function init() {
       .sort((a,b) => (order[a.priority]||2) - (order[b.priority]||2));
     setTaskChip('ok', 'HQ synced');
     setCountChip('ok', `${rescueTasks.length} open`);
-    // Notes — load latest Rescue note into textarea
-    allNotes = data.notes || {};
-    const rescueNotes = allNotes['Rescue'] || [];
-    if (rescueNotes.length) {
-      // Show the most recent entry
-      const latest = rescueNotes[rescueNotes.length - 1];
-      document.getElementById('rescue-notes').value = latest.text || '';
-      setNotesStatus(`Last saved ${latest.date}`);
-    } else {
-      setNotesStatus('Not yet saved');
-    }
   } catch(e) {
     setTaskChip('err', 'HQ offline');
     setCountChip('err', 'offline');
-    setNotesStatus('Offline — changes local only');
   }
   renderTasks();
 }
@@ -376,33 +322,6 @@ function scheduleTaskSave() {
     }
   }, 1500);
 }
-
-// ── NOTES SAVE ────────────────────────
-async function saveNotes() {
-  const text = document.getElementById('rescue-notes').value.trim();
-  if (!text) return;
-  setNotesStatus('Saving...');
-  try {
-    // Append new entry, keep last 10 for this area
-    const prev = (allNotes['Rescue'] || []).filter(e => e.text !== text);
-    const entry = {
-      date: `${MONTHS[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`,
-      text
-    };
-    allNotes['Rescue'] = [...prev, entry].slice(-10);
-    await hqPost('saveNotes', allNotes);
-    setNotesStatus(`Saved ${entry.date}`);
-  } catch(e) {
-    setNotesStatus('Save failed — try again');
-  }
-}
-
-// Auto-save notes 3s after last keystroke
-document.getElementById('rescue-notes').addEventListener('input', () => {
-  setNotesStatus('Unsaved changes...');
-  clearTimeout(notesTimer);
-  notesTimer = setTimeout(saveNotes, 3000);
-});
 
 // ── RENDER TASKS ──────────────────────
 function priClass(p) {
