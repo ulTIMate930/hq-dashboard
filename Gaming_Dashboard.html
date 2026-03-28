@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎮 Gaming — T.Scanlin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0D0F1A; --surface:#141628; --surface2:#1C1F38; --surface3:#232748;
+  --border:#2A2E50; --border2:#363A60;
+  --text:#E8E8FF; --muted:#7880B0; --dim:#3A3F68;
+  --purple:#8B6FFF; --pur-d:#8B6FFF18; --pur-b:#8B6FFF40;
+  --blue:#4A9FFF;   --blu-d:#4A9FFF18; --blu-b:#4A9FFF35;
+  --green:#3EE09A;  --grn-d:#3EE09A14; --grn-b:#3EE09A30;
+  --orange:#FFB060; --org-d:#FFB06014; --org-b:#FFB06030;
+  --pink:#FF70B0;   --pnk-d:#FF70B014; --pnk-b:#FF70B030;
+  --yellow:#FFE060; --yel-d:#FFE06014; --yel-b:#FFE06030;
+  --red:#FF5060;    --red-d:#FF506014; --red-b:#FF506030;
+  --teal:#30D0C0;   --tel-d:#30D0C014; --tel-b:#30D0C030;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 15% 15%,rgba(139,111,255,0.09) 0%,transparent 55%),
+             radial-gradient(ellipse at 85% 85%,rgba(74,159,255,0.06) 0%,transparent 50%);
+  pointer-events:none;z-index:0;}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 28px 80px;position:relative;z-index:1;}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.topbar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.back-link{display:inline-flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:0.61rem;color:var(--muted);text-decoration:none;padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);transition:all 0.2s;}
+.back-link:hover{color:var(--purple);border-color:var(--pur-b);background:var(--pur-d);}
+.chip{display:inline-flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:0.61rem;padding:5px 11px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);color:var(--muted);}
+.chip.ok{color:var(--green);background:var(--grn-d);border-color:var(--grn-b);}
+.chip.err{color:var(--orange);background:var(--org-d);border-color:var(--org-b);}
+.chip.syn{color:var(--purple);background:var(--pur-d);border-color:var(--pur-b);}
+.cdot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.chip.ok .cdot{box-shadow:0 0 5px currentColor;animation:pulse 2s infinite;}
+.chip.syn .cdot{animation:blink 0.6s infinite;}
+.topbar-right{display:flex;gap:8px;}
+.action-btn{padding:6px 14px;border:1px solid var(--border2);border-radius:20px;font-family:'DM Mono',monospace;font-size:0.61rem;cursor:pointer;background:var(--surface);color:var(--muted);transition:all 0.15s;}
+.action-btn:hover{border-color:var(--purple);color:var(--purple);}
+.action-btn.add{background:var(--pur-d);border-color:var(--pur-b);color:var(--purple);}
+
+/* ── HEADER ── */
+.page-header{margin-bottom:22px;animation:fadeUp 0.35s ease both;}
+.breadcrumb{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+.breadcrumb a{color:var(--muted);text-decoration:none;}
+.breadcrumb a:hover{color:var(--purple);}
+.breadcrumb .sep{color:var(--dim);}  .breadcrumb .cur{color:var(--purple);}
+.page-header h1{font-size:2rem;font-weight:800;letter-spacing:-1.5px;}
+.page-header h1 .hl{color:var(--purple);}
+.stats-row{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.stat-pill{font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:3px 11px;border-radius:20px;}
+.stat-pill.active{background:var(--pur-d);border-color:var(--pur-b);color:var(--purple);}
+
+/* ── NOW PLAYING ── */
+.now-section{margin-bottom:24px;animation:fadeUp 0.35s 0.04s ease both;}
+.section-label{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.playing-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.5s infinite;}
+.now-grid{display:flex;gap:14px;flex-wrap:wrap;}
+.now-card{background:var(--surface);border:2px solid var(--grn-b);border-radius:16px;overflow:hidden;width:180px;position:relative;transition:all 0.2s;}
+.now-card:hover{border-color:var(--green);transform:translateY(-3px);box-shadow:0 8px 30px rgba(62,224,154,0.15);}
+.now-cover{width:100%;height:240px;object-fit:cover;display:block;background:var(--surface2);}
+.now-cover-placeholder{width:100%;height:240px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;background:var(--surface2);}
+.now-info{padding:10px 12px;}
+.now-title{font-size:0.8rem;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:6px;}
+.now-btns{display:flex;gap:5px;}
+.done-btn{flex:1;padding:5px;background:var(--grn-d);border:1px solid var(--grn-b);color:var(--green);border-radius:7px;font-family:'DM Mono',monospace;font-size:0.58rem;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.done-btn:hover{background:var(--green);color:#000;}
+.back-btn{padding:5px 8px;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:7px;font-family:'DM Mono',monospace;font-size:0.58rem;cursor:pointer;transition:all 0.15s;}
+.back-btn:hover{border-color:var(--orange);color:var(--orange);}
+.now-empty{font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--dim);padding:16px;background:var(--surface);border:1px dashed var(--border2);border-radius:14px;}
+
+/* ── QUEUE ── */
+.queue-section{margin-bottom:24px;animation:fadeUp 0.35s 0.08s ease both;}
+.queue-platforms{display:flex;flex-direction:column;gap:14px;}
+.queue-plat{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.qp-header{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);}
+.plat-badge{font-family:'DM Mono',monospace;font-size:0.58rem;font-weight:700;padding:3px 9px;border-radius:8px;}
+.pb-ps5   {background:#003087;color:#66AAFF;border:1px solid #0050A0;}
+.pb-vr    {background:#3B1060;color:#C080FF;border:1px solid #6030A0;}
+.pb-pc    {background:#1B2838;color:#66C0F4;border:1px solid #2A4A6A;}
+.pb-switch{background:#5A0008;color:#FF8080;border:1px solid #880010;}
+.pb-mobile{background:#0A3A18;color:#60D080;border:1px solid #1A6030;}
+.pb-coop  {background:#5A3000;color:#FFB060;border:1px solid #804000;}
+.qp-limit{font-family:'DM Mono',monospace;font-size:0.57rem;color:var(--dim);margin-left:auto;}
+.qp-slots{display:flex;gap:10px;padding:12px 16px;flex-wrap:wrap;}
+.queue-slot{width:100px;border-radius:12px;overflow:hidden;background:var(--surface2);border:1px solid var(--border);position:relative;transition:all 0.2s;cursor:grab;}
+.queue-slot:hover{border-color:var(--pur-b);transform:translateY(-2px);}
+.queue-slot.dragging{opacity:0.5;}
+.qs-cover{width:100%;height:133px;object-fit:cover;display:block;}
+.qs-placeholder{width:100%;height:133px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;background:var(--surface3);}
+.qs-title{font-size:0.65rem;font-weight:700;color:var(--text);padding:6px 8px 4px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.qs-btns{display:flex;gap:3px;padding:0 6px 7px;}
+.qs-play{flex:1;padding:3px;background:var(--grn-d);border:1px solid var(--grn-b);color:var(--green);border-radius:5px;font-family:'DM Mono',monospace;font-size:0.52rem;font-weight:700;cursor:pointer;}
+.qs-play:hover{background:var(--green);color:#000;}
+.qs-remove{padding:3px 5px;background:transparent;border:1px solid var(--border2);color:var(--dim);border-radius:5px;font-family:'DM Mono',monospace;font-size:0.52rem;cursor:pointer;}
+.qs-remove:hover{border-color:var(--red-b);color:var(--red);}
+.queue-add-slot{width:100px;height:133px;border:2px dashed var(--border2);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--dim);}
+.queue-add-slot:hover{border-color:var(--pur-b);color:var(--purple);}
+.queue-add-slot.drag-over{border-color:var(--green);background:var(--grn-d);color:var(--green);}
+
+/* ── POOL ── */
+.pool-section{animation:fadeUp 0.35s 0.12s ease both;}
+.pool-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.search-box{flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:8px 14px;font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--text);outline:none;transition:border-color 0.15s;}
+.search-box:focus{border-color:var(--purple);}
+.search-box::placeholder{color:var(--dim);}
+.filter-chips{display:flex;gap:5px;flex-wrap:wrap;}
+.fchip{font-family:'DM Mono',monospace;font-size:0.58rem;padding:4px 10px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:all 0.15s;}
+.fchip:hover{border-color:var(--purple);color:var(--purple);}
+.fchip.active{background:var(--pur-d);border-color:var(--pur-b);color:var(--purple);}
+
+.pool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;}
+.pool-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:grab;transition:all 0.2s;position:relative;}
+.pool-card:hover{border-color:var(--pur-b);transform:translateY(-3px);box-shadow:0 6px 24px rgba(139,111,255,0.12);}
+.pool-card:active{cursor:grabbing;}
+.pool-card.dragging{opacity:0.4;transform:scale(0.95);}
+.pc-cover{width:100%;height:160px;object-fit:cover;display:block;background:var(--surface2);}
+.pc-placeholder{width:100%;height:160px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;background:var(--surface2);}
+.pc-cover.loading{background:var(--surface3);}
+.pc-info{padding:8px 10px 10px;}
+.pc-title{font-size:0.72rem;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.pc-plat{margin-bottom:6px;}
+.pc-actions{display:flex;gap:4px;}
+.pc-queue-btn{flex:1;padding:4px;background:var(--pur-d);border:1px solid var(--pur-b);color:var(--purple);border-radius:6px;font-family:'DM Mono',monospace;font-size:0.52rem;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.pc-queue-btn:hover{background:var(--purple);color:#fff;}
+.pc-del{padding:4px 6px;background:transparent;border:1px solid var(--border2);color:var(--dim);border-radius:6px;font-family:'DM Mono',monospace;font-size:0.52rem;cursor:pointer;}
+.pc-del:hover{border-color:var(--red-b);color:var(--red);}
+.in-queue-badge{position:absolute;top:6px;right:6px;background:var(--purple);color:#fff;font-family:'DM Mono',monospace;font-size:0.48rem;font-weight:700;padding:2px 5px;border-radius:6px;}
+
+/* ── COMPLETED ── */
+.completed-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;}
+.comp-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.comp-cover{width:100%;height:170px;object-fit:cover;display:block;background:var(--surface2);}
+.comp-placeholder{width:100%;height:170px;display:flex;align-items:center;justify-content:center;font-size:3rem;background:var(--surface2);}
+.comp-info{padding:8px 10px 10px;}
+.comp-title{font-size:0.72rem;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:4px;}
+.comp-stars{font-size:0.7rem;margin-bottom:4px;}
+.comp-date{font-family:'DM Mono',monospace;font-size:0.55rem;color:var(--dim);margin-bottom:4px;}
+.comp-review{font-size:0.65rem;color:var(--muted);font-style:italic;line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+
+/* ── STEAM ── */
+.steam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}
+.steam-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all 0.15s;}
+.steam-card:hover{border-color:var(--blu-b);}
+.steam-cover{width:100%;height:150px;object-fit:cover;display:block;background:var(--surface2);}
+.steam-info{padding:7px 9px 9px;}
+.steam-title{font-size:0.68rem;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.steam-price{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--green);margin-bottom:5px;}
+.steam-add-btn{width:100%;padding:4px;background:var(--blu-d);border:1px solid var(--blu-b);color:var(--blue);border-radius:6px;font-family:'DM Mono',monospace;font-size:0.55rem;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.steam-add-btn:hover{background:var(--blue);color:#000;}
+.steam-in-pool{width:100%;padding:4px;background:var(--grn-d);border:1px solid var(--grn-b);color:var(--green);border-radius:6px;font-family:'DM Mono',monospace;font-size:0.55rem;font-weight:700;text-align:center;}
+
+/* ── SEARCH MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:#00000075;z-index:200;display:flex;align-items:flex-start;justify-content:center;padding-top:80px;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:22px 24px;max-width:560px;width:92%;max-height:80vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px #00000060;}
+.modal-title{font-size:0.95rem;font-weight:800;margin-bottom:16px;color:var(--text);}
+.modal-close{position:absolute;top:16px;right:16px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:0.75rem;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{color:var(--text);}
+.search-row{display:flex;gap:8px;margin-bottom:14px;}
+.modal-input{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:9px;padding:9px 12px;font-family:'Syne',sans-serif;font-size:0.82rem;color:var(--text);outline:none;}
+.modal-input:focus{border-color:var(--purple);}
+.modal-input::placeholder{color:var(--dim);}
+.modal-select{background:var(--surface2);border:1px solid var(--border2);border-radius:9px;padding:9px 12px;font-family:'Syne',sans-serif;font-size:0.82rem;color:var(--text);outline:none;}
+.search-btn{padding:9px 16px;background:var(--purple);color:#fff;border:none;border-radius:9px;font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;}
+.search-btn:hover{filter:brightness(1.1);}
+.search-results{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px;}
+.sr-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;}
+.sr-card:hover{border-color:var(--pur-b);transform:translateY(-2px);}
+.sr-cover{width:100%;height:120px;object-fit:cover;display:block;background:var(--surface3);}
+.sr-info{padding:7px 8px 9px;}
+.sr-title{font-size:0.68rem;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:3px;}
+.sr-meta{font-family:'DM Mono',monospace;font-size:0.55rem;color:var(--muted);}
+.form-group{margin-bottom:10px;}
+.form-label{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.modal-actions{display:flex;gap:10px;margin-top:14px;}
+.btn-p{flex:1;padding:9px;background:var(--purple);color:#fff;border:none;border-radius:9px;font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;}
+.btn-p:hover{filter:brightness(1.1);}
+.btn-c{padding:9px 14px;background:transparent;color:var(--muted);border:1px solid var(--border2);border-radius:9px;font-family:'Syne',sans-serif;font-size:0.8rem;cursor:pointer;}
+
+/* ── COMPLETE MODAL ── */
+.star-picker{display:flex;gap:6px;margin-top:4px;}
+.star-pick{font-size:1.4rem;cursor:pointer;transition:transform 0.1s;opacity:0.3;}
+.star-pick.active{opacity:1;}
+.star-pick:hover{transform:scale(1.2);}
+textarea.modal-input{min-height:80px;resize:vertical;line-height:1.5;}
+
+/* ── TABS ── */
+.tab-bar{display:flex;gap:3px;margin-bottom:18px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:4px;flex-wrap:wrap;animation:fadeUp 0.35s 0.1s ease both;}
+.tab-btn{font-family:'DM Mono',monospace;font-size:0.6rem;font-weight:700;padding:6px 12px;border-radius:8px;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{background:var(--surface2);color:var(--purple);box-shadow:0 1px 4px #00000030;}
+
+.empty-msg{font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--dim);padding:20px;text-align:center;font-style:italic;background:var(--surface);border:1px dashed var(--border2);border-radius:12px;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.15}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:680px){
+  .pool-grid{grid-template-columns:repeat(3,1fr);}
+  .search-results{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <a class="back-link" href="index.html">← HQ</a>
+      <div class="chip syn" id="conn-chip"><div class="cdot"></div><span id="conn-text">Loading...</span></div>
+    </div>
+    <div class="topbar-right">
+      <button class="action-btn" onclick="init()">↺ Refresh</button>
+      <button class="action-btn add" onclick="openSearchModal()">+ Add Game</button>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="breadcrumb">
+      <a href="index.html">⚡ HQ</a><span class="sep">›</span><span class="cur">🎮 Gaming</span>
+    </div>
+    <h1>Game <span class="hl">Library</span></h1>
+    <div class="stats-row">
+      <span class="stat-pill active" id="s-playing">— playing</span>
+      <span class="stat-pill" id="s-queue">— queued</span>
+      <span class="stat-pill" id="s-pool">— in pool</span>
+      <span class="stat-pill" id="s-done">— completed</span>
+    </div>
+  </div>
+
+  <!-- NOW PLAYING -->
+  <div class="now-section">
+    <div class="section-label"><div class="playing-dot"></div>Now Playing</div>
+    <div class="now-grid" id="now-playing"></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('queue')"    id="tab-queue">📋 Queue</button>
+    <button class="tab-btn"        onclick="switchTab('pool')"     id="tab-pool">🎱 Pool</button>
+    <button class="tab-btn"        onclick="switchTab('completed')"id="tab-completed">✅ Completed</button>
+    <button class="tab-btn"        onclick="switchTab('steam')"    id="tab-steam">🟦 Steam Wishlist</button>
+  </div>
+
+  <!-- TAB CONTENT -->
+  <div id="tab-content"></div>
+
+</div>
+
+<!-- SEARCH / ADD MODAL -->
+<div class="modal-overlay" id="search-modal">
+  <div class="modal">
+    <div class="modal-title" id="search-modal-title">🔍 Search & Add Game</div>
+    <button class="modal-close" onclick="closeModal('search-modal')">✕</button>
+
+    <!-- IGDB Search -->
+    <div id="igdb-search-section">
+      <div class="search-row">
+        <input class="modal-input" id="igdb-query" placeholder="Search for a game..." onkeydown="if(event.key==='Enter')searchIGDB()">
+        <select class="modal-select" id="igdb-platform">
+          <option value="PS5">PS5</option>
+          <option value="VR">VR/PSVR2</option>
+          <option value="PC">PC/Steam</option>
+          <option value="Switch">Switch</option>
+          <option value="Mobile">Mobile</option>
+        </select>
+        <button class="search-btn" onclick="searchIGDB()">Search</button>
+      </div>
+      <div id="igdb-results"></div>
+    </div>
+
+    <!-- Manual add fallback -->
+    <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
+      <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);margin-bottom:10px;">Or add manually:</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          <input class="modal-input" id="m-title" placeholder="Game title">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Emoji</label>
+          <input class="modal-input" id="m-emoji" placeholder="🎮" maxlength="2">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Platform</label>
+          <select class="modal-input" id="m-platform">
+            <option value="PS5">PS5</option><option value="VR">VR/PSVR2</option>
+            <option value="PC">PC/Steam</option><option value="Switch">Switch</option>
+            <option value="Mobile">Mobile</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Add to</label>
+          <select class="modal-input" id="m-status">
+            <option value="pool">Pool</option>
+            <option value="queue">Queue</option>
+            <option value="playing">Now Playing</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tags</label>
+        <input class="modal-input" id="m-tags" placeholder="Solo, Co-op, Horror...">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-p" onclick="addManual()">Add Game</button>
+        <button class="btn-c" onclick="closeModal('search-modal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPLETE MODAL -->
+<div class="modal-overlay" id="complete-modal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-title">✅ Mark Completed</div>
+    <button class="modal-close" onclick="closeModal('complete-modal')">✕</button>
+    <div class="form-group">
+      <label class="form-label">Rating</label>
+      <div class="star-picker" id="star-picker">
+        <span class="star-pick" onclick="setRating(1)">⭐</span>
+        <span class="star-pick" onclick="setRating(2)">⭐</span>
+        <span class="star-pick" onclick="setRating(3)">⭐</span>
+        <span class="star-pick" onclick="setRating(4)">⭐</span>
+        <span class="star-pick" onclick="setRating(5)">⭐</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Quick Review</label>
+      <textarea class="modal-input" id="c-review" placeholder="Worth it? Would recommend?"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Date Completed</label>
+      <input class="modal-input" id="c-date" type="date">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-p" onclick="confirmComplete()">Save</button>
+      <button class="btn-c" onclick="closeModal('complete-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════
+const HQ_URL     = 'https://script.google.com/macros/s/AKfycbwp5ZfmY8ZcME0QZaWO1DRmpA9zrZm_fVczqogGKA5MAmtmdUiVuzqQKbbaZFanaybn/exec';
+const STEAM_ID   = '76561198313251626';
+const STEAM_BASE = 'https://cdn.akamai.steamstatic.com/steam/apps';
+
+// ── DATE ──────────────────────────────────────────
+const now    = new Date();
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+// ── STATE ─────────────────────────────────────────
+let games       = [];
+let nextId      = 100;
+let currentTab  = 'queue';
+let completeId  = null;
+let selectedRating = 0;
+let saveTimer   = null;
+let dragId      = null;
+
+const PLAT_META = {
+  'PS5':   {label:'PS5',      cls:'pb-ps5',    emoji:'🎮'},
+  'VR':    {label:'VR/PSVR2', cls:'pb-vr',     emoji:'🥽'},
+  'PC':    {label:'PC/Steam', cls:'pb-pc',      emoji:'💻'},
+  'Switch':{label:'Switch',   cls:'pb-switch',  emoji:'🕹️'},
+  'Mobile':{label:'Mobile',   cls:'pb-mobile',  emoji:'📱'},
+};
+const PLAT_ORDER = ['PS5','VR','PC','Switch','Mobile'];
+
+// Seed games from brain dump
+const SEED = [
+  {id:1,  title:'The Room VR',            emoji:'🔐',platform:'VR',    status:'pool',tags:'Solo,Puzzle',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:2,  title:'I Expect You To Die',    emoji:'💣',platform:'VR',    status:'pool',tags:'Solo,Puzzle',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:3,  title:'Red Matter 2',           emoji:'🚀',platform:'VR',    status:'pool',tags:'Solo,Sci-Fi',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:4,  title:'Last Clockwinder',       emoji:'⏰',platform:'VR',    status:'pool',tags:'Solo',         notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:5,  title:'The 7th Guest VR',       emoji:'👻',platform:'VR',    status:'pool',tags:'Solo,Horror',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:6,  title:'Obduction',              emoji:'🌌',platform:'VR',    status:'pool',tags:'Solo,Puzzle',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:7,  title:'Metro Awakening',        emoji:'🚇',platform:'VR',    status:'pool',tags:'Solo,Horror',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:8,  title:'Doom 3 VR',             emoji:'👹',platform:'VR',    status:'pool',tags:'Solo,FPS',     notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:9,  title:'Resident Evil 7 VR',    emoji:'🧟',platform:'VR',    status:'pool',tags:'Solo,Horror',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:10, title:'Batman Arkham Shadow',   emoji:'🦇',platform:'VR',    status:'pool',tags:'Solo,Action',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:11, title:'The Last of Us Part I',  emoji:'🌿',platform:'PS5',   status:'pool',tags:'Solo,Story',   notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:12, title:'The Last of Us Part II', emoji:'🏹',platform:'PS5',   status:'pool',tags:'Solo,Story',   notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:13, title:'God of War Ragnarök',    emoji:'⚡',platform:'PS5',   status:'pool',tags:'Solo,Action',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:14, title:'Returnal',               emoji:'👾',platform:'PS5',   status:'pool',tags:'Solo,Roguelite',notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:15, title:'Stellar Blade',          emoji:'⚔️',platform:'PS5',   status:'pool',tags:'Solo,Action',  notes:'Interested',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:16, title:"Tiny Tina's Wonderlands",emoji:'🔫',platform:'PS5',   status:'pool',tags:'Co-op,FPS',    notes:'2P',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:17, title:'Bayonetta',              emoji:'✨',platform:'Switch', status:'pool',tags:'Solo,Action',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:18, title:'Metroid Prime',          emoji:'🌀',platform:'Switch', status:'pool',tags:'Solo',         notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:19, title:'Starless Abyss',         emoji:'🕳️',platform:'PC',    status:'pool',tags:'Solo',         notes:'Interested',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:20, title:'Riftbreaker',            emoji:'⚙️',platform:'PC',    status:'pool',tags:'Solo,Strategy',notes:'Buy?',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:21, title:'Deep Rock Galactic',     emoji:'⛏️',platform:'PC',    status:'pool',tags:'Co-op,FPS',    notes:'Buy?',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:22, title:'Nobody Saves the World', emoji:'🧙',platform:'PC',    status:'completed',tags:'Solo',     notes:'',rating:4,review:'Fun roguelite twist mechanics. Enjoyed the class system.',dateCompleted:'2026-03-21',cover:'',igdbId:null},
+];
+
+// ── CONNECTION ────────────────────────────────────
+function setConn(state, msg) {
+  const c = document.getElementById('conn-chip');
+  c.className = 'chip'+(state==='ok'?' ok':state==='err'?' err':' syn');
+  document.getElementById('conn-text').textContent = msg;
+}
+
+// ── GAMING API ──────────────────────────────────────
+async function gamingGet() {
+  const res  = await fetch(HQ_URL+'?action=loadGaming', {redirect:'follow'});
+  const json = await res.json();
+  if (!json.ok) throw new Error(json.error);
+  return json.data;
+}
+async function gamingPost(action, data) {
+  await fetch(HQ_URL, {
+    method:'POST', redirect:'follow',
+    headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify({action, data})
+  });
+}
+async function igdbSearch(query) {
+  const res  = await fetch(HQ_URL+'?action=igdbSearch&data='+encodeURIComponent(query), {redirect:'follow'});
+  const json = await res.json();
+  return json;
+}
+
+function scheduleSave() {
+  setConn('syn','Saving...');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try {
+      await gamingPost('saveGaming', games);
+      setConn('ok', `${games.length} games saved`);
+    } catch(e) { setConn('err','Save failed'); }
+  }, 1200);
+}
+
+// ── INIT ──────────────────────────────────────────
+async function init() {
+  setConn('syn','Loading...');
+  try {
+    const data = await gamingGet();
+    if (data.games && data.games.length > 0) {
+      games  = data.games;
+      nextId = Math.max(...games.map(g=>g.id||0), 0) + 1;
+      setConn('ok', `${games.length} games`);
+    } else {
+      games  = SEED;
+      nextId = 100;
+      setConn('syn','Seeding...');
+      await gamingPost('saveGaming', games);
+      setConn('ok', `${games.length} games seeded`);
+    }
+  } catch(e) {
+    games  = SEED;
+    nextId = 100;
+    setConn('err','HQ offline — local');
+  }
+  renderAll();
+}
+
+// ── RENDER ────────────────────────────────────────
+function renderAll() {
+  renderNowPlaying();
+  renderStats();
+  renderTab(currentTab);
+}
+
+function renderStats() {
+  const c = s => games.filter(g=>g.status===s).length;
+  document.getElementById('s-playing').textContent = c('playing') + ' playing';
+  document.getElementById('s-queue').textContent   = c('queue')   + ' queued';
+  document.getElementById('s-pool').textContent    = c('pool')    + ' in pool';
+  document.getElementById('s-done').textContent    = c('completed') + ' completed';
+}
+
+// ── NOW PLAYING ───────────────────────────────────
+function renderNowPlaying() {
+  const playing = games.filter(g=>g.status==='playing');
+  const el = document.getElementById('now-playing');
+  if (!playing.length) {
+    el.innerHTML = '<div class="now-empty">Nothing playing — pick something from your queue! 🎮</div>';
+    return;
+  }
+  el.innerHTML = playing.map(g => `
+    <div class="now-card">
+      ${coverImg(g, 'now-cover', 'now-cover-placeholder', 240)}
+      <div class="now-info">
+        <div class="now-title">${g.title}</div>
+        <div class="now-btns">
+          <button class="done-btn" onclick="openCompleteModal(${g.id})">✓ Done</button>
+          <button class="back-btn" onclick="changeStatus(${g.id},'queue')">↩</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ── TABS ──────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab)?.classList.add('active');
+  renderTab(tab);
+}
+function renderTab(tab) {
+  const el = document.getElementById('tab-content');
+  if (tab==='queue')     renderQueue(el);
+  else if (tab==='pool') renderPool(el);
+  else if (tab==='completed') renderCompleted(el);
+  else if (tab==='steam')    renderSteam(el);
+}
+
+// ── QUEUE ─────────────────────────────────────────
+function renderQueue(el) {
+  const queued = games.filter(g=>g.status==='queue');
+  el.innerHTML = `<div class="queue-section"><div class="queue-platforms">${
+    PLAT_ORDER.map(plat => {
+      const pm = PLAT_META[plat];
+      const platGames = queued.filter(g=>g.platform===plat);
+      const atMax = platGames.length >= 2;
+      return `
+      <div class="queue-plat">
+        <div class="qp-header">
+          <span class="plat-badge ${pm.cls}">${pm.emoji} ${pm.label}</span>
+          <span class="qp-limit">${platGames.length}/2 slots</span>
+        </div>
+        <div class="qp-slots" id="queue-${plat}"
+             ondragover="event.preventDefault();this.classList.add('drag-over-active')"
+             ondragleave="this.classList.remove('drag-over-active')"
+             ondrop="dropToQueue(event,'${plat}')">
+          ${platGames.map(g=>`
+            <div class="queue-slot" draggable="true"
+                 ondragstart="startDrag(event,${g.id})"
+                 ondragend="endDrag(event)">
+              ${coverImg(g,'qs-cover','qs-placeholder',133)}
+              <div class="qs-title">${g.title}</div>
+              <div class="qs-btns">
+                <button class="qs-play" onclick="changeStatus(${g.id},'playing')">▶</button>
+                <button class="qs-remove" onclick="changeStatus(${g.id},'pool')">↩</button>
+              </div>
+            </div>`).join('')}
+          ${platGames.length < 2 ? `
+            <div class="queue-add-slot" id="drop-${plat}"
+                 ondragover="event.preventDefault();this.classList.add('drag-over')"
+                 ondragleave="this.classList.remove('drag-over')"
+                 ondrop="dropToQueue(event,'${plat}')"
+                 onclick="openSearchModal(null,'queue','${plat}')">
+              + drag or add
+            </div>` : ''}
+        </div>
+      </div>`;
+    }).join('')
+  }</div></div>`;
+}
+
+// ── POOL ──────────────────────────────────────────
+let poolFilter = 'All';
+function renderPool(el) {
+  const pool = games.filter(g=>g.status==='pool');
+  const filtered = poolFilter==='All' ? pool : pool.filter(g=>g.platform===poolFilter);
+  const inQueue = new Set(games.filter(g=>g.status==='queue').map(g=>g.id));
+  const platCounts = {};
+  PLAT_ORDER.forEach(p=>{ platCounts[p]=pool.filter(g=>g.platform===p).length; });
+
+  el.innerHTML = `
+  <div class="pool-section">
+    <div class="pool-toolbar">
+      <input class="search-box" placeholder="Filter pool..." oninput="filterPool(this.value)" id="pool-search">
+      <div class="filter-chips">
+        <button class="fchip ${poolFilter==='All'?'active':''}" onclick="setPoolFilter('All')">All (${pool.length})</button>
+        ${PLAT_ORDER.map(p=>`
+          <button class="fchip ${poolFilter===p?'active':''}" onclick="setPoolFilter('${p}')">
+            ${PLAT_META[p].emoji} ${PLAT_META[p].label} (${platCounts[p]||0})
+          </button>`).join('')}
+      </div>
+    </div>
+    <div class="pool-grid" id="pool-grid">
+      ${filtered.map(g=>{
+        const queued = inQueue.has(g.id);
+        return `
+        <div class="pool-card" draggable="true"
+             ondragstart="startDrag(event,${g.id})"
+             ondragend="endDrag(event)"
+             id="pc-${g.id}">
+          ${queued?'<div class="in-queue-badge">Queued</div>':''}
+          ${coverImg(g,'pc-cover','pc-placeholder',160)}
+          <div class="pc-info">
+            <div class="pc-title">${g.title}</div>
+            <div class="pc-plat"><span class="plat-badge ${(PLAT_META[g.platform]||PLAT_META.PS5).cls}" style="font-size:0.5rem;padding:2px 6px;">${g.platform}</span></div>
+            <div class="pc-actions">
+              ${queued
+                ? `<button class="pc-queue-btn" style="background:var(--org-d);border-color:var(--org-b);color:var(--orange);" onclick="changeStatus(${g.id},'pool')">↩ Unqueue</button>`
+                : `<button class="pc-queue-btn" onclick="addToQueue(${g.id})">+ Queue</button>`}
+              <button class="pc-del" onclick="deleteGame(${g.id})">✕</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+      ${filtered.length===0?'<div class="empty-msg" style="grid-column:1/-1;">No games in pool for this filter.</div>':''}
+    </div>
+  </div>`;
+}
+
+function setPoolFilter(f) { poolFilter=f; renderPool(document.getElementById('tab-content')); }
+function filterPool(q) {
+  const grid = document.getElementById('pool-grid');
+  if (!grid) return;
+  grid.querySelectorAll('.pool-card').forEach(card => {
+    const title = card.querySelector('.pc-title')?.textContent?.toLowerCase()||'';
+    card.style.display = title.includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+
+// ── COMPLETED ─────────────────────────────────────
+function renderCompleted(el) {
+  const done = games.filter(g=>g.status==='completed')
+    .sort((a,b)=>(b.dateCompleted||'')>(a.dateCompleted||'')?1:-1);
+  el.innerHTML = done.length
+    ? `<div class="completed-grid">${done.map(g=>`
+        <div class="comp-card">
+          ${coverImg(g,'comp-cover','comp-placeholder',170)}
+          <div class="comp-info">
+            <div class="comp-title">${g.title}</div>
+            <div class="comp-stars">${'⭐'.repeat(g.rating||0)}${'☆'.repeat(5-(g.rating||0))}</div>
+            ${g.dateCompleted?`<div class="comp-date">${g.dateCompleted}</div>`:''}
+            ${g.review?`<div class="comp-review">"${g.review}"</div>`:''}
+          </div>
+        </div>`).join('')}
+      </div>`
+    : '<div class="empty-msg">No completed games yet. Start playing! 🎮</div>';
+}
+
+// ── STEAM ─────────────────────────────────────────
+async function renderSteam(el) {
+  el.innerHTML = `
+  <div>
+    <div style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);margin-bottom:14px;">
+      🟦 Loading Steam wishlist for profile ${STEAM_ID}...
+    </div>
+    <div id="steam-grid-wrap"><div class="empty-msg">Loading...</div></div>
+  </div>`;
+
+  try {
+    const res  = await fetch(`https://store.steampowered.com/wishlist/profiles/${STEAM_ID}/wishlistdata/?p=0`);
+    if (!res.ok) throw new Error('Steam profile may be private');
+    const data = await res.json();
+    const items = Object.entries(data)
+      .map(([appid,info])=>({appid, name:info.name, price:info.subs?.[0]?.price}))
+      .sort((a,b)=>a.name.localeCompare(b.name));
+
+    if (!items.length) {
+      document.getElementById('steam-grid-wrap').innerHTML = '<div class="empty-msg">Wishlist empty or profile is private.</div>';
+      return;
+    }
+
+    const inPool = new Set(games.map(g=>g.title.toLowerCase()));
+    document.getElementById('steam-grid-wrap').innerHTML = `
+    <div class="steam-grid">${items.map(item=>{
+      const cover = `${STEAM_BASE}/${item.appid}/library_600x900.jpg`;
+      const price = item.price===undefined?'—':item.price===0?'Free':'$'+(item.price/100).toFixed(2);
+      const added = inPool.has(item.name.toLowerCase());
+      return `
+      <div class="steam-card">
+        <img class="steam-cover" src="${cover}" alt="${item.name}"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div style="display:none;width:100%;height:150px;align-items:center;justify-content:center;font-size:2rem;background:var(--surface2);">💻</div>
+        <div class="steam-info">
+          <div class="steam-title">${item.name}</div>
+          <div class="steam-price">${price}</div>
+          ${added
+            ? '<div class="steam-in-pool">✓ In Library</div>'
+            : `<button class="steam-add-btn" onclick="addFromSteam('${item.name.replace(/'/g,"\\'")}','${item.appid}')">+ Add to Pool</button>`}
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+  } catch(e) {
+    document.getElementById('steam-grid-wrap').innerHTML =
+      `<div class="empty-msg">⚠ ${e.message}<br><br>Make sure your Steam profile and wishlist visibility are set to Public in Steam Privacy Settings.</div>`;
+  }
+}
+
+function addFromSteam(name, appid) {
+  const cover = `${STEAM_BASE}/${appid}/library_600x900.jpg`;
+  games.push({id:nextId++, title:name, emoji:'💻', platform:'PC', status:'pool',
+    tags:'PC,Steam', notes:`AppID:${appid}`, rating:0, review:'', dateCompleted:'', cover, igdbId:null});
+  scheduleSave();
+  renderStats();
+  // Refresh steam tab to show "In Library"
+  setTimeout(()=>renderSteam(document.getElementById('tab-content')), 300);
+}
+
+// ── COVER ART ─────────────────────────────────────
+function coverImg(g, imgCls, placeholderCls, height) {
+  if (g.cover) {
+    return `<img class="${imgCls}" src="${g.cover}" alt="${g.title}"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    <div class="${placeholderCls}" style="display:none;">${g.emoji||'🎮'}</div>`;
+  }
+  // Steam CDN for PC games with AppID in notes
+  const appMatch = (g.notes||'').match(/AppID:(\d+)/);
+  if (appMatch) {
+    return `<img class="${imgCls}" src="${STEAM_BASE}/${appMatch[1]}/library_600x900.jpg" alt="${g.title}"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    <div class="${placeholderCls}" style="display:none;">${g.emoji||'🎮'}</div>`;
+  }
+  return `<div class="${placeholderCls}">${g.emoji||'🎮'}</div>`;
+}
+
+// ── DRAG & DROP ───────────────────────────────────
+function startDrag(e, id) {
+  dragId = id;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function endDrag(e) {
+  e.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));
+}
+function dropToQueue(e, platform) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (dragId === null) return;
+  const g = games.find(x=>x.id===dragId);
+  if (!g) return;
+  // Check queue limit for this platform
+  const platQueued = games.filter(x=>x.status==='queue' && x.platform===platform).length;
+  if (g.status !== 'queue' && platQueued >= 2) {
+    alert(`Queue for ${platform} is full (max 2). Remove one first.`);
+    return;
+  }
+  g.platform = platform;
+  g.status   = 'queue';
+  dragId = null;
+  scheduleSave(); renderAll();
+}
+
+// ── GAME ACTIONS ──────────────────────────────────
+function changeStatus(id, status) {
+  const g = games.find(x=>x.id===id);
+  if (g) { g.status=status; scheduleSave(); renderAll(); }
+}
+function addToQueue(id) {
+  const g = games.find(x=>x.id===id);
+  if (!g) return;
+  const platQueued = games.filter(x=>x.status==='queue' && x.platform===g.platform).length;
+  if (platQueued >= 2) {
+    alert(`Queue for ${g.platform} is full (max 2). Remove one first.`);
+    return;
+  }
+  g.status = 'queue';
+  scheduleSave(); renderAll();
+}
+function deleteGame(id) {
+  if (!confirm('Remove this game?')) return;
+  games = games.filter(x=>x.id!==id);
+  scheduleSave(); renderAll();
+}
+
+// ── SEARCH MODAL ──────────────────────────────────
+function openSearchModal(title, defaultStatus, defaultPlatform) {
+  if (title)           document.getElementById('m-title').value = title;
+  if (defaultStatus)   document.getElementById('m-status').value = defaultStatus;
+  if (defaultPlatform) document.getElementById('m-platform').value = defaultPlatform;
+  document.getElementById('search-modal').classList.add('open');
+  document.getElementById('igdb-results').innerHTML = '';
+  setTimeout(()=>document.getElementById('igdb-query').focus(), 100);
+}
+
+async function searchIGDB() {
+  const q = document.getElementById('igdb-query').value.trim();
+  if (!q) return;
+  const resultsEl = document.getElementById('igdb-results');
+  resultsEl.innerHTML = '<div style="font-family:DM Mono,monospace;font-size:0.7rem;color:var(--muted);padding:10px;">Searching...</div>';
+  try {
+    const res = await igdbSearch(q);
+    if (!res.ok || !res.data.length) {
+      resultsEl.innerHTML = '<div style="font-family:DM Mono,monospace;font-size:0.7rem;color:var(--dim);padding:10px;">No results found.</div>';
+      return;
+    }
+    const plat = document.getElementById('igdb-platform').value;
+    resultsEl.innerHTML = `<div class="search-results">${res.data.map(g=>`
+      <div class="sr-card" onclick="addFromIGDB(${g.igdbId},'${g.title.replace(/'/g,"\\'")}','${plat}','${(g.cover||'').replace(/'/g,"\\'")}')">
+        ${g.cover
+          ? `<img class="sr-cover" src="${g.cover}" alt="${g.title}">`
+          : `<div class="sr-cover" style="display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--surface3);">🎮</div>`}
+        <div class="sr-info">
+          <div class="sr-title">${g.title}</div>
+          <div class="sr-meta">${g.year||''}</div>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  } catch(e) {
+    resultsEl.innerHTML = `<div style="font-family:DM Mono,monospace;font-size:0.7rem;color:var(--orange);padding:10px;">Error: ${e.message}</div>`;
+  }
+}
+
+function addFromIGDB(igdbId, title, platform, cover) {
+  const status = document.getElementById('m-status').value || 'pool';
+  games.push({
+    id:nextId++, title, emoji:'🎮', platform,
+    status, tags:'', notes:'', rating:0,
+    review:'', dateCompleted:'', cover, igdbId
+  });
+  closeModal('search-modal');
+  scheduleSave(); renderAll();
+}
+
+function addManual() {
+  const title = document.getElementById('m-title').value.trim();
+  if (!title) return;
+  games.push({
+    id:nextId++, title,
+    emoji:    document.getElementById('m-emoji').value.trim()||'🎮',
+    platform: document.getElementById('m-platform').value,
+    status:   document.getElementById('m-status').value,
+    tags:     document.getElementById('m-tags').value.trim(),
+    notes:'', rating:0, review:'', dateCompleted:'', cover:'', igdbId:null
+  });
+  ['m-title','m-emoji','m-tags'].forEach(id=>document.getElementById(id).value='');
+  closeModal('search-modal');
+  scheduleSave(); renderAll();
+}
+
+// ── COMPLETE MODAL ────────────────────────────────
+function openCompleteModal(id) {
+  completeId = id;
+  selectedRating = 0;
+  document.getElementById('c-review').value = '';
+  document.getElementById('c-date').value   = new Date().toISOString().split('T')[0];
+  updateStars(0);
+  document.getElementById('complete-modal').classList.add('open');
+}
+function setRating(n)  { selectedRating=n; updateStars(n); }
+function updateStars(n){ document.querySelectorAll('.star-pick').forEach((s,i)=>s.classList.toggle('active',i<n)); }
+function confirmComplete() {
+  const g = games.find(x=>x.id===completeId);
+  if (g) {
+    g.status        = 'completed';
+    g.rating        = selectedRating;
+    g.review        = document.getElementById('c-review').value.trim();
+    g.dateCompleted = document.getElementById('c-date').value;
+  }
+  closeModal('complete-modal');
+  scheduleSave(); renderAll();
+}
+
+// ── MODAL UTILS ───────────────────────────────────
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
+});
+
+// ── GO ────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
