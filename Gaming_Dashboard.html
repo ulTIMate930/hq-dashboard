@@ -198,6 +198,11 @@ textarea.modal-input{min-height:80px;resize:vertical;line-height:1.5;}
 .tab-btn.active{background:var(--surface2);color:var(--purple);box-shadow:0 1px 4px #00000030;}
 
 .empty-msg{font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--dim);padding:20px;text-align:center;font-style:italic;background:var(--surface);border:1px dashed var(--border2);border-radius:12px;}
+.pool-add-card{background:var(--surface);border:2px dashed var(--border2);border-radius:14px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;padding:16px;}
+.pool-add-card:hover{border-color:var(--purple);background:var(--pur-d);}
+.pool-add-card:hover div{color:var(--purple) !important;}
+.pool-add-card.drag-over{border-color:var(--green);background:var(--grn-d);}
+.pool-add-card.drag-over div{color:var(--green) !important;}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
@@ -321,6 +326,28 @@ textarea.modal-input{min-height:80px;resize:vertical;line-height:1.5;}
         <button class="btn-c" onclick="closeModal('search-modal')">Cancel</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- GAME DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal" style="max-width:420px;">
+    <button class="modal-close" onclick="closeModal('detail-modal')">✕</button>
+    <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:16px;">
+      <div id="dm-cover-wrap" style="flex-shrink:0;width:90px;border-radius:10px;overflow:hidden;background:var(--surface2);"></div>
+      <div style="flex:1;min-width:0;">
+        <div id="dm-title" style="font-size:1rem;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:6px;"></div>
+        <div id="dm-plat" style="margin-bottom:6px;"></div>
+        <div id="dm-tags" style="font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);margin-bottom:4px;"></div>
+        <div id="dm-notes" style="font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--dim);"></div>
+      </div>
+    </div>
+    <div id="dm-completed-section" style="display:none;border-top:1px solid var(--border);padding-top:12px;margin-bottom:12px;">
+      <div id="dm-stars" style="font-size:1rem;margin-bottom:6px;"></div>
+      <div id="dm-date" style="font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--dim);margin-bottom:6px;"></div>
+      <div id="dm-review" style="font-size:0.78rem;color:var(--muted);font-style:italic;line-height:1.5;"></div>
+    </div>
+    <div id="dm-actions" style="display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:12px;"></div>
   </div>
 </div>
 
@@ -496,17 +523,23 @@ function renderNowPlaying() {
     el.innerHTML = '<div class="now-empty">Nothing playing — pick something from your queue! 🎮</div>';
     return;
   }
-  el.innerHTML = playing.map(g => `
-    <div class="now-card">
+  el.innerHTML = playing.map(g => {
+    const pm = PLAT_META[g.platform] || PLAT_META['PS5'];
+    return `
+    <div class="now-card" onclick="openDetail(${g.id})" style="cursor:pointer;">
       ${coverImg(g, 'now-cover', 'now-cover-placeholder', 240)}
       <div class="now-info">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
+          <span class="plat-badge ${pm.cls}" style="font-size:0.52rem;padding:2px 7px;">${pm.emoji} ${pm.label}</span>
+        </div>
         <div class="now-title">${g.title}</div>
-        <div class="now-btns">
-          <button class="done-btn" onclick="openCompleteModal(${g.id})">✓ Done</button>
-          <button class="back-btn" onclick="changeStatus(${g.id},'queue')">↩</button>
+        <div class="now-btns" style="margin-top:6px;">
+          <button class="done-btn" onclick="event.stopPropagation();openCompleteModal(${g.id})">✓ Done</button>
+          <button class="back-btn" onclick="event.stopPropagation();changeStatus(${g.id},'queue')">↩</button>
         </div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 // ── TABS ──────────────────────────────────────────
@@ -531,12 +564,12 @@ function renderQueue(el) {
     PLAT_ORDER.map(plat => {
       const pm = PLAT_META[plat];
       const platGames = queued.filter(g=>g.platform===plat);
-      const atMax = platGames.length >= 2;
+      const atMax = platGames.length >= 5;
       return `
       <div class="queue-plat">
         <div class="qp-header">
           <span class="plat-badge ${pm.cls}">${pm.emoji} ${pm.label}</span>
-          <span class="qp-limit">${platGames.length}/2 slots</span>
+          <span class="qp-limit">${platGames.length}/5 slots</span>
         </div>
         <div class="qp-slots" id="queue-${plat}"
              ondragover="event.preventDefault();this.classList.add('drag-over-active')"
@@ -545,15 +578,16 @@ function renderQueue(el) {
           ${platGames.map(g=>`
             <div class="queue-slot" draggable="true"
                  ondragstart="startDrag(event,${g.id})"
-                 ondragend="endDrag(event)">
+                 ondragend="endDrag(event)"
+                 onclick="openDetail(${g.id})">
               ${coverImg(g,'qs-cover','qs-placeholder',133)}
               <div class="qs-title">${g.title}</div>
               <div class="qs-btns">
-                <button class="qs-play" onclick="changeStatus(${g.id},'playing')">▶</button>
-                <button class="qs-remove" onclick="changeStatus(${g.id},'pool')">↩</button>
+                <button class="qs-play" onclick="event.stopPropagation();changeStatus(${g.id},'playing')">▶</button>
+                <button class="qs-remove" onclick="event.stopPropagation();changeStatus(${g.id},'pool')">↩</button>
               </div>
             </div>`).join('')}
-          ${platGames.length < 2 ? `
+          ${platGames.length < 5 ? `
             <div class="queue-add-slot" id="drop-${plat}"
                  ondragover="event.preventDefault();this.classList.add('drag-over')"
                  ondragleave="this.classList.remove('drag-over')"
@@ -586,16 +620,26 @@ function renderPool(el) {
           <button class="fchip ${poolFilter===p?'active':''}" onclick="setPoolFilter('${p}')">
             ${PLAT_META[p].emoji} ${PLAT_META[p].label} (${platCounts[p]||0})
           </button>`).join('')}
-        <button class="fchip" onclick="openSearchModal(null,'pool',poolFilter==='All'?'PS5':poolFilter)" style="border-color:var(--pur-b);color:var(--purple);">+ Add Game</button>
+
       </div>
     </div>
     <div class="pool-grid" id="pool-grid">
+      <!-- Drag-or-add card always first -->
+      <div class="pool-add-card"
+           ondragover="event.preventDefault();this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="dropToPool(event)"
+           onclick="openSearchModal(null,'pool',poolFilter==='All'?'PS5':poolFilter)">
+        <div style="font-size:1.6rem;margin-bottom:6px;">+</div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);text-align:center;line-height:1.5;">drag or add</div>
+      </div>
       ${filtered.map(g=>{
         const queued = inQueue.has(g.id);
         return `
         <div class="pool-card" draggable="true"
              ondragstart="startDrag(event,${g.id})"
              ondragend="endDrag(event)"
+             onclick="openDetail(${g.id})"
              id="pc-${g.id}">
           ${queued?'<div class="in-queue-badge">Queued</div>':''}
           ${coverImg(g,'pc-cover','pc-placeholder',160)}
@@ -604,14 +648,14 @@ function renderPool(el) {
             <div class="pc-plat"><span class="plat-badge ${(PLAT_META[g.platform]||PLAT_META.PS5).cls}" style="font-size:0.5rem;padding:2px 6px;">${g.platform}</span></div>
             <div class="pc-actions">
               ${queued
-                ? `<button class="pc-queue-btn" style="background:var(--org-d);border-color:var(--org-b);color:var(--orange);" onclick="changeStatus(${g.id},'pool')">↩ Unqueue</button>`
-                : `<button class="pc-queue-btn" onclick="addToQueue(${g.id})">+ Queue</button>`}
-              <button class="pc-del" onclick="deleteGame(${g.id})">✕</button>
+                ? `<button class="pc-queue-btn" style="background:var(--org-d);border-color:var(--org-b);color:var(--orange);" onclick="event.stopPropagation();changeStatus(${g.id},'pool')">↩ Unqueue</button>`
+                : `<button class="pc-queue-btn" onclick="event.stopPropagation();addToQueue(${g.id})">+ Queue</button>`}
+              <button class="pc-del" onclick="event.stopPropagation();deleteGame(${g.id})">✕</button>
             </div>
           </div>
         </div>`;
       }).join('')}
-      ${filtered.length===0?'<div class="empty-msg" style="grid-column:1/-1;">No games in pool for this filter.</div>':''}
+      ${filtered.length===0?'':''}
     </div>
   </div>`;
 }
@@ -721,7 +765,68 @@ function coverImg(g, imgCls, placeholderCls, height) {
   return `<div class="${placeholderCls}">${g.emoji||'🎮'}</div>`;
 }
 
+// ── GAME DETAIL ───────────────────────────────────
+function openDetail(id) {
+  const g = games.find(x=>x.id===id);
+  if (!g) return;
+  const pm = PLAT_META[g.platform] || PLAT_META['PS5'];
+
+  // Cover
+  const coverWrap = document.getElementById('dm-cover-wrap');
+  if (g.cover) {
+    const appMatch = (g.notes||'').match(/AppID:(\d+)/);
+    const src = g.cover || (appMatch ? `https://cdn.akamai.steamstatic.com/steam/apps/${appMatch[1]}/library_600x900.jpg` : '');
+    coverWrap.innerHTML = src
+      ? `<img src="${src}" style="width:90px;height:120px;object-fit:cover;display:block;" onerror="this.parentNode.innerHTML='<div style=\"width:90px;height:120px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--surface3);\">${g.emoji||'🎮'}</div>'">`
+      : `<div style="width:90px;height:120px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--surface3);">${g.emoji||'🎮'}</div>`;
+  } else {
+    const appMatch = (g.notes||'').match(/AppID:(\d+)/);
+    if (appMatch) {
+      coverWrap.innerHTML = `<img src="https://cdn.akamai.steamstatic.com/steam/apps/${appMatch[1]}/library_600x900.jpg" style="width:90px;height:120px;object-fit:cover;display:block;" onerror="this.parentNode.innerHTML='<div style=\"width:90px;height:120px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--surface3);\">${g.emoji||'🎮'}</div>'">`;
+    } else {
+      coverWrap.innerHTML = `<div style="width:90px;height:120px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--surface3);">${g.emoji||'🎮'}</div>`;
+    }
+  }
+
+  document.getElementById('dm-title').textContent = g.title;
+  document.getElementById('dm-plat').innerHTML = `<span class="plat-badge ${pm.cls}">${pm.emoji} ${pm.label}</span>`;
+  document.getElementById('dm-tags').textContent = g.tags || '';
+  document.getElementById('dm-notes').textContent = g.notes ? '📝 ' + g.notes : '';
+
+  // Completed section
+  const doneSection = document.getElementById('dm-completed-section');
+  if (g.status === 'completed') {
+    doneSection.style.display = 'block';
+    document.getElementById('dm-stars').textContent = '⭐'.repeat(g.rating||0) + '☆'.repeat(5-(g.rating||0));
+    document.getElementById('dm-date').textContent = g.dateCompleted ? 'Completed ' + g.dateCompleted : '';
+    document.getElementById('dm-review').textContent = g.review ? '"' + g.review + '"' : '';
+  } else {
+    doneSection.style.display = 'none';
+  }
+
+  // Action buttons based on status
+  const actions = document.getElementById('dm-actions');
+  const btns = [];
+  if (g.status === 'pool')      btns.push(`<button class="btn-p" style="font-size:0.75rem;padding:7px 14px;" onclick="addToQueue(${g.id});closeModal('detail-modal')">+ Queue</button>`);
+  if (g.status === 'queue')     btns.push(`<button class="btn-p" style="font-size:0.75rem;padding:7px 14px;background:var(--grn-d);border:1px solid var(--grn-b);color:var(--green);" onclick="changeStatus(${g.id},'playing');closeModal('detail-modal')">▶ Play Now</button>`);
+  if (g.status === 'queue')     btns.push(`<button class="btn-c" style="font-size:0.75rem;padding:7px 14px;" onclick="changeStatus(${g.id},'pool');closeModal('detail-modal')">↩ Back to Pool</button>`);
+  if (g.status === 'playing')   btns.push(`<button class="btn-p" style="font-size:0.75rem;padding:7px 14px;background:var(--grn-d);border:1px solid var(--grn-b);color:var(--green);" onclick="openCompleteModal(${g.id});closeModal('detail-modal')">✓ Mark Done</button>`);
+  if (g.status === 'completed') btns.push(`<button class="btn-c" style="font-size:0.75rem;padding:7px 14px;" onclick="changeStatus(${g.id},'pool');closeModal('detail-modal')">↩ Requeue</button>`);
+  btns.push(`<button class="btn-c" style="font-size:0.75rem;padding:7px 14px;color:var(--red);border-color:var(--red-b);" onclick="deleteGame(${g.id});closeModal('detail-modal')">✕ Remove</button>`);
+  actions.innerHTML = btns.join('');
+
+  document.getElementById('detail-modal').classList.add('open');
+}
+
 // ── DRAG & DROP ───────────────────────────────────
+function dropToPool(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (dragId === null) return;
+  const g = games.find(x=>x.id===dragId);
+  if (g) { g.status='pool'; dragId=null; scheduleSave(); renderAll(); }
+}
+
 function startDrag(e, id) {
   dragId = id;
   e.currentTarget.classList.add('dragging');
