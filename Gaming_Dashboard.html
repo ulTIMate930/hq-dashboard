@@ -134,7 +134,8 @@ body::before{content:'';position:fixed;inset:0;
 
 /* ── COMPLETED ── */
 .completed-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;}
-.comp-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.comp-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all 0.2s;}
+.comp-card:hover{border-color:var(--pur-b);transform:translateY(-2px);box-shadow:0 4px 16px rgba(139,111,255,0.12);}
 .comp-cover{width:100%;height:170px;object-fit:cover;display:block;background:var(--surface2);}
 .comp-placeholder{width:100%;height:170px;display:flex;align-items:center;justify-content:center;font-size:3rem;background:var(--surface2);}
 .comp-info{padding:8px 10px 10px;}
@@ -676,7 +677,7 @@ function renderCompleted(el) {
     .sort((a,b)=>(b.dateCompleted||'')>(a.dateCompleted||'')?1:-1);
   el.innerHTML = done.length
     ? `<div class="completed-grid">${done.map(g=>`
-        <div class="comp-card">
+        <div class="comp-card" onclick="openDetail(${g.id})" style="cursor:pointer;transition:all 0.2s;">
           ${coverImg(g,'comp-cover','comp-placeholder',170)}
           <div class="comp-info">
             <div class="comp-title">${g.title}</div>
@@ -811,6 +812,7 @@ function openDetail(id) {
   if (g.status === 'queue')     btns.push(`<button class="btn-p" style="font-size:0.75rem;padding:7px 14px;background:var(--grn-d);border:1px solid var(--grn-b);color:var(--green);" onclick="changeStatus(${g.id},'playing');closeModal('detail-modal')">▶ Play Now</button>`);
   if (g.status === 'queue')     btns.push(`<button class="btn-c" style="font-size:0.75rem;padding:7px 14px;" onclick="changeStatus(${g.id},'pool');closeModal('detail-modal')">↩ Back to Pool</button>`);
   if (g.status === 'playing')   btns.push(`<button class="btn-p" style="font-size:0.75rem;padding:7px 14px;background:var(--grn-d);border:1px solid var(--grn-b);color:var(--green);" onclick="openCompleteModal(${g.id});closeModal('detail-modal')">✓ Mark Done</button>`);
+  if (g.status === 'completed') btns.push(`<button class="btn-p" style="font-size:0.75rem;padding:7px 14px;background:var(--pur-d);border:1px solid var(--pur-b);color:var(--purple);" onclick="closeModal('detail-modal');openCompleteModal(${g.id})">✏ Edit Review</button>`);
   if (g.status === 'completed') btns.push(`<button class="btn-c" style="font-size:0.75rem;padding:7px 14px;" onclick="changeStatus(${g.id},'pool');closeModal('detail-modal')">↩ Requeue</button>`);
   btns.push(`<button class="btn-c" style="font-size:0.75rem;padding:7px 14px;color:var(--red);border-color:var(--red-b);" onclick="deleteGame(${g.id});closeModal('detail-modal')">✕ Remove</button>`);
   actions.innerHTML = btns.join('');
@@ -844,8 +846,8 @@ function dropToQueue(e, platform) {
   if (!g) return;
   // Check queue limit for this platform
   const platQueued = games.filter(x=>x.status==='queue' && x.platform===platform).length;
-  if (g.status !== 'queue' && platQueued >= 2) {
-    alert(`Queue for ${platform} is full (max 2). Remove one first.`);
+  if (g.status !== 'queue' && platQueued >= 5) {
+    alert(`Queue for ${platform} is full (max 5). Remove one first.`);
     return;
   }
   g.platform = platform;
@@ -863,8 +865,8 @@ function addToQueue(id) {
   const g = games.find(x=>x.id===id);
   if (!g) return;
   const platQueued = games.filter(x=>x.status==='queue' && x.platform===g.platform).length;
-  if (platQueued >= 2) {
-    alert(`Queue for ${g.platform} is full (max 2). Remove one first.`);
+  if (platQueued >= 5) {
+    alert(`Queue for ${g.platform} is full (max 5). Remove one first.`);
     return;
   }
   g.status = 'queue';
@@ -944,10 +946,12 @@ function addManual() {
 // ── COMPLETE MODAL ────────────────────────────────
 function openCompleteModal(id) {
   completeId = id;
-  selectedRating = 0;
-  document.getElementById('c-review').value = '';
-  document.getElementById('c-date').value   = new Date().toISOString().split('T')[0];
-  updateStars(0);
+  const g = games.find(x=>x.id===id);
+  // Pre-fill if already completed (editing)
+  selectedRating = g?.rating || 0;
+  document.getElementById('c-review').value = g?.review || '';
+  document.getElementById('c-date').value   = g?.dateCompleted || new Date().toISOString().split('T')[0];
+  updateStars(selectedRating);
   document.getElementById('complete-modal').classList.add('open');
 }
 function setRating(n)  { selectedRating=n; updateStars(n); }
