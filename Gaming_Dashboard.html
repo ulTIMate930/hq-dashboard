@@ -221,6 +221,7 @@ textarea.modal-input{min-height:80px;resize:vertical;line-height:1.5;}
     </div>
     <div class="topbar-right">
       <button class="action-btn" onclick="init()">↺ Refresh</button>
+      <button class="action-btn" id="fetch-covers-btn" onclick="fetchAllCovers()" style="border-color:var(--org-b);color:var(--orange);">🖼 Fetch Covers</button>
       <button class="action-btn add" onclick="openSearchModal()">+ Add Game</button>
     </div>
   </div>
@@ -585,6 +586,7 @@ function renderPool(el) {
           <button class="fchip ${poolFilter===p?'active':''}" onclick="setPoolFilter('${p}')">
             ${PLAT_META[p].emoji} ${PLAT_META[p].label} (${platCounts[p]||0})
           </button>`).join('')}
+        <button class="fchip" onclick="openSearchModal(null,'pool',poolFilter==='All'?'PS5':poolFilter)" style="border-color:var(--pur-b);color:var(--purple);">+ Add Game</button>
       </div>
     </div>
     <div class="pool-grid" id="pool-grid">
@@ -862,6 +864,47 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 document.querySelectorAll('.modal-overlay').forEach(m=>{
   m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
 });
+
+// ── FETCH ALL COVERS ─────────────────────────────
+async function fetchAllCovers() {
+  const btn = document.getElementById('fetch-covers-btn');
+  const missing = games.filter(g => !g.cover && !((g.notes||'').includes('AppID:')));
+  if (!missing.length) {
+    setConn('ok', 'All covers already loaded!');
+    return;
+  }
+  btn.textContent = `🖼 0/${missing.length}`;
+  btn.disabled = true;
+  setConn('syn', `Fetching ${missing.length} covers...`);
+
+  let fetched = 0;
+  for (const g of missing) {
+    try {
+      const res  = await fetch(HQ_URL + '?action=igdbSearch&data=' + encodeURIComponent(g.title), {redirect:'follow'});
+      const json = await res.json();
+      if (json.ok && json.data && json.data.length > 0) {
+        // Pick best match — exact title match preferred, else first result
+        const exact = json.data.find(r => r.title.toLowerCase() === g.title.toLowerCase());
+        const best  = exact || json.data[0];
+        if (best.cover) {
+          g.cover  = best.cover;
+          g.igdbId = best.igdbId;
+        }
+      }
+    } catch(e) { /* skip on error */ }
+    fetched++;
+    btn.textContent = `🖼 ${fetched}/${missing.length}`;
+    // Small delay to avoid rate limiting
+    await new Promise(r => setTimeout(r, 300));
+  }
+
+  btn.textContent = '🖼 Fetch Covers';
+  btn.disabled = false;
+  setConn('syn', 'Saving covers...');
+  await gamingPost('saveGaming', games);
+  setConn('ok', `${fetched} covers fetched & saved`);
+  renderAll();
+}
 
 // ── GO ────────────────────────────────────────────
 init();
