@@ -202,6 +202,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .btn-cancel{padding:10px 16px;background:transparent;color:var(--muted);border:1px solid var(--border2);border-radius:9px;font-family:'Syne',sans-serif;font-size:0.8rem;cursor:pointer;}
 
 .empty-msg{font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--muted);padding:8px 0;font-style:italic;}
+.cal-btn{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:transparent;border:1px solid var(--border2);border-radius:6px;font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--muted);cursor:pointer;transition:all 0.15s;white-space:nowrap;margin-top:3px;}
+.cal-btn:hover{border-color:var(--green);color:var(--green);background:var(--grn-d);}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
@@ -552,7 +554,7 @@ function parseBooking(row, idx) {
     id:parseInt(row[BC.id])||idx+1, name:row[BC.name].trim(), date,
     amount, type:row[BC.type]||'Other', services:row[BC.services]||'DJ Only',
     status:sm[sr]||'inquiry', market:row[BC.market]||'',
-    worker:row[BC.worker]||'', notes:row[13]||''
+    worker:row[BC.worker]||'', notes:row[13]||'', time:row[12]||''
   };
 }
 function parseLead(row) {
@@ -657,6 +659,9 @@ function renderBookings() {
 function bookingHTML(b, isLead) {
   const md = getMonthDay(b.date||'');
   const isPast = b.date && new Date(b.date+'T12:00:00') < today;
+  const calBtn = (!isLead && b.date)
+    ? `<button class="cal-btn" onclick="addToCalendar(${JSON.stringify(b).replace(/"/g,'&quot;')})" title="Add to Calendar">📅 Add to Cal</button>`
+    : '';
   return `
   <div class="booking-item">
     <div class="date-box ${isLead?'lead':''} ${isPast?'past':''}">
@@ -670,6 +675,7 @@ function bookingHTML(b, isLead) {
         ${b.market?`<span>${b.market}</span>`:''}
         ${b.source?`<span>${b.source}</span>`:''}
       </div>
+      ${calBtn}
     </div>
     <div class="bk-right">
       <div class="bk-amount">${b.amount?'$'+b.amount.toLocaleString():'TBD'}</div>
@@ -788,6 +794,121 @@ function renderStats() {
   document.getElementById('stat-revenue').textContent  = '$'+rev.toLocaleString();
   document.getElementById('stat-co').textContent       = '$'+co.toLocaleString();
   document.getElementById('stat-il').textContent       = '$'+il.toLocaleString();
+}
+
+// ── CALENDAR ICS ─────────────────────────────────
+function addToCalendar(b) {
+  if (!b.date) { alert('No date set for this booking.'); return; }
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  // Parse time string like "7:00 PM–12:00 AM" or "4:00–10:00 PM"
+  // Returns {startISO, endISO} or null for all-day
+  function parseTimes(dateStr, timeStr) {
+    if (!timeStr) return null;
+    // Normalize dashes and split
+    const parts = timeStr.replace(/–|—/g,'–').split('–').map(s=>s.trim());
+    if (parts.length < 2) return null;
+
+    function to24(t) {
+      // t = "7:00 PM" or "12:00 AM" or "10:00 PM"
+      const m = t.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+      if (!m) return null;
+      let h = parseInt(m[1]), min = parseInt(m[2]);
+      const ampm = (m[3]||'').toUpperCase();
+      if (ampm === 'PM' && h !== 12) h += 12;
+      if (ampm === 'AM' && h === 12) h = 0;
+      return {h, min};
+    }
+
+    // If only end has AM/PM, infer start AM/PM from context
+    let startStr = parts[0], endStr = parts[1];
+    // If start has no AM/PM, borrow from end
+    if (!/AM|PM/i.test(startStr) && /AM|PM/i.test(endStr)) {
+      const endAmPm = endStr.match(/AM|PM/i)[0].toUpperCase();
+      // Assume start is PM if end is PM or AM (evening shows)
+      startStr = startStr + ' PM';
+    }
+
+    const start = to24(startStr);
+    const end   = to24(endStr);
+    if (!start || !end) return null;
+
+    // Build datetime strings — if end hour < start hour, event crosses midnight
+    const baseDate = new Date(dateStr + 'T00:00:00');
+    const startDt = new Date(baseDate);
+    startDt.setHours(start.h, start.min, 0, 0);
+
+    const endDt = new Date(baseDate);
+    endDt.setHours(end.h, end.min, 0, 0);
+    if (endDt <= startDt) endDt.setDate(endDt.getDate() + 1); // crosses midnight
+
+    function fmtLocal(dt) {
+      return dt.getFullYear()
+        + pad(dt.getMonth()+1) + pad(dt.getDate())
+        + 'T' + pad(dt.getHours()) + pad(dt.getMinutes()) + '00';
+    }
+    return { start: fmtLocal(startDt), end: fmtLocal(endDt) };
+  }
+
+  const times = parseTimes(b.date, b.time);
+  const d = new Date(b.date + 'T12:00:00');
+
+  let dtStart, dtEnd;
+  if (times) {
+    dtStart = `DTSTART;TZID=America/Chicago:${times.start}`;
+    dtEnd   = `DTEND;TZID=America/Chicago:${times.end}`;
+  } else {
+    // Fall back to all-day
+    const ymd = d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate());
+    const next = new Date(d); next.setDate(next.getDate()+1);
+    const ymdN = next.getFullYear() + pad(next.getMonth()+1) + pad(next.getDate());
+    dtStart = `DTSTART;VALUE=DATE:${ymd}`;
+    dtEnd   = `DTEND;VALUE=DATE:${ymdN}`;
+  }
+
+  const desc = [
+    b.time     ? 'Time: '     + b.time     : '',
+    b.services ? 'Services: ' + b.services : '',
+    b.worker   ? 'Worker: '   + b.worker   : '',
+    b.amount   ? 'Amount: $'  + b.amount   : '',
+    b.market   ? 'Market: '   + b.market   : '',
+    b.notes    ? 'Notes: '    + b.notes    : '',
+  ].filter(Boolean).join('\n');
+
+  const uid   = 'abdjs-' + Date.now() + '@answerbackdj.com';
+  const now   = new Date();
+  const stamp = now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate())
+    + 'T' + pad(now.getHours()) + pad(now.getMinutes()) + pad(now.getSeconds()) + 'Z';
+
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Answer Back DJ//ABDJS Dashboard//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    `UID:${uid}`,
+    `DTSTAMP:${stamp}`,
+    dtStart,
+    dtEnd,
+    `SUMMARY:🎙️ ${b.name}`,
+    `DESCRIPTION:${desc.replace(/\n/g,'\\n')}`,
+    `LOCATION:${b.location||''}`,
+    'STATUS:CONFIRMED',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  const blob = new Blob([ics], {type:'text/calendar;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = (b.name||'booking').replace(/[^a-z0-9]/gi,'_') + '.ics';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // ── HELPERS ───────────────────────────────────────
