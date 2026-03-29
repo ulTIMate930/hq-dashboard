@@ -701,41 +701,58 @@ async function renderSteam(el) {
   </div>`;
 
   try {
-    const res  = await fetch(`https://store.steampowered.com/wishlist/profiles/${STEAM_ID}/wishlistdata/?p=0`);
-    if (!res.ok) throw new Error('Steam profile may be private');
+    // New Steam API — returns appids only, no names
+    const res = await fetch(`https://api.steampowered.com/IWishlistService/GetWishlist/v1/?steamid=${STEAM_ID}`);
+    if (!res.ok) throw new Error('Could not reach Steam API');
     const data = await res.json();
-    const items = Object.entries(data)
-      .map(([appid,info])=>({appid, name:info.name, price:info.subs?.[0]?.price}))
-      .sort((a,b)=>a.name.localeCompare(b.name));
-
+    const items = data.response?.items || [];
     if (!items.length) {
       document.getElementById('steam-grid-wrap').innerHTML = '<div class="empty-msg">Wishlist empty or profile is private.</div>';
       return;
     }
 
-    const inPool = new Set(games.map(g=>g.title.toLowerCase()));
+    // Sort by priority first, then date added descending
+    items.sort((a,b) => (a.priority||999) - (b.priority||999) || b.date_added - a.date_added);
+    const appids = items.map(i => i.appid);
+
+    // Fetch game names from Steam store API in batches of 20
+    const nameMap = {};
+    for (let i = 0; i < Math.min(appids.length, 100); i += 20) {
+      const batch = appids.slice(i, i + 20);
+      try {
+        const sr = await fetch(`https://store.steampowered.com/api/appdetails?appids=${batch.join(',')}&filters=basic`);
+        const sd = await sr.json();
+        batch.forEach(id => { if (sd[id]?.success) nameMap[id] = sd[id].data.name; });
+      } catch(e) { /* skip batch */ }
+      if (i + 20 < appids.length) await new Promise(r => setTimeout(r, 200));
+    }
+
+    const inPoolAppids = new Set(games.map(g=>(g.notes||'').match(/AppID:(\d+)/)?.[1]||'').filter(Boolean));
+    const inPoolNames  = new Set(games.map(g=>g.title.toLowerCase()));
+
     document.getElementById('steam-grid-wrap').innerHTML = `
-    <div class="steam-grid">${items.map(item=>{
-      const cover = `${STEAM_BASE}/${item.appid}/library_600x900.jpg`;
-      const price = item.price===undefined?'—':item.price===0?'Free':'$'+(item.price/100).toFixed(2);
-      const added = inPool.has(item.name.toLowerCase());
+    <div class="steam-grid">${items.map(item => {
+      const appid = String(item.appid);
+      const name  = nameMap[appid] || 'App ' + appid;
+      const cover = `${STEAM_BASE}/${appid}/library_600x900.jpg`;
+      const added = inPoolAppids.has(appid) || inPoolNames.has(name.toLowerCase());
       return `
       <div class="steam-card">
-        <img class="steam-cover" src="${cover}" alt="${item.name}"
+        <img class="steam-cover" src="${cover}" alt="${name}"
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
         <div style="display:none;width:100%;height:150px;align-items:center;justify-content:center;font-size:2rem;background:var(--surface2);">💻</div>
         <div class="steam-info">
-          <div class="steam-title">${item.name}</div>
-          <div class="steam-price">${price}</div>
+          <div class="steam-title">${name}</div>
           ${added
             ? '<div class="steam-in-pool">✓ In Library</div>'
-            : `<button class="steam-add-btn" onclick="addFromSteam('${item.name.replace(/'/g,"\\'")}','${item.appid}')">+ Add to Pool</button>`}
+            : `<button class="steam-add-btn" onclick="addFromSteam('${name.replace(/'/g,"\\'")}','${appid}')">+ Add to Pool</button>`}
         </div>
       </div>`;
     }).join('')}</div>`;
+
   } catch(e) {
     document.getElementById('steam-grid-wrap').innerHTML =
-      `<div class="empty-msg">⚠ ${e.message}<br><br>Make sure your Steam profile and wishlist visibility are set to Public in Steam Privacy Settings.</div>`;
+      `<div class="empty-msg">⚠ ${e.message}</div>`;
   }
 }
 
