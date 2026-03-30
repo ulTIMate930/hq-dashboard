@@ -46,6 +46,16 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
 
 /* ── HEADER ── */
 .page-header{margin-bottom:26px;animation:fadeUp 0.4s ease both;}
+.header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.header-left{}
+.countdown-cluster{display:flex;flex-direction:row;gap:7px;align-items:flex-start;padding-top:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;}
+.countdown-chip{display:inline-flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:0.62rem;padding:6px 14px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);white-space:nowrap;}
+.countdown-chip .cd-label{color:var(--muted);}
+.countdown-chip .cd-days{font-weight:700;font-size:0.72rem;}
+.cd-taxes  {border-color:var(--red-b);background:var(--red-d);}    .cd-taxes  .cd-days{color:var(--red);}
+.cd-cr     {border-color:var(--teal-b);background:var(--teal-d);}  .cd-cr     .cd-days{color:var(--teal);}
+.cd-race   {border-color:var(--orange-b);background:var(--orange-d);} .cd-race .cd-days{color:var(--orange);}
+.cd-done   {border-color:var(--green-b);background:var(--green-d);} .cd-done   .cd-days{color:var(--green);}
 .greeting{font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:2.5px;margin-bottom:6px;}
 .page-header h1{font-size:2.4rem;font-weight:800;letter-spacing:-1.5px;line-height:1;background:linear-gradient(135deg,var(--purple) 0%,var(--blue) 60%,var(--teal) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .date-row{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap;}
@@ -297,11 +307,29 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
 
   <!-- HEADER -->
   <div class="page-header">
-    <div class="greeting" id="greeting">Good morning</div>
-    <h1>T.Scanlin HQ</h1>
-    <div class="date-row">
-      <span class="date-pill" id="live-date">Loading...</span>
-      <span class="date-pill">⚡ Private</span>
+    <div class="header-row">
+      <div class="header-left">
+        <div class="greeting" id="greeting">Good morning</div>
+        <h1>T.Scanlin HQ</h1>
+        <div class="date-row">
+          <span class="date-pill" id="live-date">Loading...</span>
+          <span class="date-pill">⚡ Private</span>
+        </div>
+      </div>
+      <div class="countdown-cluster">
+        <div class="countdown-chip cd-taxes">
+          <span class="cd-label">📋 Taxes Due</span>
+          <span class="cd-days" id="cd-taxes">—</span>
+        </div>
+        <div class="countdown-chip cd-cr">
+          <span class="cd-label">🌴 Costa Rica</span>
+          <span class="cd-days" id="cd-cr">—</span>
+        </div>
+        <div class="countdown-chip cd-race">
+          <span class="cd-label">🏃 North Fork 50M</span>
+          <span class="cd-days" id="cd-race">—</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -561,6 +589,26 @@ const h = now.getHours();
 document.getElementById('live-date').textContent = `${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()} · ${weekNum}`;
 document.getElementById('top3-date').textContent = `${MONTHS[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
 document.getElementById('greeting').textContent  = h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+
+// ── COUNTDOWNS ────────────────────────────────
+function daysUntil(year, month, day) {
+  const target = new Date(year, month - 1, day);
+  const today  = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const diff   = Math.ceil((target - today) / 86400000);
+  return diff;
+}
+function renderCountdown(elId, days) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (days < 0)       el.textContent = 'Passed';
+  else if (days === 0) el.textContent = 'Today! 🎉';
+  else if (days === 1) el.textContent = 'Tomorrow';
+  else                 el.textContent = days + ' days';
+  if (days < 0) el.closest('.countdown-chip').classList.add('cd-done');
+}
+renderCountdown('cd-taxes', daysUntil(2026, 4, 15));
+renderCountdown('cd-cr',    daysUntil(2026, 5, 2));
+renderCountdown('cd-race',  daysUntil(2026, 5, 30));
 
 // ── STATE ─────────────────────────────────────
 let top3=[], projects=[], rows=[], cadenceData={}, cadenceItems=[], notes={};
