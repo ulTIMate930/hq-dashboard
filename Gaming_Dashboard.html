@@ -240,8 +240,7 @@ textarea.modal-input{min-height:80px;resize:vertical;line-height:1.5;}
     <h1>Game <span class="hl">Library</span></h1>
     <div class="stats-row">
       <span class="stat-pill active" id="s-playing">— playing</span>
-      <span class="stat-pill" id="s-queue">— queued</span>
-      <span class="stat-pill" id="s-pool">— in pool</span>
+      <span class="stat-pill" id="s-queue">— in queue</span>
       <span class="stat-pill" id="s-done">— completed</span>
     </div>
   </div>
@@ -254,10 +253,15 @@ textarea.modal-input{min-height:80px;resize:vertical;line-height:1.5;}
 
   <!-- TABS -->
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('queue')"    id="tab-queue">📋 Queue</button>
-    <button class="tab-btn"        onclick="switchTab('pool')"     id="tab-pool">🎱 Pool</button>
+    <button class="tab-btn active" onclick="switchTab('all')"      id="tab-all">🎮 All</button>
+    <button class="tab-btn"        onclick="switchTab('PS5')"      id="tab-PS5">🎮 PS5</button>
+    <button class="tab-btn"        onclick="switchTab('VR')"       id="tab-VR">🥽 VR</button>
+    <button class="tab-btn"        onclick="switchTab('PC')"       id="tab-PC">💻 PC</button>
+    <button class="tab-btn"        onclick="switchTab('Switch')"   id="tab-Switch">🕹️ Switch</button>
+    <button class="tab-btn"        onclick="switchTab('Mobile')"   id="tab-Mobile">📱 Mobile</button>
+    <button class="tab-btn"        onclick="switchTab('2-Player')" id="tab-2-Player">👥 2-Player</button>
     <button class="tab-btn"        onclick="switchTab('completed')"id="tab-completed">✅ Completed</button>
-    <button class="tab-btn"        onclick="switchTab('steam')"    id="tab-steam">🟦 Steam Wishlist</button>
+    <button class="tab-btn"        onclick="switchTab('steam')"    id="tab-steam">🟦 Steam</button>
   </div>
 
   <!-- TAB CONTENT -->
@@ -281,6 +285,7 @@ textarea.modal-input{min-height:80px;resize:vertical;line-height:1.5;}
           <option value="PC">PC/Steam</option>
           <option value="Switch">Switch</option>
           <option value="Mobile">Mobile</option>
+          <option value="2-Player">2-Player</option>
         </select>
         <button class="search-btn" onclick="searchIGDB()">Search</button>
       </div>
@@ -312,7 +317,6 @@ textarea.modal-input{min-height:80px;resize:vertical;line-height:1.5;}
         <div class="form-group">
           <label class="form-label">Add to</label>
           <select class="modal-input" id="m-status">
-            <option value="pool">Pool</option>
             <option value="queue">Queue</option>
             <option value="playing">Now Playing</option>
           </select>
@@ -398,44 +402,45 @@ const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Sat
 // ── STATE ─────────────────────────────────────────
 let games       = [];
 let nextId      = 100;
-let currentTab  = 'queue';
+let currentTab  = 'all';
 let completeId  = null;
 let selectedRating = 0;
 let saveTimer   = null;
 let dragId      = null;
 
 const PLAT_META = {
-  'PS5':   {label:'PS5',      cls:'pb-ps5',    emoji:'🎮'},
-  'VR':    {label:'VR/PSVR2', cls:'pb-vr',     emoji:'🥽'},
-  'PC':    {label:'PC/Steam', cls:'pb-pc',      emoji:'💻'},
-  'Switch':{label:'Switch',   cls:'pb-switch',  emoji:'🕹️'},
-  'Mobile':{label:'Mobile',   cls:'pb-mobile',  emoji:'📱'},
+  'PS5':     {label:'PS5',       cls:'pb-ps5',    emoji:'🎮'},
+  'VR':      {label:'VR/PSVR2',  cls:'pb-vr',     emoji:'🥽'},
+  'PC':      {label:'PC/Steam',  cls:'pb-pc',      emoji:'💻'},
+  'Switch':  {label:'Switch',    cls:'pb-switch',  emoji:'🕹️'},
+  'Mobile':  {label:'Mobile',    cls:'pb-mobile',  emoji:'📱'},
+  '2-Player':{label:'2-Player',  cls:'pb-coop',   emoji:'👥'},
 };
-const PLAT_ORDER = ['PS5','VR','PC','Switch','Mobile'];
+const PLAT_ORDER = ['PS5','VR','PC','Switch','Mobile','2-Player'];
 
 // Seed games from brain dump
 const SEED = [
-  {id:1,  title:'The Room VR',            emoji:'🔐',platform:'VR',    status:'pool',tags:'Solo,Puzzle',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:2,  title:'I Expect You To Die',    emoji:'💣',platform:'VR',    status:'pool',tags:'Solo,Puzzle',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:3,  title:'Red Matter 2',           emoji:'🚀',platform:'VR',    status:'pool',tags:'Solo,Sci-Fi',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:4,  title:'Last Clockwinder',       emoji:'⏰',platform:'VR',    status:'pool',tags:'Solo',         notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:5,  title:'The 7th Guest VR',       emoji:'👻',platform:'VR',    status:'pool',tags:'Solo,Horror',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:6,  title:'Obduction',              emoji:'🌌',platform:'VR',    status:'pool',tags:'Solo,Puzzle',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:7,  title:'Metro Awakening',        emoji:'🚇',platform:'VR',    status:'pool',tags:'Solo,Horror',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:8,  title:'Doom 3 VR',             emoji:'👹',platform:'VR',    status:'pool',tags:'Solo,FPS',     notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:9,  title:'Resident Evil 7 VR',    emoji:'🧟',platform:'VR',    status:'pool',tags:'Solo,Horror',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:10, title:'Batman Arkham Shadow',   emoji:'🦇',platform:'VR',    status:'pool',tags:'Solo,Action',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:11, title:'The Last of Us Part I',  emoji:'🌿',platform:'PS5',   status:'pool',tags:'Solo,Story',   notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:12, title:'The Last of Us Part II', emoji:'🏹',platform:'PS5',   status:'pool',tags:'Solo,Story',   notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:13, title:'God of War Ragnarök',    emoji:'⚡',platform:'PS5',   status:'pool',tags:'Solo,Action',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:14, title:'Returnal',               emoji:'👾',platform:'PS5',   status:'pool',tags:'Solo,Roguelite',notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:15, title:'Stellar Blade',          emoji:'⚔️',platform:'PS5',   status:'pool',tags:'Solo,Action',  notes:'Interested',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:16, title:"Tiny Tina's Wonderlands",emoji:'🔫',platform:'PS5',   status:'pool',tags:'Co-op,FPS',    notes:'2P',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:17, title:'Bayonetta',              emoji:'✨',platform:'Switch', status:'pool',tags:'Solo,Action',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:18, title:'Metroid Prime',          emoji:'🌀',platform:'Switch', status:'pool',tags:'Solo',         notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:19, title:'Starless Abyss',         emoji:'🕳️',platform:'PC',    status:'pool',tags:'Solo',         notes:'Interested',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:20, title:'Riftbreaker',            emoji:'⚙️',platform:'PC',    status:'pool',tags:'Solo,Strategy',notes:'Buy?',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
-  {id:21, title:'Deep Rock Galactic',     emoji:'⛏️',platform:'PC',    status:'pool',tags:'Co-op,FPS',    notes:'Buy?',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:1,  title:'The Room VR',            emoji:'🔐',platform:'VR',    status:'queue',tags:'Solo,Puzzle',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:2,  title:'I Expect You To Die',    emoji:'💣',platform:'VR',    status:'queue',tags:'Solo,Puzzle',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:3,  title:'Red Matter 2',           emoji:'🚀',platform:'VR',    status:'queue',tags:'Solo,Sci-Fi',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:4,  title:'Last Clockwinder',       emoji:'⏰',platform:'VR',    status:'queue',tags:'Solo',         notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:5,  title:'The 7th Guest VR',       emoji:'👻',platform:'VR',    status:'queue',tags:'Solo,Horror',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:6,  title:'Obduction',              emoji:'🌌',platform:'VR',    status:'queue',tags:'Solo,Puzzle',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:7,  title:'Metro Awakening',        emoji:'🚇',platform:'VR',    status:'queue',tags:'Solo,Horror',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:8,  title:'Doom 3 VR',             emoji:'👹',platform:'VR',    status:'queue',tags:'Solo,FPS',     notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:9,  title:'Resident Evil 7 VR',    emoji:'🧟',platform:'VR',    status:'queue',tags:'Solo,Horror',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:10, title:'Batman Arkham Shadow',   emoji:'🦇',platform:'VR',    status:'queue',tags:'Solo,Action',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:11, title:'The Last of Us Part I',  emoji:'🌿',platform:'PS5',   status:'queue',tags:'Solo,Story',   notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:12, title:'The Last of Us Part II', emoji:'🏹',platform:'PS5',   status:'queue',tags:'Solo,Story',   notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:13, title:'God of War Ragnarök',    emoji:'⚡',platform:'PS5',   status:'queue',tags:'Solo,Action',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:14, title:'Returnal',               emoji:'👾',platform:'PS5',   status:'queue',tags:'Solo,Roguelite',notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:15, title:'Stellar Blade',          emoji:'⚔️',platform:'PS5',   status:'queue',tags:'Solo,Action',  notes:'Interested',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:16, title:"Tiny Tina's Wonderlands",emoji:'🔫',platform:'2-Player',   status:'queue',tags:'Co-op,FPS',    notes:'2P',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:17, title:'Bayonetta',              emoji:'✨',platform:'Switch', status:'queue',tags:'Solo,Action',  notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:18, title:'Metroid Prime',          emoji:'🌀',platform:'Switch', status:'queue',tags:'Solo',         notes:'',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:19, title:'Starless Abyss',         emoji:'🕳️',platform:'PC',    status:'queue',tags:'Solo',         notes:'Interested',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:20, title:'Riftbreaker',            emoji:'⚙️',platform:'PC',    status:'queue',tags:'Solo,Strategy',notes:'Buy?',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
+  {id:21, title:'Deep Rock Galactic',     emoji:'⛏️',platform:'2-Player',status:'queue',tags:'Co-op,FPS',    notes:'Buy?',rating:0,review:'',dateCompleted:'',cover:'',igdbId:null},
   {id:22, title:'Nobody Saves the World', emoji:'🧙',platform:'PC',    status:'completed',tags:'Solo',     notes:'',rating:4,review:'Fun roguelite twist mechanics. Enjoyed the class system.',dateCompleted:'2026-03-21',cover:'',igdbId:null},
 ];
 
@@ -509,11 +514,12 @@ function renderAll() {
 }
 
 function renderStats() {
-  const c = s => games.filter(g=>g.status===s).length;
-  document.getElementById('s-playing').textContent = c('playing') + ' playing';
-  document.getElementById('s-queue').textContent   = c('queue')   + ' queued';
-  document.getElementById('s-pool').textContent    = c('pool')    + ' in pool';
-  document.getElementById('s-done').textContent    = c('completed') + ' completed';
+  const playing   = games.filter(g=>g.status==='playing').length;
+  const queued    = games.filter(g=>g.status==='queue'||g.status==='pool').length;
+  const completed = games.filter(g=>g.status==='completed').length;
+  document.getElementById('s-playing').textContent = playing   + ' playing';
+  document.getElementById('s-queue').textContent   = queued    + ' in queue';
+  document.getElementById('s-done').textContent    = completed + ' completed';
 }
 
 // ── NOW PLAYING ───────────────────────────────────
@@ -552,25 +558,27 @@ function switchTab(tab) {
 }
 function renderTab(tab) {
   const el = document.getElementById('tab-content');
-  if (tab==='queue')     renderQueue(el);
-  else if (tab==='pool') renderPool(el);
-  else if (tab==='completed') renderCompleted(el);
-  else if (tab==='steam')    renderSteam(el);
+  if (tab==='completed') renderCompleted(el);
+  else if (tab==='steam') renderSteam(el);
+  else renderPlatformQueue(el, tab); // 'all' or specific platform
 }
 
-// ── QUEUE ─────────────────────────────────────────
-function renderQueue(el) {
-  const queued = games.filter(g=>g.status==='queue');
+// ── PLATFORM QUEUE (infinite — replaces separate pool/queue) ─────────────
+function renderPlatformQueue(el, filterPlat) {
+  const platsToShow = filterPlat==='all' ? PLAT_ORDER : [filterPlat];
+  const allQueued = games.filter(g=>g.status==='queue'||g.status==='pool'); // treat pool as queue
+
   el.innerHTML = `<div class="queue-section"><div class="queue-platforms">${
-    PLAT_ORDER.map(plat => {
+    platsToShow.map(plat => {
       const pm = PLAT_META[plat];
-      const platGames = queued.filter(g=>g.platform===plat);
-      const atMax = platGames.length >= 5;
+      const platGames = allQueued.filter(g=>g.platform===plat);
       return `
       <div class="queue-plat">
         <div class="qp-header">
           <span class="plat-badge ${pm.cls}">${pm.emoji} ${pm.label}</span>
-          <span class="qp-limit">${platGames.length}/5 slots</span>
+          <span class="qp-limit">${platGames.length} game${platGames.length!==1?'s':''}</span>
+          <button onclick="openSearchModal(null,'queue','${plat}')"
+            style="margin-left:auto;font-family:'DM Mono',monospace;font-size:0.55rem;padding:3px 10px;border:1px solid var(--pur-b);color:var(--purple);background:var(--pur-d);border-radius:8px;cursor:pointer;">+ Add</button>
         </div>
         <div class="qp-slots" id="queue-${plat}"
              ondragover="event.preventDefault();this.classList.add('drag-over-active')"
@@ -585,17 +593,16 @@ function renderQueue(el) {
               <div class="qs-title">${g.title}</div>
               <div class="qs-btns">
                 <button class="qs-play" onclick="event.stopPropagation();changeStatus(${g.id},'playing')">▶</button>
-                <button class="qs-remove" onclick="event.stopPropagation();changeStatus(${g.id},'pool')">↩</button>
+                <button class="qs-remove" onclick="event.stopPropagation();deleteGame(${g.id})">✕</button>
               </div>
             </div>`).join('')}
-          ${platGames.length < 5 ? `
-            <div class="queue-add-slot" id="drop-${plat}"
-                 ondragover="event.preventDefault();this.classList.add('drag-over')"
-                 ondragleave="this.classList.remove('drag-over')"
-                 ondrop="dropToQueue(event,'${plat}')"
-                 onclick="openSearchModal(null,'queue','${plat}')">
-              + drag or add
-            </div>` : ''}
+          <div class="queue-add-slot"
+               ondragover="event.preventDefault();this.classList.add('drag-over')"
+               ondragleave="this.classList.remove('drag-over')"
+               ondrop="dropToQueue(event,'${plat}')"
+               onclick="openSearchModal(null,'queue','${plat}')">
+            + drag or add
+          </div>
         </div>
       </div>`;
     }).join('')
@@ -739,7 +746,7 @@ async function renderSteam(el) {
 
 function addFromSteam(name, appid) {
   const cover = `${STEAM_BASE}/${appid}/library_600x900.jpg`;
-  games.push({id:nextId++, title:name, emoji:'💻', platform:'PC', status:'pool',
+  games.push({id:nextId++, title:name, emoji:'💻', platform:'PC', status:'queue',
     tags:'PC,Steam', notes:`AppID:${appid}`, rating:0, review:'', dateCompleted:'', cover, igdbId:null});
   scheduleSave();
   renderStats();
@@ -808,10 +815,10 @@ function openDetail(id) {
   const btns = [];
   if (g.status === 'pool')      btns.push(`<button class="btn-p" style="font-size:0.75rem;padding:7px 14px;" onclick="addToQueue(${g.id});closeModal('detail-modal')">+ Queue</button>`);
   if (g.status === 'queue')     btns.push(`<button class="btn-p" style="font-size:0.75rem;padding:7px 14px;background:var(--grn-d);border:1px solid var(--grn-b);color:var(--green);" onclick="changeStatus(${g.id},'playing');closeModal('detail-modal')">▶ Play Now</button>`);
-  if (g.status === 'queue')     btns.push(`<button class="btn-c" style="font-size:0.75rem;padding:7px 14px;" onclick="changeStatus(${g.id},'pool');closeModal('detail-modal')">↩ Back to Pool</button>`);
+  if (g.status === 'queue')     btns.push(`<button class="btn-c" style="font-size:0.75rem;padding:7px 14px;" onclick="deleteGame(${g.id});closeModal('detail-modal')">↩ Back to Pool</button>`);
   if (g.status === 'playing')   btns.push(`<button class="btn-p" style="font-size:0.75rem;padding:7px 14px;background:var(--grn-d);border:1px solid var(--grn-b);color:var(--green);" onclick="openCompleteModal(${g.id});closeModal('detail-modal')">✓ Mark Done</button>`);
   if (g.status === 'completed') btns.push(`<button class="btn-p" style="font-size:0.75rem;padding:7px 14px;background:var(--pur-d);border:1px solid var(--pur-b);color:var(--purple);" onclick="closeModal('detail-modal');openCompleteModal(${g.id})">✏ Edit Review</button>`);
-  if (g.status === 'completed') btns.push(`<button class="btn-c" style="font-size:0.75rem;padding:7px 14px;" onclick="changeStatus(${g.id},'pool');closeModal('detail-modal')">↩ Requeue</button>`);
+  if (g.status === 'completed') btns.push(`<button class="btn-c" style="font-size:0.75rem;padding:7px 14px;" onclick="deleteGame(${g.id});closeModal('detail-modal')">↩ Requeue</button>`);
   btns.push(`<button class="btn-c" style="font-size:0.75rem;padding:7px 14px;color:var(--red);border-color:var(--red-b);" onclick="deleteGame(${g.id});closeModal('detail-modal')">✕ Remove</button>`);
   actions.innerHTML = btns.join('');
 
@@ -844,10 +851,7 @@ function dropToQueue(e, platform) {
   if (!g) return;
   // Check queue limit for this platform
   const platQueued = games.filter(x=>x.status==='queue' && x.platform===platform).length;
-  if (g.status !== 'queue' && platQueued >= 5) {
-    alert(`Queue for ${platform} is full (max 5). Remove one first.`);
-    return;
-  }
+  // No limit — infinite queue per platform
   g.platform = platform;
   g.status   = 'queue';
   dragId = null;
@@ -863,10 +867,7 @@ function addToQueue(id) {
   const g = games.find(x=>x.id===id);
   if (!g) return;
   const platQueued = games.filter(x=>x.status==='queue' && x.platform===g.platform).length;
-  if (platQueued >= 5) {
-    alert(`Queue for ${g.platform} is full (max 5). Remove one first.`);
-    return;
-  }
+  // No limit
   g.status = 'queue';
   scheduleSave(); renderAll();
 }
