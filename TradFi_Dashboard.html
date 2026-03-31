@@ -8,8 +8,7 @@
 <style>
 :root {
   --cream:#f5f0e8;--cream2:#ede7d9;--cream3:#e4dccb;
-  --paper:#faf7f2;--ink:#1e1a14;--ink2:#3d3629;
-  --ink3:#6b6050;--ink4:#a89880;--ink5:#c8b99a;
+  --paper:#faf7f2;--ink:#1e1a14;--ink2:#3d3629;--ink3:#6b6050;--ink4:#a89880;--ink5:#c8b99a;
   --rust:#c44b2b;--rust-l:#e8705a;--rust-bg:#fdf0ed;
   --amber:#c07a1a;--amber-l:#e8a030;--amber-bg:#fdf5e6;
   --sage:#3a6b4a;--sage-l:#5a9a6a;--sage-bg:#eef4f0;
@@ -23,119 +22,166 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-size:14px;min-height:100vh;}
 
-.topbar{background:var(--ink);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
-.logo{font-family:var(--font-serif);font-size:18px;font-weight:700;color:#f5f0e8;display:flex;align-items:center;gap:10px;}
+/* TOPBAR */
+.topbar{background:var(--ink);padding:0 32px;display:flex;align-items:center;
+  justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
+.logo{font-family:var(--font-serif);font-size:18px;font-weight:700;color:#f5f0e8;
+  display:flex;align-items:center;gap:10px;}
 .logo-sub{font-family:var(--font-mono);font-size:10px;color:var(--ink4);letter-spacing:2px;text-transform:uppercase;}
-.back-link{font-family:var(--font-mono);font-size:10px;color:var(--ink4);text-decoration:none;letter-spacing:1px;text-transform:uppercase;transition:color .2s;}
+.back-link{font-family:var(--font-mono);font-size:10px;color:var(--ink4);text-decoration:none;
+  letter-spacing:1px;text-transform:uppercase;transition:color .2s;}
 .back-link:hover{color:var(--cream);}
-.conn-chip{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:5px 12px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);color:var(--ink4);}
-.conn-chip.ok{color:#5a9a6a;border-color:rgba(90,154,106,0.3);background:rgba(90,154,106,0.08);}
-.conn-chip.err{color:var(--rust-l);border-color:rgba(196,75,43,0.3);}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.log-btn{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:6px 14px;
+  background:var(--sage);color:#fff;border:none;border-radius:5px;cursor:pointer;transition:all .2s;}
+.log-btn:hover{background:var(--sage-l);}
+.log-btn:disabled{opacity:.5;cursor:not-allowed;}
+.conn-chip{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;
+  letter-spacing:1px;padding:5px 12px;border-radius:4px;border:1px solid rgba(255,255,255,.1);color:var(--ink4);}
+.conn-chip.ok{color:var(--sage-l);border-color:rgba(90,154,106,.3);background:rgba(90,154,106,.08);}
+.conn-chip.err{color:var(--rust-l);border-color:rgba(196,75,43,.3);}
 .cdot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
-.conn-chip.ok .cdot{box-shadow:0 0 4px currentColor;}
+.conn-chip.ok .cdot{box-shadow:0 0 4px currentColor;animation:pulse 2s infinite;}
 
-.nav-strip{background:var(--paper);border-bottom:1px solid var(--cream2);padding:0 32px;display:flex;gap:0;overflow-x:auto;}
-.nav-tab{padding:14px 18px;font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;}
+/* NAV */
+.nav-strip{background:var(--paper);border-bottom:1px solid var(--cream2);padding:0 32px;
+  display:flex;gap:0;overflow-x:auto;}
+.nav-tab{padding:14px 18px;font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--ink4);cursor:pointer;border-bottom:2px solid transparent;
+  white-space:nowrap;transition:all .15s;}
 .nav-tab:hover{color:var(--ink2);}
 .nav-tab.active{color:var(--slate);border-bottom-color:var(--slate);}
-.tab-badge{background:var(--rust);color:#fff;font-size:9px;padding:1px 5px;border-radius:8px;margin-left:4px;vertical-align:middle;}
+.tab-badge{background:var(--rust);color:#fff;font-size:9px;padding:1px 5px;border-radius:8px;margin-left:4px;}
 
-.main{max-width:960px;margin:0 auto;padding:32px 24px 80px;}
+/* LAYOUT */
+.main{max-width:980px;margin:0 auto;padding:32px 24px 80px;}
+.panel{display:none;} .panel.active{display:block;}
 
-/* NET WORTH HERO */
+/* HERO */
 .hero{background:var(--ink);border-radius:12px;padding:28px 32px;margin-bottom:28px;}
-.hero-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:6px;}
-.hero-nw{font-family:var(--font-serif);font-size:42px;font-weight:700;line-height:1.05;margin-bottom:8px;}
-.hero-nw.neg{color:var(--rust-l);}
-.hero-nw.pos{color:#5a9a6a;}
-.hero-sub{font-size:13px;color:var(--ink4);margin-bottom:20px;}
-.hero-row{display:flex;gap:28px;flex-wrap:wrap;}
-.hero-stat label{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);display:block;margin-bottom:3px;}
+.hero-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--ink4);margin-bottom:6px;}
+.hero-nw{font-family:var(--font-serif);font-size:44px;font-weight:700;line-height:1;margin-bottom:6px;}
+.hero-nw.pos{color:var(--sage-l);}  .hero-nw.neg{color:var(--rust-l);}
+.hero-sub{font-size:12px;color:var(--ink4);margin-bottom:20px;}
+.hero-row{display:flex;gap:24px;flex-wrap:wrap;}
+.hero-stat label{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--ink4);display:block;margin-bottom:3px;}
 .hero-stat .fig{font-family:var(--font-serif);font-size:20px;font-weight:600;}
-.c-gold{color:var(--amber-l);}
-.c-rust{color:var(--rust-l);}
-.c-sage{color:#5a9a6a;}
-.c-slate{color:var(--slate-l);}
+.c-gold{color:var(--amber-l);} .c-rust{color:var(--rust-l);} .c-sage{color:var(--sage-l);} .c-slate{color:var(--slate-l);}
 
-.card{background:var(--paper);border:1px solid var(--cream2);border-radius:10px;padding:20px;box-shadow:var(--shadow-sm);}
-.card-label{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:8px;}
+/* TREND ROW */
+.trend-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;}
+.trend-card{background:var(--paper);border:1px solid var(--cream2);border-radius:10px;
+  padding:14px 18px;flex:1;min-width:140px;}
+.trend-label{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--ink4);margin-bottom:5px;}
+.trend-val{font-family:var(--font-serif);font-size:20px;font-weight:700;color:var(--ink);}
+.trend-val.pos{color:var(--sage);} .trend-val.neg{color:var(--rust);}
+.trend-change{font-size:11px;margin-top:2px;}
+
+/* CARDS */
+.card{background:var(--paper);border:1px solid var(--cream2);border-radius:10px;
+  padding:20px;box-shadow:var(--shadow-sm);margin-bottom:20px;}
+.card-label{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--ink4);margin-bottom:10px;}
 .card-fig{font-family:var(--font-serif);font-size:26px;font-weight:700;line-height:1.1;}
 .card-note{font-size:11px;color:var(--ink4);margin-top:4px;}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
-.mb24{margin-bottom:24px;}
-.mb16{margin-bottom:16px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.sec-label{font-family:var(--font-mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--ink4);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--cream2);}
 
-.sec-label{font-family:var(--font-mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--ink4);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--cream2);}
-.panel{display:none;}
-.panel.active{display:block;}
+/* ROW */
+.row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--cream2);}
+.row:last-child{border-bottom:none;}
+.row .lbl{font-size:13px;color:var(--ink);flex:1;}
+.row .val{font-family:var(--font-serif);font-size:16px;font-weight:600;color:var(--ink);min-width:90px;text-align:right;}
+.row .meta{font-family:var(--font-mono);font-size:10px;color:var(--ink4);min-width:100px;text-align:right;}
 
 /* DEBT BLOCKS */
-.debt-block{padding:16px 0;border-bottom:1px solid var(--cream2);}
+.debt-block{padding:14px 0;border-bottom:1px solid var(--cream2);}
 .debt-block:last-child{border-bottom:none;}
-.debt-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.debt-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px;}
 .debt-name{font-size:14px;font-weight:600;color:var(--ink);}
-.debt-bal{font-family:var(--font-serif);font-size:18px;font-weight:700;color:var(--ink);}
-.debt-meta-row{display:flex;gap:16px;font-family:var(--font-mono);font-size:11px;color:var(--ink4);margin-bottom:6px;flex-wrap:wrap;}
-.track{height:5px;background:var(--cream2);border-radius:10px;overflow:hidden;margin-top:8px;}
+.debt-bal{font-family:var(--font-serif);font-size:18px;font-weight:700;}
+.debt-meta{display:flex;gap:14px;font-family:var(--font-mono);font-size:10px;color:var(--ink4);
+  margin-bottom:6px;flex-wrap:wrap;}
+.track{height:5px;background:var(--cream2);border-radius:10px;overflow:hidden;margin-top:6px;}
 .fill{height:100%;border-radius:10px;}
-.badge{display:inline-flex;align-items:center;font-family:var(--font-mono);font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:10px;font-weight:600;margin-right:4px;margin-bottom:4px;}
+.badge{display:inline-flex;align-items:center;font-family:var(--font-mono);font-size:9px;
+  letter-spacing:1px;padding:2px 8px;border-radius:10px;font-weight:600;margin-right:4px;margin-bottom:4px;}
 .badge.red{background:var(--rust-bg);color:var(--rust);border:1px solid rgba(196,75,43,.2);}
 .badge.amber{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(192,122,26,.2);}
 .badge.green{background:var(--sage-bg);color:var(--sage);border:1px solid rgba(58,107,74,.2);}
 .badge.blue{background:var(--slate-bg);color:var(--slate);border:1px solid rgba(45,74,107,.2);}
 .badge.muted{background:var(--cream2);color:var(--ink4);}
-.badge.purple{background:#f3f0ff;color:#5b4fd9;border:1px solid rgba(91,79,217,.2);}
 
 /* ALERTS */
 .alert{display:flex;gap:12px;padding:16px;border-radius:8px;margin-bottom:10px;font-size:13px;line-height:1.6;}
 .alert-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
 .alert-head{font-weight:600;margin-bottom:3px;}
-.alert.amber{background:var(--amber-bg);border:1px solid rgba(192,122,26,.2);}
 .alert.red{background:var(--rust-bg);border:1px solid rgba(196,75,43,.2);}
+.alert.amber{background:var(--amber-bg);border:1px solid rgba(192,122,26,.2);}
 .alert.slate{background:var(--slate-bg);border:1px solid rgba(45,74,107,.2);}
 
-/* TABLES */
+/* EXPENSES TABLE */
 .etable{width:100%;border-collapse:collapse;font-size:13px;}
-.etable th{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:6px 0 10px;text-align:left;border-bottom:1px solid var(--cream2);}
+.etable th{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--ink4);padding:6px 0 10px;text-align:left;border-bottom:1px solid var(--cream2);}
 .etable td{padding:9px 0;border-bottom:1px solid var(--cream2);color:var(--ink3);vertical-align:top;}
 .etable tr:last-child td{border-bottom:none;}
 .etable .num{font-family:var(--font-mono);font-size:12px;color:var(--amber);font-weight:600;}
 .etable .yr{font-family:var(--font-mono);font-size:11px;color:var(--ink4);}
-.savings-box{background:var(--sage-bg);border:1px solid rgba(58,107,74,.15);border-radius:8px;padding:14px 16px;margin-top:16px;}
-.s-lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);margin-bottom:4px;}
+.savings-box{background:var(--sage-bg);border:1px solid rgba(58,107,74,.15);border-radius:8px;
+  padding:14px 16px;margin-top:14px;}
+.s-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--sage);margin-bottom:4px;}
 .s-fig{font-family:var(--font-serif);font-size:20px;font-weight:700;color:var(--sage);}
 .s-sub{font-size:12px;color:var(--sage-l);margin-top:3px;}
 
-/* ROW */
-.row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--cream2);}
-.row:last-child{border-bottom:none;}
-.lbl{font-size:13px;color:var(--ink);flex:1;}
-.val{font-family:var(--font-serif);font-size:16px;font-weight:600;color:var(--ink);min-width:80px;text-align:right;}
-.meta{font-family:var(--font-mono);font-size:10px;color:var(--ink4);min-width:120px;text-align:right;}
-
 /* TASKS */
-.task-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--cream2);cursor:pointer;}
+.task-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--cream2);}
 .task-item:last-child{border-bottom:none;}
-.task-check{width:16px;height:16px;min-width:16px;border:1.5px solid var(--cream3);border-radius:4px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
-.task-item.done .task-check{background:var(--sage);border-color:var(--sage);}
-.task-item.done .task-check::after{content:'✓';font-size:9px;color:#fff;font-weight:700;}
-.task-item.done .task-text{text-decoration:line-through;color:var(--ink4);}
+.task-check{width:16px;height:16px;min-width:16px;border:1.5px solid var(--cream3);border-radius:4px;}
 .task-text{font-size:13px;color:var(--ink);flex:1;}
-.task-badge{font-family:var(--font-mono);font-size:9px;padding:2px 7px;border-radius:10px;flex-shrink:0;}
-.badge-now{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-l);}
-.badge-week{background:var(--slate-bg);color:var(--slate);border:1px solid var(--slate-l);}
-.badge-someday{background:var(--cream2);color:var(--ink4);}
+.task-pri{font-family:var(--font-mono);font-size:9px;padding:2px 7px;border-radius:10px;flex-shrink:0;}
+.pri-now{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber);}
+.pri-week{background:var(--slate-bg);color:var(--slate);border:1px solid var(--slate-l);}
+.pri-someday{background:var(--cream2);color:var(--ink4);}
 
-/* STRAT BUTTONS */
-#btn-av,#btn-sb{transition:all .15s;}
+/* HISTORY CHART */
+.hist-chart{width:100%;height:180px;position:relative;margin-bottom:8px;}
+.chart-line{fill:none;stroke:var(--sage);stroke-width:2.5;stroke-linejoin:round;}
+.chart-area{fill:rgba(58,107,74,.08);}
+.chart-dot{fill:var(--sage);}
+.chart-label{font-family:var(--font-mono);font-size:9px;fill:var(--ink4);}
+.chart-zero{stroke:var(--cream3);stroke-width:1;stroke-dasharray:4,4;}
+.hist-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px;}
+.hist-table th{font-family:var(--font-mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;
+  color:var(--ink4);padding:6px 8px;text-align:right;border-bottom:1px solid var(--cream2);}
+.hist-table th:first-child{text-align:left;}
+.hist-table td{padding:8px;border-bottom:1px solid var(--cream2);font-family:var(--font-mono);font-size:11px;
+  text-align:right;color:var(--ink3);}
+.hist-table td:first-child{text-align:left;font-weight:600;color:var(--ink);}
+.hist-table td.pos{color:var(--sage);} .hist-table td.neg{color:var(--rust);}
+.hist-table tr:last-child td{border-bottom:none;}
+.hist-table tr.current-row td{background:var(--sage-bg);}
+
+/* STRAT BTNS */
+.strat-btn{flex:1;padding:9px 6px;border-radius:6px;font-family:var(--font-mono);font-size:10px;
+  font-weight:500;cursor:pointer;letter-spacing:1px;transition:all .15s;}
+.strat-btn.on{background:var(--ink);color:var(--cream);border:none;}
+.strat-btn.off{background:var(--cream2);color:var(--ink4);border:1px solid var(--cream3);}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 @media(max-width:700px){
-  .g4{grid-template-columns:1fr 1fr;}
-  .g3{grid-template-columns:1fr 1fr;}
-  .hero-row{gap:16px;}
-  .meta{display:none;}
+  .topbar{padding:0 16px;} .main{padding:20px 14px 60px;}
+  .nav-strip{padding:0 14px;} .g3{grid-template-columns:1fr 1fr;} .g2{grid-template-columns:1fr;}
+  .hero{padding:20px;} .hero-nw{font-size:36px;} .hero-row{gap:14px;}
+  .row .meta{display:none;}
 }
 </style>
 </head>
@@ -143,23 +189,25 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <div style="display:flex;align-items:center;gap:16px;">
+  <div style="display:flex;align-items:center;gap:14px;">
     <a href="index.html" class="back-link">← HQ</a>
     <div class="logo">💰 TradFi &amp; Wealth <span class="logo-sub">Answer Back</span></div>
   </div>
-  <div style="display:flex;align-items:center;gap:10px;">
+  <div class="topbar-right">
+    <button class="log-btn" id="log-btn" onclick="logMonth()">📅 Log Month</button>
     <div class="conn-chip" id="conn-chip"><div class="cdot"></div><span id="conn-text">Connecting...</span></div>
   </div>
 </div>
 
 <!-- NAV -->
 <div class="nav-strip">
-  <div class="nav-tab active" onclick="switchTab('overview')">Overview</div>
-  <div class="nav-tab" onclick="switchTab('alerts')">Alerts <span class="tab-badge" id="alert-count">4</span></div>
-  <div class="nav-tab" onclick="switchTab('debt')">Debt</div>
-  <div class="nav-tab" onclick="switchTab('investments')">Investments</div>
-  <div class="nav-tab" onclick="switchTab('expenses')">Expenses</div>
-  <div class="nav-tab" onclick="switchTab('tasks')">Tasks</div>
+  <div class="nav-tab active" onclick="tab('overview',this)">Overview</div>
+  <div class="nav-tab" onclick="tab('alerts',this)">Alerts <span class="tab-badge" id="alert-count">4</span></div>
+  <div class="nav-tab" onclick="tab('debt',this)">Debt</div>
+  <div class="nav-tab" onclick="tab('investments',this)">Investments</div>
+  <div class="nav-tab" onclick="tab('expenses',this)">Expenses</div>
+  <div class="nav-tab" onclick="tab('history',this)">History</div>
+  <div class="nav-tab" onclick="tab('tasks',this)">Tasks</div>
 </div>
 
 <div class="main">
@@ -167,11 +215,11 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
 <!-- ═══ OVERVIEW ═══ -->
 <div class="panel active" id="panel-overview">
   <div class="hero">
-    <div class="hero-eyebrow">Net Worth Snapshot — 2026</div>
-    <div class="hero-nw neg" id="nw-hero">Loading...</div>
-    <div class="hero-sub" id="hero-sub">Cash + Crypto + Investments − CC Debt. Update numbers in AnswerBack_Data.xlsx → sync to Sheets.</div>
+    <div class="hero-eyebrow" id="snap-month">Net Worth Snapshot</div>
+    <div class="hero-nw" id="nw-hero">Loading...</div>
+    <div class="hero-sub" id="hero-sub">Cash + Investments − Debt. Crypto excluded until added.</div>
     <div class="hero-row">
-      <div class="hero-stat"><label>Cash (Chase)</label><div class="fig c-slate" id="ov-cash">—</div></div>
+      <div class="hero-stat"><label>Cash</label><div class="fig c-slate" id="ov-cash">—</div></div>
       <div class="hero-stat"><label>Crypto</label><div class="fig c-gold" id="ov-crypto">—</div></div>
       <div class="hero-stat"><label>Investments</label><div class="fig c-sage" id="ov-invest">—</div></div>
       <div class="hero-stat"><label>CC Debt</label><div class="fig c-rust" id="ov-debt">—</div></div>
@@ -179,46 +227,58 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
     </div>
   </div>
 
-  <div class="sec-label">At a Glance</div>
-  <div class="g4">
+  <!-- Trend row (populated from history) -->
+  <div class="trend-row" id="trend-row" style="display:none;">
+    <div class="trend-card">
+      <div class="trend-label">vs Last Month</div>
+      <div class="trend-val" id="trend-mom">—</div>
+      <div class="trend-change" id="trend-mom-sub"></div>
+    </div>
+    <div class="trend-card">
+      <div class="trend-label">Debt Trend</div>
+      <div class="trend-val" id="trend-debt">—</div>
+      <div class="trend-change" id="trend-debt-sub"></div>
+    </div>
+    <div class="trend-card">
+      <div class="trend-label">Invest Trend</div>
+      <div class="trend-val" id="trend-invest">—</div>
+      <div class="trend-change" id="trend-invest-sub"></div>
+    </div>
+  </div>
+
+  <div class="g3">
     <div class="card">
       <div class="card-label">Total CC Debt</div>
-      <div class="card-fig" style="color:var(--rust)" id="snap-debt">—</div>
+      <div class="card-fig" style="color:var(--rust);" id="snap-debt">—</div>
       <div class="card-note">Across all cards</div>
     </div>
     <div class="card">
       <div class="card-label">Accruing Interest</div>
-      <div class="card-fig" style="color:var(--amber)" id="snap-interest">$5,944+</div>
-      <div class="card-note">Crypto.com + Prime Visa + BOA2*</div>
+      <div class="card-fig" style="color:var(--amber);" id="snap-accruing">$5,944+</div>
+      <div class="card-note" id="snap-accruing-note">Crypto.com + Prime Visa + BOA2*</div>
     </div>
     <div class="card">
-      <div class="card-label">Monthly Fixed Expenses</div>
-      <div class="card-fig" style="color:var(--amber)" id="snap-monthly">—</div>
+      <div class="card-label">Monthly Fixed</div>
+      <div class="card-fig" style="color:var(--amber);" id="snap-monthly">—</div>
       <div class="card-note">Bills &amp; subscriptions</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Recoverable / Year</div>
-      <div class="card-fig" style="color:var(--sage)">$736</div>
-      <div class="card-note">If 3 flagged subs cut</div>
     </div>
   </div>
 
   <div class="sec-label">Priority Checklist</div>
   <div class="g2">
     <div class="card">
-      <div class="card-label" style="margin-bottom:14px;">🚨 Do These First</div>
-      <div class="row" style="cursor:default;"><div class="lbl"><strong>Set AutoPay on Crypto.com card</strong> — $4,099 with no autopay is highest risk</div></div>
-      <div class="row" style="cursor:default;"><div class="lbl"><strong>Check BOA2 APR</strong> — 0% promo expired Oct 2025, $945 likely accruing</div></div>
-      <div class="row" style="cursor:default;"><div class="lbl"><strong>Plan BB2 payoff</strong> — deferred interest expires Jul 14, 2026 (~$238/mo)</div></div>
-      <div class="row" style="cursor:default;border-bottom:none;"><div class="lbl"><strong>Confirm Chase Ink Business</strong> — $39 due Feb 21, may be past due</div></div>
+      <div class="card-label" style="margin-bottom:12px;">🚨 Do These First</div>
+      <div class="row" style="cursor:default;"><div class="lbl"><strong>Set AutoPay on Crypto.com</strong> — $4,844 with no autopay</div></div>
+      <div class="row" style="cursor:default;"><div class="lbl"><strong>Verify BOA2 (...7720) APR</strong> — promo expired Oct 2025</div></div>
+      <div class="row" style="cursor:default;"><div class="lbl"><strong>Pay BB1 in full by Jul 14</strong> — $973 deferred interest</div></div>
+      <div class="row" style="cursor:default;border-bottom:none;"><div class="lbl"><strong>Pay BOA1 before Jun 6</strong> — 0% expires then</div></div>
     </div>
     <div class="card">
-      <div class="card-label" style="margin-bottom:14px;">📋 Next Actions</div>
-      <div class="row" style="cursor:default;"><div class="lbl">Update AnswerBack_Data.xlsx → sync to Sheets</div></div>
-      <div class="row" style="cursor:default;"><div class="lbl">Enter crypto balances from Coinstats</div></div>
-      <div class="row" style="cursor:default;"><div class="lbl">Enter Betterment + Robinhood balances</div></div>
+      <div class="card-label" style="margin-bottom:12px;">📋 Next Actions</div>
+      <div class="row" style="cursor:default;"><div class="lbl">Add crypto value from Coinstats next month</div></div>
       <div class="row" style="cursor:default;"><div class="lbl">Decide: cancel Skill Incubator? ($396/yr)</div></div>
-      <div class="row" style="cursor:default;border-bottom:none;"><div class="lbl">Decide: replace Wix + Google Workspace? ($341/yr)</div></div>
+      <div class="row" style="cursor:default;"><div class="lbl">Review NSA Storage — $177/mo worth it?</div></div>
+      <div class="row" style="cursor:default;border-bottom:none;"><div class="lbl">Deploy $7,176 uninvested Roth IRA buying power</div></div>
     </div>
   </div>
 </div>
@@ -226,11 +286,12 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
 <!-- ═══ ALERTS ═══ -->
 <div class="panel" id="panel-alerts">
   <div class="sec-label">Active Flags — Prioritized</div>
-  <div class="alert red"><div class="alert-icon">🚨</div><div><div class="alert-head">Crypto.com Visa — No AutoPay on $4,099</div><div>Second-largest balance with zero autopay protection. One missed payment = late fee + potential penalty APR. Log into Comenity Bank and set up AutoPay — 5 minutes to protect $4,100.</div></div></div>
-  <div class="alert red"><div class="alert-icon">⚠️</div><div><div class="alert-head">BOA2 (...7720) — 0% Promo Likely Expired Oct 2025</div><div>Over 4 months past expiry. That $945 is very likely accruing standard BofA APR (20–29%). At 25% APR you're paying ~$20/month in interest. Log in and verify.</div></div></div>
-  <div class="alert amber"><div class="alert-icon">⏰</div><div><div class="alert-head">Best Buy Deferred Interest — BB2 Expires July 14, 2026</div><div>Best Buy promos are deferred interest — if BB2 ($1,070.98) isn't paid in full by July 14, Citi back-charges all interest from day one. ~4.5 months left. That's <strong>~$238/month</strong> to clear it.</div></div></div>
-  <div class="alert amber"><div class="alert-icon">📦</div><div><div class="alert-head">NSA Storage Rate Jumped $43/mo (+32%)</div><div>Now $177/mo = $2,124/yr — more than car insurance. Is everything in that unit worth $177/month? Downsizing could free up real cash flow for debt payoff.</div></div></div>
-  <div class="alert slate"><div class="alert-icon">💡</div><div><div class="alert-head">Subscription Audit — $736/yr Recoverable</div><div><strong>Skill Incubator ($396/yr):</strong> Quarterly billing. Actively using it?<br><strong>Google Workspace ($173/yr):</strong> Zoho Mail does custom domain email free.<br><strong>Wix ($168/yr):</strong> Cheaper options exist for a DJ brochure site.<br>Total: <strong>$736/yr</strong> → redirect to Crypto.com payoff.</div></div></div>
+  <div class="alert red"><div class="alert-icon">🚨</div><div><div class="alert-head">Crypto.com Visa — No AutoPay on $4,844</div><div>One missed payment = late fee + potential penalty APR on your largest high-interest balance. Log into Comenity Bank and set AutoPay today.</div></div></div>
+  <div class="alert red"><div class="alert-icon">⚠️</div><div><div class="alert-head">BOA2 (...7720) — 0% Promo Expired Oct 2025</div><div>$905 has been exposed to standard BofA APR (~25%) for 5+ months. Verify the rate and factor actual interest into your payoff calc.</div></div></div>
+  <div class="alert amber"><div class="alert-icon">⏰</div><div><div class="alert-head">Best Buy BB1 — Deferred Interest Expires Jul 14, 2026</div><div>$973 must be paid in full before July 14 or Citi back-charges all interest from day one. ~3.5 months left — roughly <strong>$278/mo</strong> to clear it.</div></div></div>
+  <div class="alert amber"><div class="alert-icon">📅</div><div><div class="alert-head">BOA1 (...8769) — 0% Promo Expires Jun 6, 2026</div><div>$1,148 at 0% until June 6. After that, standard BofA rate applies. ~$288/mo to clear it before the deadline.</div></div></div>
+  <div class="alert slate"><div class="alert-icon">💡</div><div><div class="alert-head">Robinhood Roth IRA — $7,176 Sitting Uninvested</div><div>That buying power is in a tax-advantaged account doing nothing. Select auto-invest or choose holdings — even a money market fund beats 0% while you decide.</div></div></div>
+  <div class="alert slate"><div class="alert-icon">💡</div><div><div class="alert-head">Subscription Audit — $736/yr Potentially Recoverable</div><div><strong>Skill Incubator ($396/yr):</strong> Actively using it?<br><strong>Google Workspace ($173/yr):</strong> Zoho Mail does custom domain email free.<br><strong>Wix ($168/yr):</strong> Cheaper options for a DJ site exist.<br>Redirect savings → Crypto.com payoff.</div></div></div>
 </div>
 
 <!-- ═══ DEBT ═══ -->
@@ -238,84 +299,85 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
   <div class="g3">
     <div class="card">
       <div class="card-label">Total CC Debt</div>
-      <div class="card-fig" style="color:var(--rust)" id="debt-total">—</div>
-      <div class="card-note">As of last update</div>
+      <div class="card-fig" style="color:var(--rust);" id="debt-total">—</div>
+      <div class="card-note">As of <span id="debt-as-of">last update</span></div>
     </div>
     <div class="card">
-      <div class="card-label">Currently Accruing Interest</div>
-      <div class="card-fig" style="color:var(--amber)">$5,944+</div>
-      <div class="card-note">Crypto.com + Prime Visa + BOA2 (verify)</div>
+      <div class="card-label">Currently Accruing</div>
+      <div class="card-fig" style="color:var(--amber);" id="debt-accruing">$5,814+</div>
+      <div class="card-note">Crypto.com + Prime Visa + BOA2*</div>
     </div>
     <div class="card">
       <div class="card-label">Payoff Strategy</div>
       <div style="display:flex;gap:8px;margin-top:10px;">
-        <button id="btn-av" onclick="strat('avalanche')" style="flex:1;padding:9px 6px;background:var(--ink);color:var(--cream);border:none;border-radius:6px;font-family:var(--font-mono);font-size:10px;font-weight:500;cursor:pointer;letter-spacing:1px;">AVALANCHE</button>
-        <button id="btn-sb" onclick="strat('snowball')"  style="flex:1;padding:9px 6px;background:var(--cream2);color:var(--ink4);border:1px solid var(--cream3);border-radius:6px;font-family:var(--font-mono);font-size:10px;cursor:pointer;letter-spacing:1px;">SNOWBALL</button>
+        <button id="btn-av" class="strat-btn on" onclick="strat('avalanche')">AVALANCHE</button>
+        <button id="btn-sb" class="strat-btn off" onclick="strat('snowball')">SNOWBALL</button>
       </div>
-      <div id="strat-note" style="font-size:12px;color:var(--ink3);margin-top:10px;line-height:1.6;">Highest APR first — Crypto.com → Prime Visa → BOA2. Saves the most interest.</div>
+      <div id="strat-note" style="font-size:12px;color:var(--ink3);margin-top:10px;line-height:1.6;">
+        Highest APR first — Crypto.com → Prime Visa → BOA2*. Saves most interest.
+      </div>
     </div>
   </div>
 
   <div class="sec-label">All Accounts — by Priority</div>
-  <div class="card mb24">
-    <div class="debt-block"><div class="debt-top"><span class="debt-name">Crypto.com Visa (Comenity)</span><span class="debt-bal" id="d-cdc">$4,099.19</span></div><div class="debt-meta-row"><span>Due: 10th</span><span>No promo</span><span style="color:var(--rust);font-weight:500;">AutoPay: NONE 🚨</span></div><div><span class="badge red">NO AUTOPAY — URGENT</span><span class="badge red">ACCRUING INTEREST</span></div><div class="track"><div class="fill" style="background:var(--rust);width:37%"></div></div></div>
-    <div class="debt-block"><div class="debt-top"><span class="debt-name">Best Buy Citi (...6761)</span><span class="debt-bal">$4,900.01</span></div><div class="debt-meta-row"><span>Due: 14th</span><span>AutoPay: YES</span></div><div style="margin:4px 0 6px;font-size:12px;color:var(--ink3);">BB2: <span id="d-bb2">$1,070.98</span> &nbsp;<span class="badge amber">⏰ Deferred — expires Jul 14, 2026</span></div><div class="track mb16"><div class="fill" style="background:var(--amber-l);width:22%"></div></div><div style="font-size:12px;color:var(--ink3);margin:8px 0 4px;">BB3: $1,614.39 &nbsp;<span class="badge green">0% until Jan 14, 2027</span></div><div class="track mb16"><div class="fill" style="background:var(--sage-l);width:33%"></div></div><div style="font-size:12px;color:var(--ink3);margin:8px 0 4px;">BB4: $2,163.99 &nbsp;<span class="badge green">0% until Mar 16, 2027</span></div><div class="track"><div class="fill" style="background:var(--sage-l);width:44%"></div></div><div style="margin-top:10px;"><span class="badge amber">PAY BB2 IN FULL BEFORE JUL 2026</span></div></div>
-    <div class="debt-block"><div class="debt-top"><span class="debt-name">Bank of America (...8769)</span><span class="debt-bal" id="d-boa1">$1,177.19</span></div><div class="debt-meta-row"><span>Due: 3rd</span><span>AutoPay: YES</span><span>0% until Jun 6, 2026</span></div><span class="badge green">✓ 0% PROMO ACTIVE — ~4 months left</span><div class="track"><div class="fill" style="background:var(--sage-l);width:24%"></div></div></div>
-    <div class="debt-block"><div class="debt-top"><span class="debt-name">Chase Prime Visa (...7376)</span><span class="debt-bal" id="d-pv">$1,084.75</span></div><div class="debt-meta-row"><span>Due: 4th</span><span>AutoPay: YES</span><span>No promo</span></div><span class="badge red">ACCRUING INTEREST</span><div class="track"><div class="fill" style="background:var(--rust);width:22%"></div></div></div>
-    <div class="debt-block"><div class="debt-top"><span class="debt-name">Bank of America (...7720)</span><span class="debt-bal" id="d-boa2">$945.77</span></div><div class="debt-meta-row"><span>Due: 6th</span><span>AutoPay: YES</span><span>Promo expired Oct 9, 2025 ⚠</span></div><span class="badge amber">VERIFY APR — PROMO LIKELY EXPIRED</span><div class="track"><div class="fill" style="background:var(--amber-l);width:19%"></div></div></div>
-    <div class="debt-block"><div class="debt-top"><span class="debt-name">Chase Ink Preferred (...2118)</span><span class="debt-bal">$188.00</span></div><div class="debt-meta-row"><span>Due: Mar 2</span><span>Min: $40</span><span>AutoPay: YES</span></div><span class="badge blue">LOW BALANCE</span></div>
-    <div class="debt-block"><div class="debt-top"><span class="debt-name">Chase Ink Business Cash (...0526)</span><span class="debt-bal">$39.00</span></div><div class="debt-meta-row"><span>Due: Feb 21 ⚠</span><span>AutoPay: YES</span></div><span class="badge amber">CONFIRM PAYMENT PROCESSED</span></div>
+  <div class="card" style="margin-bottom:20px;" id="debt-blocks">
+    <!-- Injected by JS -->
   </div>
+
   <div class="card">
-    <div class="card-label" style="margin-bottom:12px;">Zero Balance Cards</div>
-    <div class="row"><div class="lbl">Venmo (...5265)</div><div class="val" style="color:var(--sage);">$0</div><div class="meta">Due 15th</div></div>
-    <div class="row"><div class="lbl">Chase Freedom (...2035)</div><div class="val" style="color:var(--sage);">$0</div><div class="meta">Due Feb 22</div></div>
-    <div class="row"><div class="lbl">Chase Sapphire Preferred (...5377)</div><div class="val" style="color:var(--sage);">$0</div><div class="meta">Due Mar 15</div></div>
-    <div class="row"><div class="lbl">Chase Southwest Plus (...1749)</div><div class="val" style="color:var(--sage);">$0</div><div class="meta">Due Mar 8</div></div>
-    <div class="row"><div class="lbl">Chase Freedom Unlimited (...0163)</div><div class="val" style="color:var(--sage);">$0</div><div class="meta">Due Mar 21</div></div>
+    <div class="card-label" style="margin-bottom:12px;">$0 Balance Cards</div>
+    <div class="row"><div class="lbl">Venmo Card (...5265)</div><div class="val" style="color:var(--sage);">$0</div><div class="meta">Due 15th</div></div>
+    <div class="row"><div class="lbl">Freedom (...2035)</div><div class="val" style="color:var(--sage);">$0</div><div class="meta">Due Apr 22</div></div>
+    <div class="row"><div class="lbl">Sapphire Preferred (...5377)</div><div class="val" style="color:var(--sage);">$0</div><div class="meta">Due Apr 15</div></div>
+    <div class="row"><div class="lbl">Southwest Plus (...1749)</div><div class="val" style="color:var(--sage);">$0</div><div class="meta">Due Apr 8</div></div>
+    <div class="row"><div class="lbl">Freedom Unlimited (...0163)</div><div class="val" style="color:var(--sage);">$0</div><div class="meta">Due Apr 21</div></div>
+    <div class="row"><div class="lbl">Ink Preferred (...2118)</div><div class="val" style="color:var(--sage);">$0</div><div class="meta">Due Apr 2</div></div>
+    <div class="row"><div class="lbl">Ink Business Cash (...0526)</div><div class="val" style="color:var(--sage);">$0</div><div class="meta">Due Apr 21</div></div>
+    <div class="row"><div class="lbl">EIDL Loan (SBA)</div><div class="val" style="color:var(--sage);">$0</div><div class="meta">Due 22nd</div></div>
   </div>
 </div>
 
 <!-- ═══ INVESTMENTS ═══ -->
 <div class="panel" id="panel-investments">
-  <div class="g4">
+  <div class="g3">
     <div class="card"><div class="card-label">Total Investments</div><div class="card-fig" style="color:var(--slate);" id="inv-total">—</div><div class="card-note">Betterment + Robinhood</div></div>
-    <div class="card"><div class="card-label">Betterment</div><div class="card-fig" style="color:#1a6b3a;" id="inv-betterment">—</div><div class="card-note">All goals combined</div></div>
-    <div class="card"><div class="card-label">Robinhood</div><div class="card-fig" style="color:#006b00;" id="inv-robinhood">—</div><div class="card-note">Stocks + IRA + cash</div></div>
-    <div class="card"><div class="card-label">Cash (Chase)</div><div class="card-fig" style="color:var(--slate);" id="inv-cash">—</div><div class="card-note">CHK + SAV + Biz</div></div>
+    <div class="card"><div class="card-label">Betterment</div><div class="card-fig" style="color:#1a6b3a;" id="inv-betterment">—</div><div class="card-note">SEP IRA · Tax-Coordinated</div></div>
+    <div class="card"><div class="card-label">Robinhood</div><div class="card-fig" style="color:#006b00;" id="inv-robinhood">—</div><div class="card-note">Roth IRA + Individual</div></div>
   </div>
 
-  <div class="sec-label">Betterment</div>
-  <div class="card mb24">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+  <div class="sec-label">Betterment — Retirement</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
       <div style="width:10px;height:10px;border-radius:50%;background:#1a6b3a;flex-shrink:0;"></div>
       <div style="font-family:var(--font-serif);font-size:15px;font-weight:700;">Betterment</div>
-      <div style="margin-left:auto;font-family:var(--font-serif);font-size:18px;font-weight:700;color:#1a6b3a;" id="inv-bet-total">—</div>
+      <div style="margin-left:auto;font-family:var(--font-serif);font-size:18px;font-weight:700;color:#1a6b3a;" id="bet-total">—</div>
     </div>
-    <div class="row"><div class="lbl">Safety Net / Cash Reserve</div><div class="val" id="bet-safety">—</div><div class="meta">Emergency fund goal</div></div>
-    <div class="row"><div class="lbl">Retirement — IRA</div><div class="val" id="bet-ira">—</div><div class="meta">Traditional / Roth IRA</div></div>
-    <div class="row"><div class="lbl">Investing (Taxable)</div><div class="val" id="bet-taxable">—</div><div class="meta">Core portfolio</div></div>
-    <div class="row"><div class="lbl">Other Goal</div><div class="val" id="bet-other">—</div><div class="meta">e.g. Camaro build, house</div></div>
+    <div class="row"><div class="lbl">SEP IRA (Tax-Coordinated, 100% Stocks)</div><div class="val" id="bet-sep">$31,897.98</div><div class="meta">Innovative Technology</div></div>
+    <div class="row"><div class="lbl">Roth IRA</div><div class="val" style="color:var(--sage);">$0.00</div><div class="meta"></div></div>
     <div style="padding:10px 0 4px;display:flex;justify-content:space-between;border-top:1px solid var(--cream2);margin-top:4px;">
-      <span style="font-size:12px;color:var(--ink4);">Update in <strong>Balances</strong> sheet → Betterment section</span>
+      <span style="font-size:11px;color:var(--ink4);">Projected Mar 2054: <strong>$237,430</strong> · Spending power $2,703/mo</span>
       <a href="https://betterment.com" target="_blank" style="font-size:11px;color:#1a6b3a;text-decoration:none;font-family:var(--font-mono);">betterment.com ↗</a>
     </div>
   </div>
 
   <div class="sec-label">Robinhood</div>
   <div class="card">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
       <div style="width:10px;height:10px;border-radius:50%;background:#00c805;flex-shrink:0;"></div>
       <div style="font-family:var(--font-serif);font-size:15px;font-weight:700;">Robinhood</div>
-      <div style="margin-left:auto;font-family:var(--font-serif);font-size:18px;font-weight:700;color:#006b00;" id="inv-rh-total">—</div>
+      <div style="margin-left:auto;font-family:var(--font-serif);font-size:18px;font-weight:700;color:#006b00;" id="rh-total">—</div>
     </div>
-    <div class="row"><div class="lbl">Stocks</div><div class="val" id="rh-stocks">—</div><div class="meta">Individual equities</div></div>
-    <div class="row"><div class="lbl">Options</div><div class="val" id="rh-options">—</div><div class="meta">Mark-to-market value</div></div>
-    <div class="row"><div class="lbl">Crypto (via Robinhood)</div><div class="val" id="rh-crypto">—</div><div class="meta">BTC / ETH / DOGE</div></div>
-    <div class="row"><div class="lbl">Uninvested Cash</div><div class="val" id="rh-cash">—</div><div class="meta">Buying power</div></div>
-    <div class="row"><div class="lbl">IRA (Robinhood Gold)</div><div class="val" id="rh-ira">—</div><div class="meta">If applicable</div></div>
+    <div class="row"><div class="lbl">Roth IRA</div><div class="val" id="rh-ira">$29,687.65</div><div class="meta">+$662 today</div></div>
+    <div class="row"><div class="lbl">Individual (taxable)</div><div class="val" id="rh-individual">$2,586.14</div><div class="meta">+$129 today</div></div>
+    <div class="row" style="background:var(--amber-bg);border-radius:6px;padding:9px 8px;margin:4px 0;">
+      <div class="lbl" style="color:var(--amber);">⚠ Buying Power — Roth IRA</div>
+      <div class="val" style="color:var(--amber);">$7,176.87</div>
+      <div class="meta" style="color:var(--amber);">Uninvested</div>
+    </div>
+    <div class="row"><div class="lbl">2025 IRA Contributions</div><div class="val">$2,000.00</div><div class="meta">$5,000 until max</div></div>
+    <div class="row"><div class="lbl">IRA Match (3% Gold)</div><div class="val" style="color:var(--sage);">$60.00</div><div class="meta"></div></div>
     <div style="padding:10px 0 4px;display:flex;justify-content:space-between;border-top:1px solid var(--cream2);margin-top:4px;">
-      <span style="font-size:12px;color:var(--ink4);">Update in <strong>Balances</strong> sheet → Robinhood section</span>
+      <span style="font-size:11px;color:var(--amber);">$7,176 buying power is uninvested — consider deploying it</span>
       <a href="https://robinhood.com" target="_blank" style="font-size:11px;color:#006b00;text-decoration:none;font-family:var(--font-mono);">robinhood.com ↗</a>
     </div>
   </div>
@@ -324,48 +386,71 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
 <!-- ═══ EXPENSES ═══ -->
 <div class="panel" id="panel-expenses">
   <div class="g3">
-    <div class="card"><div class="card-label">Monthly Fixed</div><div class="card-fig" style="color:var(--amber);" id="exp-monthly">—</div><div class="card-note">All recurring bills &amp; subscriptions</div></div>
-    <div class="card"><div class="card-label">Annual Total</div><div class="card-fig" style="color:var(--amber);" id="exp-annual">—</div><div class="card-note">Annualized</div></div>
-    <div class="card"><div class="card-label">If Flagged Subs Cut</div><div class="card-fig" style="color:var(--sage);">$736 saved</div><div class="card-note">→ redirect to debt payoff</div></div>
+    <div class="card"><div class="card-label">Monthly Fixed</div><div class="card-fig" style="color:var(--amber);" id="exp-monthly">$1,980</div><div class="card-note">All recurring</div></div>
+    <div class="card"><div class="card-label">Annual Total</div><div class="card-fig" style="color:var(--amber);" id="exp-annual">$23,760</div><div class="card-note">Annualized</div></div>
+    <div class="card"><div class="card-label">If Flagged Subs Cut</div><div class="card-fig" style="color:var(--sage);">$736 saved</div><div class="card-note">→ redirect to CC debt</div></div>
   </div>
-
   <div class="sec-label">Personal</div>
-  <div class="card mb24"><table class="etable"><thead><tr><th>Expense</th><th>Monthly</th><th>Annual</th><th>Schedule</th><th>Status</th></tr></thead><tbody>
+  <div class="card" style="margin-bottom:20px;"><table class="etable"><thead><tr><th>Expense</th><th>Monthly</th><th>Annual</th><th>Schedule</th><th>Status</th></tr></thead><tbody>
     <tr><td>Rent</td><td class="num">$1,400</td><td class="yr">$16,800</td><td>Monthly</td><td><span class="badge green">Active</span></td></tr>
-    <tr><td>NSA Storage, Monument CO</td><td class="num">$177</td><td class="yr">$2,124</td><td>Monthly — 1st</td><td><span class="badge amber">Rate ↑ $43</span></td></tr>
-    <tr><td>Car Insurance (Progressive)</td><td class="num">$83</td><td class="yr">$1,001</td><td>6-Month</td><td><span class="badge blue">Renews 12.14.26</span></td></tr>
+    <tr><td>NSA Storage, Monument CO</td><td class="num">$177</td><td class="yr">$2,124</td><td>Monthly — 1st</td><td><span class="badge amber">⚠ Rate ↑ $43</span></td></tr>
+    <tr><td>Car Insurance (Progressive)</td><td class="num">$83</td><td class="yr">$1,001</td><td>6-Month</td><td><span class="badge blue">Renews 8.14.26</span></td></tr>
     <tr><td>Cell Phone</td><td class="num">$42</td><td class="yr">$504</td><td>Monthly — 1st</td><td><span class="badge green">Active</span></td></tr>
-    <tr><td>Dog — Simparico Trio</td><td class="num">~$13</td><td class="yr">~$155</td><td>12 doses/yr</td><td><span class="badge green">Active</span></td></tr>
     <tr><td>iCloud+ 200GB</td><td class="num">$3</td><td class="yr">$36</td><td>Monthly — 9th</td><td><span class="badge green">Active</span></td></tr>
     <tr><td>NordVPN</td><td class="num">$1.26</td><td class="yr">$15</td><td>2-yr prepaid</td><td><span class="badge muted">Prepaid ✓</span></td></tr>
   </tbody></table></div>
-
   <div class="sec-label">Crypto &amp; Trading</div>
-  <div class="card mb24"><table class="etable"><thead><tr><th>Expense</th><th>Monthly</th><th>Annual</th><th>Schedule</th><th>Status</th></tr></thead><tbody>
+  <div class="card" style="margin-bottom:20px;"><table class="etable"><thead><tr><th>Expense</th><th>Monthly</th><th>Annual</th><th>Schedule</th><th>Status</th></tr></thead><tbody>
     <tr><td>Obsidian Council</td><td class="num">$94</td><td class="yr">$1,128</td><td>Monthly — 12th</td><td><span class="badge green">Active</span></td></tr>
-    <tr><td>Skill Incubator</td><td class="num">$99*</td><td class="yr">$396</td><td>Quarterly</td><td><span class="badge purple">Review — Keep?</span></td></tr>
-    <tr><td>TradingView Premium</td><td class="num">$17</td><td class="yr">$200</td><td>Yearly (BF deal)</td><td><span class="badge green">Active ✓</span></td></tr>
+    <tr><td>Skill Incubator</td><td class="num">$99*</td><td class="yr">$396</td><td>Quarterly</td><td><span class="badge amber">⚠ Review</span></td></tr>
+    <tr><td>TradingView Premium</td><td class="num">$17</td><td class="yr">$200</td><td>Yearly</td><td><span class="badge green">Active ✓</span></td></tr>
   </tbody></table></div>
-
   <div class="sec-label">ABDJS Business</div>
   <div class="card"><table class="etable"><thead><tr><th>Expense</th><th>Monthly</th><th>Annual</th><th>Schedule</th><th>Status</th></tr></thead><tbody>
     <tr><td>Spotify (DJ Library)</td><td class="num">$19</td><td class="yr">$223</td><td>Monthly — 1st</td><td><span class="badge green">Active</span></td></tr>
     <tr><td>YouTube Premium</td><td class="num">$14</td><td class="yr">$168</td><td>Monthly — 25th</td><td><span class="badge green">Active</span></td></tr>
-    <tr><td>Wix Website</td><td class="num">$14</td><td class="yr">$168</td><td>Yearly — Oct 29</td><td><span class="badge purple">Review</span></td></tr>
+    <tr><td>Wix Website</td><td class="num">$14</td><td class="yr">$168</td><td>Yearly — Oct 29</td><td><span class="badge amber">⚠ Review</span></td></tr>
     <tr><td>ABDJS Domain</td><td class="num">$2.31</td><td class="yr">$28</td><td>Yearly — Jul 8</td><td><span class="badge green">Active ✓</span></td></tr>
-    <tr><td>Google Workspace Starter</td><td class="num">$14.40</td><td class="yr">$173</td><td>Monthly</td><td><span class="badge purple">Review</span></td></tr>
+    <tr><td>Google Workspace Starter</td><td class="num">$14.40</td><td class="yr">$173</td><td>Monthly</td><td><span class="badge amber">⚠ Review</span></td></tr>
   </tbody></table>
-  <div class="savings-box"><div class="s-lbl">If all three flagged subs cancelled</div><div class="s-fig">$736 / year saved</div><div class="s-sub">Skill Incubator ($396) + Google Workspace ($173) + Wix ($168) → redirect to Crypto.com payoff</div></div>
+  <div class="savings-box"><div class="s-lbl">If flagged subs cancelled</div><div class="s-fig">$736 / year saved</div><div class="s-sub">Skill Incubator ($396) + Google Workspace ($173) + Wix ($168)</div></div></div>
+</div>
+
+<!-- ═══ HISTORY ═══ -->
+<div class="panel" id="panel-history">
+  <div class="sec-label">Net Worth Over Time</div>
+  <div class="card" style="margin-bottom:20px;">
+    <svg id="nw-chart" class="hist-chart" viewBox="0 0 900 180" preserveAspectRatio="none">
+      <text x="450" y="95" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#A89880">Loading history...</text>
+    </svg>
+    <div style="font-family:var(--font-mono);font-size:9px;color:var(--ink4);text-align:right;margin-top:4px;">
+      Net Worth · green = positive · red = negative
+    </div>
+  </div>
+  <div class="sec-label">Monthly History Table</div>
+  <div class="card">
+    <div style="overflow-x:auto;">
+      <table class="hist-table" id="hist-table">
+        <thead><tr>
+          <th style="text-align:left;">Month</th>
+          <th>Cash</th><th>Crypto</th><th>Betterment</th><th>Robinhood</th>
+          <th>Invest Total</th><th>Debt</th><th>Net Worth</th>
+        </tr></thead>
+        <tbody id="hist-body">
+          <tr><td colspan="8" style="text-align:center;color:var(--ink4);font-family:var(--font-mono);font-size:11px;padding:20px;">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
 <!-- ═══ TASKS ═══ -->
 <div class="panel" id="panel-tasks">
   <div class="sec-label">TradFi &amp; Financial Tasks</div>
-  <div class="card mb24" id="task-list">
+  <div class="card" id="task-list">
     <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">Loading tasks from HQ...</div>
   </div>
-  <div style="text-align:right;">
+  <div style="text-align:right;margin-top:8px;">
     <a href="index.html" style="font-family:var(--font-mono);font-size:10px;color:var(--slate);text-decoration:none;letter-spacing:1px;">← Manage all tasks in HQ ↗</a>
   </div>
 </div>
@@ -373,126 +458,340 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
 </div><!-- /main -->
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw6fGdCZnZHBfpQaHs03_3xWkuxunC08aaCoE40iLY03Q6CVcb6f5_bWYUk_3YKGH20/exec';
+// ══════════════════════════════════════════════════════════════════════════
+// CONFIG — replace with your deployed TradFi_Backend_v2.gs URL
+// ══════════════════════════════════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGWZ7suPbtEgzCQKH1imyp12lJn-qD2R3z1kC2mbNmNA4BBdjfH4SKupaL_PDrDBIc/exec';
 
-function switchTab(name) {
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-  document.getElementById('panel-'+name).classList.add('active');
+// HQ Script URL for tasks (Brain Dump)
+const HQ_URL = 'https://script.google.com/macros/s/AKfycbw6fGdCZnZHBfpQaHs03_3xWkuxunC08aaCoE40iLY03Q6CVcb6f5_bWYUk_3YKGH20/exec';
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────────────
+function tab(name, el) {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
 }
 
+// ── CONNECTION STATUS ─────────────────────────────────────────────────────
 function setConn(state, msg) {
   const chip = document.getElementById('conn-chip');
-  chip.className = 'conn-chip ' + (state==='ok'?'ok':'err');
+  chip.className = 'conn-chip ' + (state === 'ok' ? 'ok' : 'err');
   document.getElementById('conn-text').textContent = msg;
 }
 
-function fmt(n) {
-  if (n===null||n===undefined) return '—';
-  const v = parseFloat(n)||0;
-  return '$'+Math.abs(v).toLocaleString('en-US',{maximumFractionDigits:0});
+// ── FORMATTING ───────────────────────────────────────────────────────────
+function fmt(n, dec=0) {
+  if (n === null || n === undefined || n === '') return '—';
+  const v = parseFloat(n) || 0;
+  return '$' + Math.abs(v).toLocaleString('en-US', {minimumFractionDigits:dec, maximumFractionDigits:dec});
 }
-function setEl(id, val) {
-  const el = document.getElementById(id);
-  if (el && val && parseFloat(val)>0) el.textContent = fmt(val);
+function fmtSigned(n) {
+  const v = parseFloat(n) || 0;
+  return (v >= 0 ? '+' : '−') + '$' + Math.abs(v).toLocaleString('en-US', {maximumFractionDigits:0});
 }
+function el(id) { return document.getElementById(id); }
+function set(id, val) { const e = el(id); if (e) e.textContent = val; }
 
+// ── LOAD DATA ─────────────────────────────────────────────────────────────
 async function loadData() {
-  setConn('','Loading...');
+  setConn('', 'Connecting...');
   try {
-    const r = await fetch(SCRIPT_URL+'?action=load',{redirect:'follow'});
+    const r = await fetch(SCRIPT_URL + '?action=loadTradFi', {redirect: 'follow'});
     const j = await r.json();
-    if(!j.ok) throw new Error(j.error);
+    if (!j.ok) throw new Error(j.error);
     applyData(j.data);
-    setConn('ok','Connected · Sheets');
+    setConn('ok', 'Live · ' + new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}));
+    loadTasks();
   } catch(e) {
-    setConn('err','Offline — defaults shown');
-    applyData({});
+    setConn('err', 'Offline — check script URL');
+    applyFallback();
   }
 }
 
+// ── APPLY DATA ────────────────────────────────────────────────────────────
 function applyData(d) {
-  const cash   = parseFloat(d.cash_total)        || 1982;
-  const crypto = parseFloat(d.crypto_total)      || 0;
-  const invest = parseFloat(d.investments_total) || 0;
-  const debt   = parseFloat(d.debt_total)        || 11122;
-  const monthly= parseFloat(d.monthly_expenses)  || 1980;
-  const annual = parseFloat(d.annual_expenses)   || 23755;
-  const net    = cash + crypto + invest - debt;
+  const cur = d.current;
+  const hist = d.history || [];
 
-  // Hero
-  const nwEl = document.getElementById('nw-hero');
-  nwEl.textContent = (net<0?'−':'')+'$'+Math.abs(net).toLocaleString('en-US',{maximumFractionDigits:0});
-  nwEl.className = 'hero-nw '+(net<0?'neg':'pos');
+  // ── Hero ──────────────────────────────────────────────────────────────
+  const nw = cur.net_worth || 0;
+  const nwEl = el('nw-hero');
+  nwEl.textContent = (nw < 0 ? '−' : '') + fmt(Math.abs(nw));
+  nwEl.className = 'hero-nw ' + (nw >= 0 ? 'pos' : 'neg');
+  set('snap-month', (cur.snapshot_mo || 'Net Worth') + ' Snapshot');
+  set('hero-sub', 'Cash + Betterment + Robinhood − CC Debt' + (cur.crypto > 0 ? ' + Crypto' : ' · Crypto excluded'));
 
-  document.getElementById('ov-cash').textContent    = fmt(cash);
-  document.getElementById('ov-crypto').textContent  = crypto>0 ? fmt(crypto) : 'TBD';
-  document.getElementById('ov-invest').textContent  = invest>0 ? fmt(invest) : 'TBD';
-  document.getElementById('ov-debt').textContent    = '−'+fmt(debt);
-  document.getElementById('ov-monthly').textContent = fmt(monthly);
-  document.getElementById('snap-debt').textContent  = fmt(debt);
-  document.getElementById('snap-monthly').textContent = fmt(monthly);
+  set('ov-cash',    fmt(cur.cash));
+  set('ov-crypto',  cur.crypto > 0 ? fmt(cur.crypto) : 'Not tracked');
+  set('ov-invest',  fmt(cur.invest));
+  set('ov-debt',    '−' + fmt(cur.total_debt));
+  set('ov-monthly', fmt(cur.monthly_exp));
+  set('snap-debt',  fmt(cur.total_debt));
+  set('snap-monthly', fmt(cur.monthly_exp));
+  set('debt-total', '(' + fmt(cur.total_debt) + ')');
+  set('debt-as-of', cur.snapshot_mo || 'last update');
 
-  // Debt
-  document.getElementById('debt-total').textContent = fmt(debt);
-  if(d.cryptodotcom_balance) document.getElementById('d-cdc').textContent  = '$'+(parseFloat(d.cryptodotcom_balance)||4099.19).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-  if(d.bestbuy_bb2)          document.getElementById('d-bb2').textContent  = '$'+(parseFloat(d.bestbuy_bb2)||1070.98).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-  if(d.boa1_balance)         document.getElementById('d-boa1').textContent = '$'+(parseFloat(d.boa1_balance)||1177.19).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-  if(d.prime_visa_balance)   document.getElementById('d-pv').textContent   = '$'+(parseFloat(d.prime_visa_balance)||1084.75).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-  if(d.boa2_balance)         document.getElementById('d-boa2').textContent = '$'+(parseFloat(d.boa2_balance)||945.77).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  // Accruing interest: Crypto.com + Prime Visa + BOA2 if not $0
+  const accruing = (cur.crypto_com || 0) + (cur.prime_visa || 0) + (cur.boa2 || 0);
+  set('snap-accruing', accruing > 0 ? fmt(accruing) + '+' : '—');
+  set('debt-accruing', accruing > 0 ? fmt(accruing) + '+' : '—');
 
-  // Investments
-  if(invest>0) document.getElementById('inv-total').textContent = fmt(invest);
-  document.getElementById('inv-cash').textContent = fmt(cash);
-  setEl('inv-betterment',  d.betterment_total);
-  setEl('inv-robinhood',   d.robinhood_total);
-  setEl('inv-bet-total',   d.betterment_total);
-  setEl('inv-rh-total',    d.robinhood_total);
-  setEl('bet-safety',      d.betterment_safety);
-  setEl('bet-ira',         d.betterment_ira);
-  setEl('bet-taxable',     d.betterment_taxable);
-  setEl('bet-other',       d.betterment_other);
-  setEl('rh-stocks',       d.robinhood_stocks);
-  setEl('rh-options',      d.robinhood_options);
-  setEl('rh-crypto',       d.robinhood_crypto);
-  setEl('rh-cash',         d.robinhood_cash);
-  setEl('rh-ira',          d.robinhood_ira);
+  // ── Investments ───────────────────────────────────────────────────────
+  set('inv-total',     fmt(cur.invest));
+  set('inv-betterment', fmt(cur.betterment));
+  set('inv-robinhood',  fmt(cur.robinhood));
+  set('bet-total',      fmt(cur.betterment));
+  set('rh-total',       fmt(cur.robinhood));
+  set('bet-sep',        fmt(cur.betterment));
+  set('rh-ira',         fmt(29687.65));  // from last RH screenshot
+  set('rh-individual',  fmt(2586.14));
 
-  // Expenses
-  document.getElementById('exp-monthly').textContent = fmt(monthly);
-  document.getElementById('exp-annual').textContent  = fmt(annual);
+  // ── Expenses ──────────────────────────────────────────────────────────
+  set('exp-monthly', fmt(cur.monthly_exp));
+  set('exp-annual',  fmt((cur.monthly_exp || 0) * 12));
 
-  // Tasks
-  renderTasks(d.rows || []);
+  // ── Debt blocks (dynamic) ─────────────────────────────────────────────
+  renderDebtBlocks(cur);
+
+  // ── History ───────────────────────────────────────────────────────────
+  renderHistory(hist, cur);
+
+  // ── Trend row ─────────────────────────────────────────────────────────
+  if (hist.length >= 2) {
+    const prev = hist[hist.length - 2];
+    const curr_hist = hist[hist.length - 1];
+    const nwChange   = (curr_hist.net_worth || 0) - (prev.net_worth || 0);
+    const debtChange = (curr_hist.debt || 0) - (prev.debt || 0);
+    const invChange  = (curr_hist.invest_total || 0) - (prev.invest_total || 0);
+    el('trend-row').style.display = 'flex';
+    set('trend-mom',      (nwChange >= 0 ? '+' : '−') + fmt(Math.abs(nwChange)));
+    el('trend-mom').className = 'trend-val ' + (nwChange >= 0 ? 'pos' : 'neg');
+    set('trend-mom-sub', 'vs ' + prev.month);
+    set('trend-debt',     (debtChange <= 0 ? '↓ ' : '↑ ') + fmt(Math.abs(debtChange)));
+    el('trend-debt').className = 'trend-val ' + (debtChange <= 0 ? 'pos' : 'neg');
+    set('trend-debt-sub', debtChange <= 0 ? 'Debt going down ✓' : 'Debt increased');
+    set('trend-invest',   (invChange >= 0 ? '+' : '−') + fmt(Math.abs(invChange)));
+    el('trend-invest').className = 'trend-val ' + (invChange >= 0 ? 'pos' : 'neg');
+    set('trend-invest-sub', 'Investment growth');
+  }
 }
 
-function renderTasks(rows) {
-  const tasks = rows.filter(r => r.area === 'TradFi' && !r.done);
-  const el = document.getElementById('task-list');
-  if (!tasks.length) {
-    el.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No open TradFi tasks. Add them in HQ → RAM Dump.</div>';
-    return;
-  }
-  const priClass = {'Do Now':'badge-now','This Week':'badge-week','Someday':'badge-someday'};
-  el.innerHTML = tasks.map(t=>`
-    <div class="task-item">
-      <div class="task-check"></div>
-      <div class="task-text">${t.item}</div>
-      <span class="task-badge ${priClass[t.priority]||'badge-someday'}">${t.priority||'—'}</span>
+// ── DEBT BLOCKS ───────────────────────────────────────────────────────────
+function renderDebtBlocks(cur) {
+  const blocks = [
+    {
+      name: 'Crypto.com Visa (Comenity)', bal: cur.crypto_com||4844,
+      apr: '26.99%', autopay: 'NO ⚠', due: '10th',
+      promo: 'No promo — accruing interest',
+      badges: ['<span class="badge red">NO AUTOPAY — URGENT</span>','<span class="badge red">ACCRUING INTEREST</span>'],
+      pct: Math.min(100, ((cur.crypto_com||4844)/12000)*100), color: 'var(--rust)',
+    },
+    {
+      name: 'Best Buy BB1 (...6761)', bal: cur.bb1||973,
+      apr: '0%', autopay: 'YES', due: '14th',
+      promo: '0% until Jul 14, 2026 — DEFERRED INTEREST',
+      badges: ['<span class="badge amber">⏰ PAY IN FULL BY JUL 14, 2026</span>'],
+      pct: Math.min(100, ((cur.bb1||973)/12000)*100), color: 'var(--amber)',
+    },
+    {
+      name: 'Best Buy BB2 (...6761)', bal: cur.bb2||1614,
+      apr: '0%', autopay: 'YES', due: '14th',
+      promo: '0% until Jan 14, 2027',
+      badges: ['<span class="badge green">✓ SAFE UNTIL JAN 2027</span>'],
+      pct: Math.min(100, ((cur.bb2||1614)/12000)*100), color: 'var(--sage)',
+    },
+    {
+      name: 'Best Buy BB3 (...6761)', bal: cur.bb3||2164,
+      apr: '0%', autopay: 'YES', due: '14th',
+      promo: '0% until Mar 16, 2027',
+      badges: ['<span class="badge green">✓ SAFE UNTIL MAR 2027</span>'],
+      pct: Math.min(100, ((cur.bb3||2164)/12000)*100), color: 'var(--sage)',
+    },
+    {
+      name: 'BOA (...8769)', bal: cur.boa1||1148,
+      apr: '0%', autopay: 'YES', due: '3rd',
+      promo: '0% until Jun 6, 2026',
+      badges: ['<span class="badge green">✓ 0% PROMO — PAY BEFORE JUN 2026</span>'],
+      pct: Math.min(100, ((cur.boa1||1148)/12000)*100), color: 'var(--sage)',
+    },
+    {
+      name: 'BOA (...7720)', bal: cur.boa2||905,
+      apr: '?%', autopay: 'YES', due: '6th',
+      promo: 'Promo expired Oct 2025 — VERIFY APR',
+      badges: ['<span class="badge amber">⚠ VERIFY APR — LIKELY ACCRUING</span>'],
+      pct: Math.min(100, ((cur.boa2||905)/12000)*100), color: 'var(--amber)',
+    },
+    {
+      name: 'Chase Prime Visa (...7376)', bal: cur.prime_visa||970,
+      apr: '24.99%', autopay: 'YES', due: 'Apr 4',
+      promo: 'No promo — accruing interest',
+      badges: ['<span class="badge red">ACCRUING INTEREST 24.99%</span>'],
+      pct: Math.min(100, ((cur.prime_visa||970)/12000)*100), color: 'var(--rust)',
+    },
+  ];
+
+  el('debt-blocks').innerHTML = blocks.map(b => `
+    <div class="debt-block">
+      <div class="debt-top">
+        <span class="debt-name">${b.name}</span>
+        <span class="debt-bal" style="color:${b.color};">${fmt(b.bal, 2)}</span>
+      </div>
+      <div class="debt-meta">
+        <span>Due: ${b.due}</span>
+        <span>${b.promo}</span>
+        <span style="color:${b.autopay.includes('⚠') ? 'var(--rust)' : 'inherit'};font-weight:${b.autopay.includes('⚠') ? 600 : 400};">AutoPay: ${b.autopay}</span>
+        <span>APR: ${b.apr}</span>
+      </div>
+      <div>${b.badges.join('')}</div>
+      <div class="track"><div class="fill" style="background:${b.color};width:${b.pct.toFixed(1)}%;"></div></div>
     </div>`).join('');
 }
 
-function strat(type) {
-  const av = document.getElementById('btn-av');
-  const sb = document.getElementById('btn-sb');
-  const on  = 'flex:1;padding:9px 6px;background:var(--ink);color:var(--cream);border:none;border-radius:6px;font-family:var(--font-mono);font-size:10px;font-weight:500;cursor:pointer;letter-spacing:1px;';
-  const off = 'flex:1;padding:9px 6px;background:var(--cream2);color:var(--ink4);border:1px solid var(--cream3);border-radius:6px;font-family:var(--font-mono);font-size:10px;cursor:pointer;letter-spacing:1px;';
-  const n = document.getElementById('strat-note');
-  if(type==='avalanche'){ av.style.cssText=on; sb.style.cssText=off; n.textContent='Highest APR first — Crypto.com → Prime Visa → BOA2. Saves the most interest.'; }
-  else { sb.style.cssText=on; av.style.cssText=off; n.textContent='Smallest balance first — Ink Business ($39) → Ink Preferred ($188) → BOA2 ($945). Builds momentum.'; }
+// ── HISTORY CHART + TABLE ─────────────────────────────────────────────────
+function renderHistory(hist, cur) {
+  if (!hist || !hist.length) return;
+  const tbody = el('hist-body');
+  tbody.innerHTML = hist.map((row, i) => {
+    const isLast = i === hist.length - 1;
+    const nw = row.net_worth || 0;
+    return `<tr class="${isLast ? 'current-row' : ''}">
+      <td>${row.month}${isLast ? ' ✓' : ''}</td>
+      <td>${fmt(row.cash)}</td>
+      <td>${row.crypto > 0 ? fmt(row.crypto) : '—'}</td>
+      <td>${fmt(row.betterment)}</td>
+      <td>${fmt(row.robinhood)}</td>
+      <td>${fmt(row.invest_total)}</td>
+      <td style="color:var(--rust);">(${fmt(row.debt)})</td>
+      <td class="${nw >= 0 ? 'pos' : 'neg'}">${nw < 0 ? '−' : ''}${fmt(Math.abs(nw))}</td>
+    </tr>`;
+  }).join('');
+
+  // SVG chart
+  if (hist.length < 2) return;
+  const nwVals = hist.map(r => r.net_worth || 0);
+  const minV   = Math.min(...nwVals, 0);
+  const maxV   = Math.max(...nwVals, 1);
+  const range  = maxV - minV || 1;
+  const W = 900, H = 160, PAD = 20;
+
+  function px(i) { return PAD + (i / (hist.length - 1)) * (W - PAD*2); }
+  function py(v) { return H - PAD - ((v - minV) / range) * (H - PAD*2); }
+
+  const pts = hist.map((r, i) => `${px(i)},${py(r.net_worth||0)}`).join(' ');
+  const areaPath = `M${px(0)},${py(0)} ` +
+    hist.map((r,i) => `L${px(i)},${py(r.net_worth||0)}`).join(' ') +
+    ` L${px(hist.length-1)},${H-PAD} L${px(0)},${H-PAD} Z`;
+
+  const zeroY = py(0);
+  const labels = hist.map((r, i) =>
+    `<text x="${px(i)}" y="${H}" class="chart-label" text-anchor="middle">${r.month.replace(' 2026','').replace(' 2027','')}</text>`
+  ).join('');
+  const dots = hist.map((r, i) =>
+    `<circle class="chart-dot" cx="${px(i)}" cy="${py(r.net_worth||0)}" r="4" fill="${(r.net_worth||0)>=0?'var(--sage)':'var(--rust)'}" />`
+  ).join('');
+
+  el('nw-chart').innerHTML = `
+    <line class="chart-zero" x1="${PAD}" y1="${zeroY}" x2="${W-PAD}" y2="${zeroY}"/>
+    <path class="chart-area" d="${areaPath}"/>
+    <polyline class="chart-line" points="${pts}"/>
+    ${dots}
+    ${labels}
+  `;
 }
 
+// ── TASKS (from HQ Brain Dump) ────────────────────────────────────────────
+async function loadTasks() {
+  try {
+    const r = await fetch(HQ_URL + '?action=load', {redirect:'follow'});
+    const j = await r.json();
+    if (!j.ok || !j.data || !j.data.rows) return;
+    const tasks = j.data.rows.filter(t => t.area === 'TradFi' && !t.done);
+    const tl = el('task-list');
+    if (!tasks.length) {
+      tl.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No open TradFi tasks. Add them in HQ → RAM Dump.</div>';
+      return;
+    }
+    const pc = {'Do Now':'pri-now','This Week':'pri-week','Someday':'pri-someday'};
+    tl.innerHTML = tasks.map(t => `
+      <div class="task-item">
+        <div class="task-check"></div>
+        <div class="task-text">${t.item}</div>
+        <span class="task-pri ${pc[t.priority]||'pri-someday'}">${t.priority||'—'}</span>
+      </div>`).join('');
+  } catch(e) { /* silent — tasks are optional */ }
+}
+
+// ── LOG MONTH ─────────────────────────────────────────────────────────────
+async function logMonth() {
+  const btn = el('log-btn');
+  btn.textContent = 'Logging...'; btn.disabled = true;
+  try {
+    const r = await fetch(SCRIPT_URL, {
+      method:'POST', redirect:'follow',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'logMonth'})
+    });
+    const j = await r.json();
+    if (!j.ok) {
+      alert('⚠ ' + j.error);
+    } else {
+      const nw = j.net_worth;
+      alert(`✅ ${j.logged} logged to History!\n\nNet Worth: ${nw < 0 ? '−' : ''}$${Math.abs(nw).toLocaleString('en-US', {maximumFractionDigits:0})}\nTotal Debt: $${(j.debt||0).toLocaleString('en-US', {maximumFractionDigits:0})}\nTotal Invest: $${(j.invest||0).toLocaleString('en-US', {maximumFractionDigits:0})}`);
+      loadData();
+    }
+  } catch(e) {
+    alert('Connection failed: ' + e.message);
+  } finally {
+    btn.textContent = '📅 Log Month'; btn.disabled = false;
+  }
+}
+
+// ── PAYOFF STRATEGY ───────────────────────────────────────────────────────
+function strat(type) {
+  const av = el('btn-av'), sb = el('btn-sb');
+  const n  = el('strat-note');
+  if (type === 'avalanche') {
+    av.className='strat-btn on'; sb.className='strat-btn off';
+    n.textContent = 'Highest APR first — Crypto.com (26.99%) → Prime Visa (24.99%) → BOA2 (verify). Saves most interest.';
+  } else {
+    sb.className='strat-btn on'; av.className='strat-btn off';
+    n.textContent = 'Smallest balance first — Prime Visa ($970) → BB1 ($973) → BOA2 ($905) → BOA1 ($1,148). Builds momentum.';
+  }
+}
+
+// ── FALLBACK (offline) ────────────────────────────────────────────────────
+function applyFallback() {
+  // Show confirmed Mar 31 data as static fallback
+  const nw = 52390.20;
+  el('nw-hero').textContent = '$52,390'; el('nw-hero').className = 'hero-nw pos';
+  set('snap-month', 'March 2026 Snapshot');
+  set('ov-cash',    '$836');
+  set('ov-crypto',  'Not tracked');
+  set('ov-invest',  '$64,171');
+  set('ov-debt',    '−$12,618');
+  set('ov-monthly', '$1,980');
+  set('snap-debt',  '$12,618');
+  set('snap-monthly','$1,980');
+  set('debt-total', '($12,618)');
+  set('inv-total',  '$64,171');
+  set('inv-betterment','$31,897');
+  set('inv-robinhood', '$32,273');
+  set('bet-total',  '$31,897');
+  set('rh-total',   '$32,273');
+  renderDebtBlocks({
+    crypto_com:4844, bb1:973, bb2:1614, bb3:2164,
+    boa1:1148, boa2:905, prime_visa:970
+  });
+  // Seed history table with Feb + Mar
+  el('hist-body').innerHTML = `
+    <tr><td>Feb 2026</td><td>$1,982</td><td>—</td><td>—</td><td>—</td><td>—</td><td style="color:var(--rust);">($11,122)</td><td class="neg">−$9,140</td></tr>
+    <tr class="current-row"><td>Mar 2026 ✓</td><td>$836</td><td>—</td><td>$31,897</td><td>$32,273</td><td>$64,170</td><td style="color:var(--rust);">($12,618)</td><td class="pos">$52,390</td></tr>
+  `;
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
 loadData();
 </script>
 </body>
