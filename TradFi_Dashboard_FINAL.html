@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TradFi & Wealth — Answer Back</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#f5f0e8;--cream2:#ede7d9;--cream3:#e4dccb;
+  --paper:#faf7f2;--ink:#1e1a14;--ink2:#3d3629;--ink3:#6b6050;--ink4:#a89880;--ink5:#c8b99a;
+  --rust:#c44b2b;--rust-l:#e8705a;--rust-bg:#fdf0ed;
+  --amber:#c07a1a;--amber-l:#e8a030;--amber-bg:#fdf5e6;
+  --sage:#3a6b4a;--sage-l:#5a9a6a;--sage-bg:#eef4f0;
+  --slate:#2d4a6b;--slate-l:#4a78a8;--slate-bg:#edf2f8;
+  --font-serif:'Playfair Display',Georgia,serif;
+  --font-sans:'DM Sans',sans-serif;
+  --font-mono:'DM Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-size:14px;min-height:100vh;}
+
+.topbar{background:var(--ink);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:100;}
+.logo{font-family:var(--font-serif);font-size:17px;font-weight:700;color:#f5f0e8;display:flex;align-items:center;gap:10px;}
+.logo-sub{font-family:var(--font-mono);font-size:10px;color:var(--ink4);letter-spacing:2px;}
+.back-link{font-family:var(--font-mono);font-size:10px;color:var(--ink4);text-decoration:none;letter-spacing:1px;transition:color .2s;}
+.back-link:hover{color:var(--cream);}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.sheet-btn{font-family:var(--font-mono);font-size:10px;color:var(--sage-l);background:rgba(90,154,106,.12);border:1px solid rgba(90,154,106,.3);padding:5px 12px;border-radius:5px;text-decoration:none;letter-spacing:1px;transition:background .2s;}
+.sheet-btn:hover{background:rgba(90,154,106,.22);}
+.log-btn{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:6px 14px;background:var(--sage);color:#fff;border:none;border-radius:5px;cursor:pointer;transition:background .2s;}
+.log-btn:hover{background:var(--sage-l);}
+.log-btn:disabled{opacity:.5;cursor:default;}
+.conn-chip{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:5px 12px;border-radius:4px;border:1px solid rgba(255,255,255,.1);color:var(--ink4);}
+.conn-chip.ok{color:var(--sage-l);border-color:rgba(90,154,106,.3);background:rgba(90,154,106,.08);}
+.conn-chip.err{color:var(--rust-l);border-color:rgba(196,75,43,.3);}
+.cdot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.conn-chip.ok .cdot{box-shadow:0 0 4px currentColor;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.nav-strip{background:var(--paper);border-bottom:1px solid var(--cream2);padding:0 28px;display:flex;overflow-x:auto;}
+.nav-tab{padding:13px 16px;font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;}
+.nav-tab:hover{color:var(--ink2);}
+.nav-tab.active{color:var(--slate);border-bottom-color:var(--slate);}
+.badge-cnt{background:var(--rust);color:#fff;font-size:9px;padding:1px 5px;border-radius:8px;margin-left:4px;vertical-align:middle;}
+
+.main{max-width:960px;margin:0 auto;padding:28px 20px 80px;}
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* HERO */
+.hero{background:var(--ink);border-radius:12px;padding:26px 30px;margin-bottom:24px;}
+.hero-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:5px;}
+.hero-nw{font-family:var(--font-serif);font-size:40px;font-weight:700;line-height:1.05;margin-bottom:7px;}
+.hero-nw.pos{color:var(--sage-l);}
+.hero-nw.neg{color:var(--rust-l);}
+.hero-sub{font-size:12px;color:var(--ink4);margin-bottom:18px;line-height:1.5;}
+.hero-row{display:flex;gap:24px;flex-wrap:wrap;}
+.hero-stat label{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);display:block;margin-bottom:2px;}
+.hero-stat .fig{font-family:var(--font-serif);font-size:19px;font-weight:600;}
+
+/* CARDS */
+.card{background:var(--paper);border:1px solid var(--cream2);border-radius:10px;padding:18px;box-shadow:0 1px 3px rgba(30,26,20,.05);}
+.card-label{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:7px;}
+.card-fig{font-family:var(--font-serif);font-size:24px;font-weight:700;line-height:1.1;}
+.card-note{font-size:11px;color:var(--ink4);margin-top:4px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.mb20{margin-bottom:20px;}
+
+.sec-label{font-family:var(--font-mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--ink4);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--cream2);}
+
+/* ROWS */
+.row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--cream2);}
+.row:last-child{border-bottom:none;}
+.lbl{font-size:13px;color:var(--ink);flex:1;}
+.val{font-family:var(--font-serif);font-size:15px;font-weight:600;min-width:80px;text-align:right;}
+.meta{font-family:var(--font-mono);font-size:10px;color:var(--ink4);min-width:110px;text-align:right;}
+
+/* ALERTS */
+.alert{display:flex;gap:12px;padding:14px;border-radius:8px;margin-bottom:10px;font-size:13px;line-height:1.6;}
+.alert-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.alert-head{font-weight:600;margin-bottom:2px;}
+.alert.red{background:var(--rust-bg);border:1px solid rgba(196,75,43,.2);}
+.alert.amber{background:var(--amber-bg);border:1px solid rgba(192,122,26,.2);}
+.alert.slate{background:var(--slate-bg);border:1px solid rgba(45,74,107,.2);}
+.alert.sage{background:var(--sage-bg);border:1px solid rgba(58,107,74,.2);}
+
+/* DEBT */
+.debt-block{padding:14px 0;border-bottom:1px solid var(--cream2);}
+.debt-block:last-child{border-bottom:none;}
+.debt-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.debt-name{font-size:14px;font-weight:600;}
+.debt-bal{font-family:var(--font-serif);font-size:19px;font-weight:700;}
+.debt-meta-row{display:flex;gap:14px;font-family:var(--font-mono);font-size:11px;color:var(--ink4);margin-bottom:7px;flex-wrap:wrap;}
+.track{height:5px;background:var(--cream2);border-radius:10px;overflow:hidden;margin-top:7px;}
+.track-fill{height:100%;border-radius:10px;transition:width .8s ease;}
+.badge{display:inline-flex;align-items:center;font-family:var(--font-mono);font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:10px;font-weight:600;margin-right:4px;margin-bottom:3px;}
+.badge.red{background:var(--rust-bg);color:var(--rust);border:1px solid rgba(196,75,43,.2);}
+.badge.amber{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(192,122,26,.2);}
+.badge.green{background:var(--sage-bg);color:var(--sage);border:1px solid rgba(58,107,74,.2);}
+.badge.blue{background:var(--slate-bg);color:var(--slate);border:1px solid rgba(45,74,107,.2);}
+.badge.muted{background:var(--cream2);color:var(--ink4);}
+
+/* STRAT TOGGLE */
+.strat-row{display:flex;gap:8px;margin-top:10px;}
+.strat-btn{flex:1;padding:8px 6px;border:none;border-radius:6px;font-family:var(--font-mono);font-size:10px;font-weight:500;cursor:pointer;letter-spacing:1px;transition:all .15s;}
+.strat-btn.on{background:var(--ink);color:var(--cream);}
+.strat-btn.off{background:var(--cream2);color:var(--ink4);border:1px solid var(--cream3);}
+
+/* INVESTMENTS */
+.inv-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.inv-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.inv-name{font-family:var(--font-serif);font-size:15px;font-weight:700;}
+.inv-total-fig{margin-left:auto;font-family:var(--font-serif);font-size:17px;font-weight:700;}
+.inv-link{font-size:11px;text-decoration:none;font-family:var(--font-mono);opacity:.7;transition:opacity .15s;}
+.inv-link:hover{opacity:1;}
+
+/* HISTORY TABLE */
+.hist-table{width:100%;border-collapse:collapse;font-size:12px;}
+.hist-table th{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:7px 8px;text-align:right;border-bottom:1px solid var(--cream2);background:var(--cream2);}
+.hist-table th:first-child{text-align:left;}
+.hist-table td{padding:8px;border-bottom:1px solid var(--cream2);font-family:var(--font-mono);font-size:11px;color:var(--ink3);text-align:right;}
+.hist-table td:first-child{text-align:left;font-weight:600;color:var(--ink);font-family:var(--font-sans);}
+.hist-table tr:last-child td{border-bottom:none;}
+.hist-table .pos{color:var(--sage);font-weight:700;}
+.hist-table .neg{color:var(--rust);font-weight:700;}
+.hist-table tr:first-child td{background:var(--sage-bg);}
+
+@media(max-width:680px){
+  .g4{grid-template-columns:1fr 1fr;}
+  .g3{grid-template-columns:1fr 1fr;}
+  .meta{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:14px;">
+    <a href="index.html" class="back-link">← HQ</a>
+    <div class="logo">💰 TradFi &amp; Wealth <span class="logo-sub">Answer Back</span></div>
+  </div>
+  <div class="topbar-right">
+    <a id="sheet-link" href="#" target="_blank" class="sheet-btn" title="Open Google Sheet">📊 Sheet ↗</a>
+    <button id="log-btn" class="log-btn" onclick="logMonth()">📅 Log Month</button>
+    <div class="conn-chip" id="conn-chip"><div class="cdot"></div><span id="conn-text">Connecting...</span></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav-strip">
+  <div class="nav-tab active" onclick="switchTab('overview',this)">Overview</div>
+  <div class="nav-tab" onclick="switchTab('alerts',this)">Alerts <span class="badge-cnt" id="alert-count">4</span></div>
+  <div class="nav-tab" onclick="switchTab('debt',this)">Debt</div>
+  <div class="nav-tab" onclick="switchTab('investments',this)">Investments</div>
+  <div class="nav-tab" onclick="switchTab('expenses',this)">Expenses</div>
+  <div class="nav-tab" onclick="switchTab('history',this)">History</div>
+  <div class="nav-tab" onclick="switchTab('tasks',this)">Tasks</div>
+</div>
+
+<div class="main">
+
+<!-- ══ OVERVIEW ══ -->
+<div class="panel active" id="panel-overview">
+  <div class="hero">
+    <div class="hero-eyebrow" id="nw-eyebrow">Net Worth · Loading...</div>
+    <div class="hero-nw" id="nw-hero">—</div>
+    <div class="hero-sub" id="hero-sub">Loading from Sheets...</div>
+    <div class="hero-row">
+      <div class="hero-stat"><label>Cash</label><div class="fig" style="color:var(--slate-l)" id="ov-cash">—</div></div>
+      <div class="hero-stat"><label>Crypto</label><div class="fig" style="color:var(--amber-l)" id="ov-crypto">—</div></div>
+      <div class="hero-stat"><label>Investments</label><div class="fig" style="color:var(--sage-l)" id="ov-invest">—</div></div>
+      <div class="hero-stat"><label>CC Debt</label><div class="fig" style="color:var(--rust-l)" id="ov-debt">—</div></div>
+      <div class="hero-stat"><label>Monthly Burn</label><div class="fig" style="color:var(--amber-l)" id="ov-monthly">—</div></div>
+    </div>
+  </div>
+
+  <div class="sec-label">Snapshot</div>
+  <div class="g4 mb20">
+    <div class="card"><div class="card-label">Total CC Debt</div><div class="card-fig" style="color:var(--rust)" id="snap-debt">—</div><div class="card-note">Across all cards</div></div>
+    <div class="card"><div class="card-label">Accruing Interest</div><div class="card-fig" style="color:var(--amber)" id="snap-accruing">—</div><div class="card-note">Crypto.com + Prime + BOA2*</div></div>
+    <div class="card"><div class="card-label">Monthly Fixed</div><div class="card-fig" style="color:var(--amber)" id="snap-monthly">—</div><div class="card-note">Bills &amp; subscriptions</div></div>
+    <div class="card"><div class="card-label">Recoverable / yr</div><div class="card-fig" style="color:var(--sage)">$736</div><div class="card-note">If 3 flagged subs cut</div></div>
+  </div>
+
+  <div class="sec-label">Priority Checklist</div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-label" style="margin-bottom:12px;">🚨 Do These First</div>
+      <div class="row"><div class="lbl"><strong>Set AutoPay on Crypto.com</strong> — 26.99% with no autopay protection</div></div>
+      <div class="row"><div class="lbl"><strong>Verify BOA2 APR</strong> — promo expired Oct 2025, $905 likely accruing ~27%</div></div>
+      <div class="row"><div class="lbl"><strong>Plan BB1 payoff</strong> — deferred interest expires Jul 14 (~$140/mo)</div></div>
+      <div class="row"><div class="lbl"><strong>Deploy $7,177 Roth IRA cash</strong> — uninvested buying power</div></div>
+    </div>
+    <div class="card">
+      <div class="card-label" style="margin-bottom:12px;">📋 Next Actions</div>
+      <div class="row"><div class="lbl">Pay off BOA1 before Jun 6, 2026 (0% promo ends)</div></div>
+      <div class="row"><div class="lbl">Contribute to 2026 Robinhood IRA ($5,000 remaining)</div></div>
+      <div class="row"><div class="lbl">Add crypto value from Coinstats for complete net worth</div></div>
+      <div class="row"><div class="lbl">Decide: cancel Skill Incubator? ($396/yr)</div></div>
+      <div class="row"><div class="lbl">Decide: Wix + Google Workspace replacement? ($341/yr)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ALERTS ══ -->
+<div class="panel" id="panel-alerts">
+  <div class="sec-label">Active Flags — Prioritized</div>
+  <div class="alert red"><div class="alert-icon">🚨</div><div><div class="alert-head">Crypto.com Visa — No AutoPay on $4,844 at 26.99% APR</div>Largest high-APR balance with zero autopay protection. Log into Comenity Bank → set AutoPay to minimum (or more). Takes 5 minutes. At 26.99% you're paying ~$109/month in interest.</div></div>
+  <div class="alert red"><div class="alert-icon">⚠️</div><div><div class="alert-head">BOA (...7720) — 0% Promo Expired Oct 2025</div>Over 5 months past expiry. The $905 balance is almost certainly accruing BofA standard APR (~25–29%). That's ~$20/month in silent interest. Log in and check the current rate today.</div></div>
+  <div class="alert amber"><div class="alert-icon">⏰</div><div><div class="alert-head">Best Buy BB1 — Deferred Interest Expires Jul 14, 2026</div>Best Buy promos are DEFERRED — if $973 isn't paid in full by Jul 14, Citi back-charges interest from day one of purchase. You have ~3.5 months. That's ~$140/month to clear it safely. BB2 safe until Jan 2027, BB3 until Mar 2027.</div></div>
+  <div class="alert amber"><div class="alert-icon">📦</div><div><div class="alert-head">NSA Storage — $177/mo ($2,124/yr)</div>Rate jumped $43/month (+32%). That's more than your car insurance annually. Is everything in that unit worth $177/month? Downsizing frees direct cash flow toward Crypto.com payoff.</div></div>
+  <div class="alert slate"><div class="alert-icon">💡</div><div><div class="alert-head">Subscription Audit — $736/yr Recoverable</div><strong>Skill Incubator ($396/yr):</strong> Actively using it for trading improvement?<br><strong>Google Workspace ($202/yr):</strong> Zoho Mail is free with custom domain.<br><strong>Wix ($168/yr):</strong> Cheaper DJ site options exist.<br>Total: <strong>$736/yr</strong> → redirect straight to Crypto.com payoff.</div></div>
+</div>
+
+<!-- ══ DEBT ══ -->
+<div class="panel" id="panel-debt">
+  <div class="g3">
+    <div class="card"><div class="card-label">Total CC Debt</div><div class="card-fig" style="color:var(--rust)" id="debt-total">—</div><div class="card-note">As of last update</div></div>
+    <div class="card"><div class="card-label">Currently Accruing</div><div class="card-fig" style="color:var(--amber)" id="debt-accruing">—</div><div class="card-note">Crypto.com + Prime + BOA2*</div></div>
+    <div class="card">
+      <div class="card-label">Payoff Strategy</div>
+      <div class="strat-row">
+        <button id="btn-av" class="strat-btn on" onclick="strat('avalanche')">AVALANCHE</button>
+        <button id="btn-sb" class="strat-btn off" onclick="strat('snowball')">SNOWBALL</button>
+      </div>
+      <div id="strat-note" style="font-size:12px;color:var(--ink3);margin-top:8px;line-height:1.6;">Highest APR first — Crypto.com → BOA2 → Prime Visa. Saves the most interest.</div>
+    </div>
+  </div>
+
+  <div class="sec-label">All Cards — by Priority</div>
+  <div class="card mb20">
+    <div class="debt-block">
+      <div class="debt-top"><span class="debt-name">Crypto.com Visa (Comenity)</span><span class="debt-bal" style="color:var(--rust)" id="d-cdc">—</span></div>
+      <div class="debt-meta-row"><span>Due: 10th</span><span>26.99% APR</span><span style="color:var(--rust);font-weight:600;">AutoPay: NONE 🚨</span></div>
+      <div><span class="badge red">NO AUTOPAY — SET TODAY</span><span class="badge red">ACCRUING ~$109/MO INTEREST</span></div>
+      <div class="track"><div class="track-fill" id="tr-cdc" style="background:var(--rust);width:0%"></div></div>
+    </div>
+    <div class="debt-block">
+      <div class="debt-top"><span class="debt-name">Best Buy BB1 (...6761)</span><span class="debt-bal" style="color:var(--amber)" id="d-bb1">—</span></div>
+      <div class="debt-meta-row"><span>Due: 14th</span><span>AutoPay: YES</span><span>0% — DEFERRED, expires Jul 14, 2026</span></div>
+      <div><span class="badge amber">⏰ PAY IN FULL BY JUL 14 — ~$140/mo</span></div>
+      <div class="track"><div class="track-fill" id="tr-bb1" style="background:var(--amber-l);width:0%"></div></div>
+    </div>
+    <div class="debt-block">
+      <div class="debt-top"><span class="debt-name">BOA (...8769)</span><span class="debt-bal" style="color:var(--sage)" id="d-boa1">—</span></div>
+      <div class="debt-meta-row"><span>Due: 3rd</span><span>AutoPay: YES</span><span>0% until Jun 6, 2026</span></div>
+      <div><span class="badge green">✓ 0% PROMO — PAY BEFORE JUN 2026</span></div>
+      <div class="track"><div class="track-fill" id="tr-boa1" style="background:var(--sage-l);width:0%"></div></div>
+    </div>
+    <div class="debt-block">
+      <div class="debt-top"><span class="debt-name">Chase Prime Visa (...7376)</span><span class="debt-bal" style="color:var(--rust)" id="d-pv">—</span></div>
+      <div class="debt-meta-row"><span>Due: Apr 4</span><span>24.99% APR</span><span>AutoPay: YES</span></div>
+      <div><span class="badge red">ACCRUING INTEREST</span></div>
+      <div class="track"><div class="track-fill" id="tr-pv" style="background:var(--rust);width:0%"></div></div>
+    </div>
+    <div class="debt-block">
+      <div class="debt-top"><span class="debt-name">BOA (...7720)</span><span class="debt-bal" style="color:var(--amber)" id="d-boa2">—</span></div>
+      <div class="debt-meta-row"><span>Due: 6th</span><span>AutoPay: YES</span><span>Promo expired Oct 2025 ⚠</span></div>
+      <div><span class="badge amber">VERIFY APR — LIKELY ACCRUING</span></div>
+      <div class="track"><div class="track-fill" id="tr-boa2" style="background:var(--amber-l);width:0%"></div></div>
+    </div>
+    <div class="debt-block">
+      <div class="debt-top"><span class="debt-name">Best Buy BB2 (...6761)</span><span class="debt-bal" style="color:var(--sage)" id="d-bb2">—</span></div>
+      <div class="debt-meta-row"><span>Due: 14th</span><span>AutoPay: YES</span><span>0% until Jan 14, 2027</span></div>
+      <div><span class="badge green">✓ SAFE UNTIL JAN 2027</span></div>
+      <div class="track"><div class="track-fill" id="tr-bb2" style="background:var(--sage-l);width:0%"></div></div>
+    </div>
+    <div class="debt-block">
+      <div class="debt-top"><span class="debt-name">Best Buy BB3 (...6761)</span><span class="debt-bal" style="color:var(--sage)" id="d-bb3">—</span></div>
+      <div class="debt-meta-row"><span>Due: 14th</span><span>AutoPay: YES</span><span>0% until Mar 16, 2027</span></div>
+      <div><span class="badge green">✓ SAFE UNTIL MAR 2027</span></div>
+      <div class="track"><div class="track-fill" id="tr-bb3" style="background:var(--sage-l);width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label" style="margin-bottom:10px;">Zero Balance Cards</div>
+    <div class="row"><div class="lbl">Venmo (...5265)</div><div class="val" style="color:var(--sage)">$0</div><div class="meta">Due 15th · Phone App</div></div>
+    <div class="row"><div class="lbl">Chase Freedom (...2035)</div><div class="val" style="color:var(--sage)">$0</div><div class="meta">Due Apr 22</div></div>
+    <div class="row"><div class="lbl">Sapphire Preferred (...5377)</div><div class="val" style="color:var(--sage)">$0</div><div class="meta">Due Apr 15</div></div>
+    <div class="row"><div class="lbl">Southwest Plus (...1749)</div><div class="val" style="color:var(--sage)">$0</div><div class="meta">Due Apr 8</div></div>
+    <div class="row"><div class="lbl">Freedom Unlimited (...0163)</div><div class="val" style="color:var(--sage)">$0</div><div class="meta">Due Apr 21</div></div>
+    <div class="row"><div class="lbl">Ink Preferred (...2118)</div><div class="val" style="color:var(--sage)">$0</div><div class="meta">Due Apr 2</div></div>
+    <div class="row"><div class="lbl">Ink Business Cash (...0526)</div><div class="val" style="color:var(--sage)">$0</div><div class="meta">Due Apr 21</div></div>
+    <div class="row"><div class="lbl">EIDL Loan (SBA)</div><div class="val" style="color:var(--sage)">$0</div><div class="meta">Due 22nd</div></div>
+  </div>
+</div>
+
+<!-- ══ INVESTMENTS ══ -->
+<div class="panel" id="panel-investments">
+  <div class="g4">
+    <div class="card"><div class="card-label">Total Investments</div><div class="card-fig" style="color:var(--slate)" id="inv-total">—</div><div class="card-note">Betterment + Robinhood</div></div>
+    <div class="card"><div class="card-label">Betterment</div><div class="card-fig" style="color:#1a6b3a" id="inv-betterment">—</div><div class="card-note">SEP IRA — Tax-Coordinated</div></div>
+    <div class="card"><div class="card-label">Robinhood</div><div class="card-fig" style="color:#006b00" id="inv-robinhood">—</div><div class="card-note">Roth IRA + Individual</div></div>
+    <div class="card"><div class="card-label">Cash (Chase)</div><div class="card-fig" style="color:var(--slate)" id="inv-cash">—</div><div class="card-note">CHK + SAV + Biz</div></div>
+  </div>
+
+  <div class="sec-label">Betterment</div>
+  <div class="card mb20">
+    <div class="inv-header">
+      <div class="inv-dot" style="background:#1a6b3a"></div>
+      <div class="inv-name">Betterment — Retirement</div>
+      <div class="inv-total-fig" style="color:#1a6b3a" id="inv-bet-total">—</div>
+    </div>
+    <div class="row"><div class="lbl">SEP IRA — Tax-Coordinated Portfolio</div><div class="val">$31,897.98</div><div class="meta">100% Stocks — Innovative Tech</div></div>
+    <div class="row"><div class="lbl">Roth IRA</div><div class="val">$0</div><div class="meta">Not yet funded</div></div>
+    <div class="row"><div class="lbl">Projected Balance (Mar 2054)</div><div class="val" style="color:var(--sage)">$237,431</div><div class="meta">Betterment Forecaster</div></div>
+    <div class="row" style="border:none"><div class="lbl">Spending Power (today's dollars)</div><div class="val" style="color:var(--sage)">$2,704/mo</div><div class="meta">In retirement</div></div>
+    <div style="padding:10px 0 4px;display:flex;justify-content:space-between;border-top:1px solid var(--cream2);margin-top:4px;">
+      <span style="font-size:11px;color:var(--ink4);">Update in 📊 Current → Section D → Betterment Total</span>
+      <a href="https://betterment.com" target="_blank" class="inv-link" style="color:#1a6b3a;">betterment.com ↗</a>
+    </div>
+  </div>
+
+  <div class="sec-label">Robinhood</div>
+  <div class="card mb20">
+    <div class="inv-header">
+      <div class="inv-dot" style="background:#00c805"></div>
+      <div class="inv-name">Robinhood</div>
+      <div class="inv-total-fig" style="color:#006b00" id="inv-rh-total">—</div>
+    </div>
+    <div class="row"><div class="lbl">Roth IRA</div><div class="val">$29,687.65</div><div class="meta">+$662.68 on 3/31</div></div>
+    <div class="row"><div class="lbl">Roth IRA Buying Power</div><div class="val" style="color:var(--amber)">$7,176.87</div><div class="meta">⚠ Uninvested</div></div>
+    <div class="row"><div class="lbl">Individual (taxable)</div><div class="val">$2,586.14</div><div class="meta">BP: $18.64</div></div>
+    <div class="row"><div class="lbl">2025 IRA Contribution</div><div class="val" style="color:var(--sage)">$2,000</div><div class="meta">$5,000 until max</div></div>
+    <div class="row" style="border:none"><div class="lbl">IRA Match (3% Gold)</div><div class="val" style="color:var(--sage)">$60</div><div class="meta">Robinhood Gold</div></div>
+    <div style="padding:10px 0 4px;display:flex;justify-content:space-between;border-top:1px solid var(--cream2);margin-top:4px;">
+      <span style="font-size:11px;color:var(--ink4);">Update in 📊 Current → Section D → Robinhood Total</span>
+      <a href="https://robinhood.com" target="_blank" class="inv-link" style="color:#006b00;">robinhood.com ↗</a>
+    </div>
+  </div>
+
+  <div class="alert amber"><div class="alert-icon">⚠️</div><div><div class="alert-head">$7,177 Roth IRA buying power is sitting uninvested</div>Cash in a tax-advantaged account earns nothing. Every month idle = tax-advantaged growth lost. Consider auto-investing or selecting holdings in Robinhood.</div></div>
+</div>
+
+<!-- ══ EXPENSES ══ -->
+<div class="panel" id="panel-expenses">
+  <div class="g3">
+    <div class="card"><div class="card-label">Monthly Fixed</div><div class="card-fig" style="color:var(--amber)" id="exp-monthly">—</div><div class="card-note">All recurring bills &amp; subs</div></div>
+    <div class="card"><div class="card-label">Annual Total</div><div class="card-fig" style="color:var(--amber)" id="exp-annual">—</div><div class="card-note">Annualized</div></div>
+    <div class="card"><div class="card-label">If Flagged Subs Cut</div><div class="card-fig" style="color:var(--sage)">$736/yr</div><div class="card-note">Skill Incubator + Wix + GWorkspace</div></div>
+  </div>
+  <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--slate-bg);border:1px solid rgba(45,74,107,.15);border-radius:8px;margin-bottom:14px;font-size:13px;line-height:1.6;">
+    <div style="font-size:17px;flex-shrink:0;">✏️</div>
+    <div><strong>Edit in the spreadsheet — no code needed.</strong> Open <strong>⚙️ Config</strong> tab → update any Monthly $ cell. Add a row to add an expense, delete a row to remove one. Dashboard refreshes automatically.
+    <br><a id="exp-sheet-link" href="#" target="_blank" style="font-family:var(--font-mono);font-size:10px;color:var(--slate);">📊 Open Sheet → ⚙️ Config ↗</a></div>
+  </div>
+  <div class="sec-label">All Expenses — live from ⚙️ Config sheet</div>
+  <div class="card" id="exp-table-wrap">
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">Loading from Sheets...</div>
+  </div>
+</div>
+
+<!-- ══ HISTORY ══ -->
+<div class="panel" id="panel-history">
+  <div class="sec-label">Net Worth Over Time</div>
+  <div class="card mb20" id="hist-wrap">
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">Loading history...</div>
+  </div>
+  <div class="alert sage"><div class="alert-icon">💡</div><div><div class="alert-head">How to use History</div>Click "📅 Log Month" on the first of each month after updating balances. Each click appends one row — permanent record for month-over-month and year-over-year comparison.</div></div>
+</div>
+
+<!-- ══ TASKS ══ -->
+<div class="panel" id="panel-tasks">
+  <div class="sec-label">TradFi Tasks — from HQ Brain Dump</div>
+  <div class="card mb20" id="task-list">
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">Loading tasks...</div>
+  </div>
+  <div style="text-align:right;"><a href="index.html" style="font-family:var(--font-mono);font-size:10px;color:var(--slate);text-decoration:none;">← Manage all tasks in HQ</a></div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════
+// CONFIG — update SCRIPT_URL and SHEET_ID after deployment
+// ══════════════════════════════════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzvRSoXyOv3PI-g3NkE0-oyVXd8a5h8wF9-x0UMem-evwH5lS5qLCz5Go0go-YvYtPEQA/exec';
+const HQ_URL     = 'https://script.google.com/macros/s/AKfycbw6fGdCZnZHBfpQaHs03_3xWkuxunC08aaCoE40iLY03Q6CVcb6f5_bWYUk_3YKGH20/exec';
+// Paste your Google Sheet ID from the URL bar (between /d/ and /edit):
+const SHEET_ID   = 'PASTE_SHEET_ID_HERE';
+
+// ── DEFAULTS (shown if Sheets offline) ────────────────────────────────────
+const DEFAULTS = {
+  current: {
+    snapshot_mo:'March 2026', cash:836.57, crypto:0,
+    betterment:31897.98, robinhood:32273.79, invest_total:64171.77,
+    monthly_exp:1980, net_worth:52390.20, total_debt:-12618.14,
+    crypto_com:4844, bb1:973, bb2:1614, bb3:2164,
+    boa1:1148, boa2:905, prime_visa:970.14, venmo:0,
+  },
+  history:[
+    {month:'Feb 2026',cash:1982,crypto:0,betterment:0,robinhood:0,invest_total:0,debt:11122,net_worth:-9140,monthly_exp:1980},
+    {month:'Mar 2026',cash:836.57,crypto:0,betterment:31897.98,robinhood:32273.79,invest_total:64171.77,debt:12618.14,net_worth:52390.20,monthly_exp:1980},
+  ],
+  expenses:[],
+};
+
+// ══════════════════════════════════════════════════════════════════════════
+function switchTab(name, el) {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+function setConn(state, msg) {
+  const chip = document.getElementById('conn-chip');
+  chip.className = 'conn-chip ' + (state === 'ok' ? 'ok' : state === 'err' ? 'err' : '');
+  document.getElementById('conn-text').textContent = msg;
+}
+
+function fmt(n, dec = 0) {
+  if (n === null || n === undefined || n === '') return '—';
+  const v = parseFloat(n) || 0;
+  return '$' + Math.abs(v).toLocaleString('en-US', {minimumFractionDigits:dec, maximumFractionDigits:dec});
+}
+
+function setEl(id, val) {
+  const el = document.getElementById(id);
+  if (el && val != null && val !== '') el.textContent = fmt(val);
+}
+
+// ── WIRE SHEET LINKS ──────────────────────────────────────────────────────
+function wireSheetLinks() {
+  if (SHEET_ID === 'PASTE_SHEET_ID_HERE') return;
+  const url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit';
+  ['sheet-link', 'exp-sheet-link'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.href = url;
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// LOAD DATA
+// ══════════════════════════════════════════════════════════════════════════
+async function loadData() {
+  setConn('', 'Connecting...');
+  try {
+    const r = await fetch(SCRIPT_URL + '?action=loadTradFi', {redirect:'follow'});
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'Script error');
+    applyData(j.data);
+    setConn('ok', 'Live · Google Sheets');
+  } catch(e) {
+    console.warn('Sheets offline:', e.message);
+    setConn('err', 'Offline — defaults shown');
+    applyData(DEFAULTS);
+  }
+  wireSheetLinks();
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// APPLY DATA
+// ══════════════════════════════════════════════════════════════════════════
+function applyData(d) {
+  const cur     = d.current  || {};
+  const history = d.history  || [];
+  const expenses= d.expenses || [];
+
+  const cash     = parseFloat(cur.cash)        || 836.57;
+  const crypto   = parseFloat(cur.crypto)      || 0;
+  const bet      = parseFloat(cur.betterment)  || 31897.98;
+  const rh       = parseFloat(cur.robinhood)   || 32273.79;
+  const invest   = bet + rh;
+  const monthly  = parseFloat(cur.monthly_exp) || 1980;
+  const nw       = parseFloat(cur.net_worth)   || 52390.20;
+  const debt     = Math.abs(parseFloat(cur.total_debt) || 12618.14);
+
+  // ── HERO ────────────────────────────────────────────────────────────────
+  const nwEl = document.getElementById('nw-hero');
+  nwEl.textContent = (nw < 0 ? '−' : '') + fmt(Math.abs(nw));
+  nwEl.className = 'hero-nw ' + (nw >= 0 ? 'pos' : 'neg');
+  document.getElementById('nw-eyebrow').textContent = 'Net Worth · ' + (cur.snapshot_mo || 'March 2026');
+  document.getElementById('hero-sub').textContent =
+    'Cash $' + Math.round(cash).toLocaleString() +
+    ' + Betterment $' + Math.round(bet).toLocaleString() +
+    ' + Robinhood $' + Math.round(rh).toLocaleString() +
+    (crypto > 0 ? ' + Crypto $' + Math.round(crypto).toLocaleString() : ' · Crypto excluded') +
+    ' − Debt $' + Math.round(debt).toLocaleString();
+
+  document.getElementById('ov-cash').textContent    = fmt(cash);
+  document.getElementById('ov-crypto').textContent  = crypto > 0 ? fmt(crypto) : 'TBD';
+  document.getElementById('ov-invest').textContent  = fmt(invest);
+  document.getElementById('ov-debt').textContent    = '−' + fmt(debt);
+  document.getElementById('ov-monthly').textContent = fmt(monthly);
+
+  // ── OVERVIEW CARDS ────────────────────────────────────────────────────
+  document.getElementById('snap-debt').textContent    = fmt(debt);
+  document.getElementById('snap-monthly').textContent = fmt(monthly);
+  const cc  = parseFloat(cur.crypto_com)  || 4844;
+  const pv  = parseFloat(cur.prime_visa)  || 970.14;
+  const b2  = parseFloat(cur.boa2)        || 905;
+  document.getElementById('snap-accruing').textContent = fmt(cc + pv + b2) + '+';
+
+  // ── DEBT TAB ──────────────────────────────────────────────────────────
+  const bb1v = parseFloat(cur.bb1)  || 973;
+  const bb2v = parseFloat(cur.bb2)  || 1614;
+  const bb3v = parseFloat(cur.bb3)  || 2164;
+  const b1   = parseFloat(cur.boa1) || 1148;
+  const tot  = cc + bb1v + bb2v + bb3v + b1 + b2 + pv;
+
+  document.getElementById('debt-total').textContent    = fmt(debt);
+  document.getElementById('debt-accruing').textContent = fmt(cc + pv + b2) + '+';
+
+  document.getElementById('d-cdc').textContent  = fmt(cc, 2);
+  document.getElementById('d-bb1').textContent  = fmt(bb1v, 2);
+  document.getElementById('d-bb2').textContent  = fmt(bb2v, 2);
+  document.getElementById('d-bb3').textContent  = fmt(bb3v, 2);
+  document.getElementById('d-boa1').textContent = fmt(b1, 2);
+  document.getElementById('d-boa2').textContent = fmt(b2, 2);
+  document.getElementById('d-pv').textContent   = fmt(pv, 2);
+
+  function setTrack(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.style.width = Math.min(Math.round((val / tot) * 100), 100) + '%';
+  }
+  setTrack('tr-cdc', cc); setTrack('tr-bb1', bb1v); setTrack('tr-bb2', bb2v);
+  setTrack('tr-bb3', bb3v); setTrack('tr-boa1', b1); setTrack('tr-boa2', b2); setTrack('tr-pv', pv);
+
+  // ── INVESTMENTS TAB ───────────────────────────────────────────────────
+  if (invest > 0) document.getElementById('inv-total').textContent = fmt(invest);
+  document.getElementById('inv-cash').textContent = fmt(cash);
+  if (bet > 0) { document.getElementById('inv-betterment').textContent = fmt(bet); document.getElementById('inv-bet-total').textContent = fmt(bet); }
+  if (rh > 0)  { document.getElementById('inv-robinhood').textContent  = fmt(rh);  document.getElementById('inv-rh-total').textContent  = fmt(rh); }
+
+  // ── EXPENSES TAB ──────────────────────────────────────────────────────
+  document.getElementById('exp-monthly').textContent = fmt(monthly);
+  document.getElementById('exp-annual').textContent  = fmt(monthly * 12);
+  renderExpenses(expenses);
+
+  // ── HISTORY TAB ───────────────────────────────────────────────────────
+  renderHistory(history);
+
+  // ── TASKS TAB ─────────────────────────────────────────────────────────
+  loadTasks();
+}
+
+// ── RENDER EXPENSES (dynamic from ⚙️ Config sheet) ────────────────────────
+function renderExpenses(expenses) {
+  const wrap = document.getElementById('exp-table-wrap');
+  if (!expenses || !expenses.length) {
+    wrap.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No expense data. Add rows to ⚙️ Config tab (rows 11+) in your Sheet.</div>';
+    return;
+  }
+  let totalMo = 0;
+  const rows = expenses.map(e => {
+    const mo  = parseFloat(e.monthly) || 0;
+    const yr  = parseFloat(e.annual)  || mo * 12;
+    totalMo  += mo;
+    const isSec = e.name && (e.name.startsWith('\u2500') || e.name.startsWith('\u25ba'));
+    const isRev = mo === 0 && !isSec;
+    if (isSec) {
+      const label = e.name.replace(/^[\u2500-]+\s*/,'').replace(/\s*[\u2500-]+$/,'').trim();
+      return '<tr><td colspan="3" style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);padding:10px 0 4px;border-bottom:1px solid var(--cream2);font-weight:700;">' + label + '</td></tr>';
+    }
+    const moStr = mo > 0 ? fmt(mo, 2) : '\u26a0 REVIEW';
+    const yrStr = yr > 0 ? fmt(yr, 0) : '\u2014';
+    return '<tr style="' + (isRev ? 'background:var(--amber-bg);' : '') + '">' +
+      '<td style="font-size:13px;color:' + (isRev ? 'var(--amber)' : 'var(--ink3)') + ';padding:7px 0;border-bottom:1px solid var(--cream2);">' + e.name + '</td>' +
+      '<td style="font-family:var(--font-mono);font-size:12px;color:var(--amber);font-weight:600;text-align:right;padding:7px 0;border-bottom:1px solid var(--cream2);">' + moStr + '</td>' +
+      '<td style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:right;padding:7px 0;border-bottom:1px solid var(--cream2);">' + yrStr + '</td>' +
+      '</tr>';
+  }).join('');
+  wrap.innerHTML =
+    '<table style="width:100%;border-collapse:collapse;">' +
+    '<thead><tr>' +
+    '<th style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:5px 0 9px;text-align:left;border-bottom:1px solid var(--cream2);">Expense</th>' +
+    '<th style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:5px 0 9px;text-align:right;border-bottom:1px solid var(--cream2);">Monthly</th>' +
+    '<th style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:5px 0 9px;text-align:right;border-bottom:1px solid var(--cream2);">Annual</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody>' +
+    '<tfoot><tr>' +
+    '<td style="font-weight:700;font-size:13px;color:var(--ink);padding:11px 0 4px;border-top:2px solid var(--cream3);">TOTAL</td>' +
+    '<td style="font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--amber);text-align:right;padding:11px 0 4px;border-top:2px solid var(--cream3);">' + fmt(totalMo, 2) + '</td>' +
+    '<td style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--amber);text-align:right;padding:11px 0 4px;border-top:2px solid var(--cream3);">' + fmt(totalMo * 12) + '/yr</td>' +
+    '</tr></tfoot></table>';
+}
+
+// ── RENDER HISTORY ────────────────────────────────────────────────────────
+function renderHistory(history) {
+  const wrap = document.getElementById('hist-wrap');
+  if (!history || !history.length) {
+    wrap.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No history yet — click "📅 Log Month" to start.</div>';
+    return;
+  }
+  const rows = [...history].reverse().map(r => {
+    const nw = r.net_worth;
+    const cls = nw >= 0 ? 'pos' : 'neg';
+    return '<tr>' +
+      '<td>' + r.month + '</td>' +
+      '<td>' + fmt(r.cash) + '</td>' +
+      '<td>' + (r.crypto > 0 ? fmt(r.crypto) : '\u2014') + '</td>' +
+      '<td>' + (r.betterment > 0 ? fmt(r.betterment) : '\u2014') + '</td>' +
+      '<td>' + (r.robinhood > 0 ? fmt(r.robinhood) : '\u2014') + '</td>' +
+      '<td>' + (r.invest_total > 0 ? fmt(r.invest_total) : '\u2014') + '</td>' +
+      '<td>' + fmt(r.debt) + '</td>' +
+      '<td class="' + cls + '">' + (nw < 0 ? '\u2212' : '') + fmt(Math.abs(nw)) + '</td>' +
+      '<td>' + fmt(r.monthly_exp) + '</td>' +
+      '</tr>';
+  }).join('');
+  wrap.innerHTML =
+    '<table class="hist-table"><thead><tr>' +
+    ['Month','Cash','Crypto','Betterment','Robinhood','Invest','Debt','Net Worth','Mo. Exp.']
+      .map(h => '<th>' + h + '</th>').join('') +
+    '</tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+// ── TASKS ─────────────────────────────────────────────────────────────────
+async function loadTasks() {
+  try {
+    const r = await fetch(HQ_URL + '?action=load', {redirect:'follow'});
+    const j = await r.json();
+    if (!j.ok || !j.data) return;
+    const tasks = (j.data.rows || []).filter(t => t.area === 'TradFi' && !t.done);
+    const el = document.getElementById('task-list');
+    if (!tasks.length) {
+      el.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No open TradFi tasks. Add in HQ → RAM Dump.</div>';
+      return;
+    }
+    const pc = {'Do Now':'background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-l)',
+                 'This Week':'background:var(--slate-bg);color:var(--slate);border:1px solid var(--slate-l)',
+                 'Someday':'background:var(--cream2);color:var(--ink4)'};
+    el.innerHTML = tasks.map(t =>
+      '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--cream2);">' +
+      '<div style="width:15px;height:15px;border:1.5px solid var(--cream3);border-radius:4px;flex-shrink:0;"></div>' +
+      '<div style="font-size:13px;flex:1;">' + t.item + '</div>' +
+      '<span style="font-family:var(--font-mono);font-size:9px;padding:2px 7px;border-radius:10px;flex-shrink:0;' + (pc[t.priority] || pc['Someday']) + '">' + (t.priority || '—') + '</span>' +
+      '</div>'
+    ).join('');
+  } catch(e) { /* silent */ }
+}
+
+// ── DEBT STRATEGY TOGGLE ──────────────────────────────────────────────────
+function strat(type) {
+  document.getElementById('btn-av').className = 'strat-btn ' + (type==='avalanche' ? 'on' : 'off');
+  document.getElementById('btn-sb').className = 'strat-btn ' + (type==='snowball'  ? 'on' : 'off');
+  document.getElementById('strat-note').textContent = type === 'avalanche'
+    ? 'Highest APR first — Crypto.com (26.99%) → BOA2 (verify%) → Prime Visa (24.99%). Saves the most interest.'
+    : 'Smallest balance first — BB1 ($973) → Prime Visa ($970) → BOA2 ($905). Builds momentum fastest.';
+}
+
+// ── LOG MONTH ─────────────────────────────────────────────────────────────
+async function logMonth() {
+  const btn = document.getElementById('log-btn');
+  btn.textContent = 'Logging...'; btn.disabled = true;
+  try {
+    const r = await fetch(SCRIPT_URL, {
+      method:'POST', redirect:'follow',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'logMonth'})
+    });
+    const j = await r.json();
+    if (!j.ok) {
+      alert('\u26a0 ' + j.error);
+    } else {
+      const nw = j.net_worth;
+      alert('\u2705 ' + j.logged + ' logged to History!\n\n' +
+        'Net Worth: ' + (nw < 0 ? '\u2212' : '') + '$' + Math.abs(nw).toLocaleString('en-US', {maximumFractionDigits:0}) + '\n' +
+        'Total Debt: $' + (j.debt || 0).toLocaleString('en-US', {maximumFractionDigits:0}));
+      loadData();
+    }
+  } catch(e) {
+    alert('Failed: ' + e.message);
+  } finally {
+    btn.textContent = '\uD83D\uDCC5 Log Month'; btn.disabled = false;
+  }
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
