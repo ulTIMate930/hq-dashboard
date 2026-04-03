@@ -673,18 +673,19 @@ body {
 .msg.user { flex-direction: row-reverse; }
 
 .msg-av {
-  width: 36px; height: 36px;
-  border-radius: 50%;
+  width: 44px; height: 36px;
+  border-radius: 20px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: 'Playfair Display', serif;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 11px;
+  letter-spacing: 0.5px;
 }
 .msg.ai .msg-av { background: var(--amber); color: white; }
-.msg.user .msg-av { background: var(--surface3); color: var(--muted); }
+.msg.user .msg-av { background: var(--surface3); color: var(--muted); font-size: 12px; font-weight: 700; }
 
 .bubble {
   max-width: calc(100% - 56px);
@@ -745,6 +746,11 @@ body {
   background: var(--surface);
   border-top: 1.5px solid var(--border);
   flex-shrink: 0;
+  transition: background 0.15s;
+}
+.input-bar.drag-over {
+  background: var(--amber-dim);
+  border-top-color: var(--amber);
 }
 .input-row { display: flex; gap: 10px; align-items: flex-end; }
 
@@ -1310,7 +1316,7 @@ body {
               <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
             </button>
           </div>
-          <div class="input-hint">Enter to send · Shift+Enter for new line · 📷 attach or paste a Garmin screenshot · text logs auto-save</div>
+          <div class="input-hint">Enter to send · Shift+Enter for new line · 📷 click, drag & drop, or paste a screenshot · text logs auto-save</div>
         </div>
       </div>
     </div>
@@ -2007,7 +2013,7 @@ function addMsgWithWeekBtn(text, weekNum) {
   const el = document.getElementById('msgs');
   const div = document.createElement('div');
   div.className = 'msg ai';
-  const av = document.createElement('div'); av.className = 'msg-av'; av.textContent = 'TOM';
+  const av = document.createElement('div'); av.className = 'msg-av'; av.textContent = 'COACH';
   const bub = document.createElement('div'); bub.className = 'bubble';
   bub.innerHTML = fmt(text || `Week ${weekNum} has been built and saved to your calendar! 🎉`);
   const btn = document.createElement('button');
@@ -2028,7 +2034,7 @@ function addMsgWithLogBtn(text, entry) {
   const el = document.getElementById('msgs');
   const div = document.createElement('div');
   div.className = 'msg ai';
-  const av = document.createElement('div'); av.className = 'msg-av'; av.textContent = 'TOM';
+  const av = document.createElement('div'); av.className = 'msg-av'; av.textContent = 'COACH';
   const bub = document.createElement('div'); bub.className = 'bubble';
   bub.innerHTML = fmt(text);
   const btn = document.createElement('button');
@@ -2067,7 +2073,7 @@ function addMsg(role, text) {
   const div = document.createElement('div');
   div.className = 'msg ' + role;
   const av = document.createElement('div'); av.className = 'msg-av';
-  av.textContent = role === 'ai' ? 'TOM' : 'T';
+  av.textContent = role === 'ai' ? 'COACH' : 'TOM';
   const bub = document.createElement('div'); bub.className = 'bubble';
   bub.innerHTML = role === 'ai' ? fmt(text) : escHtml(text);
   div.appendChild(av); div.appendChild(bub);
@@ -2078,7 +2084,7 @@ function addMsgWithImage(text, imgSrc) {
   const el = document.getElementById('msgs');
   const div = document.createElement('div');
   div.className = 'msg user';
-  const av = document.createElement('div'); av.className = 'msg-av'; av.textContent = 'T';
+  const av = document.createElement('div'); av.className = 'msg-av'; av.textContent = 'TOM';
   const bub = document.createElement('div'); bub.className = 'bubble';
   bub.innerHTML = `<img src="${imgSrc}" style="max-width:220px;max-height:160px;border-radius:8px;display:block;margin-bottom:${text ? '8px' : '0'};border:1.5px solid var(--border)">`;
   if (text) bub.innerHTML += `<span>${escHtml(text)}</span>`;
@@ -2107,7 +2113,7 @@ function addTyping() {
   const el = document.getElementById('msgs');
   const div = document.createElement('div');
   div.className = 'msg ai';
-  div.innerHTML = '<div class="msg-av">TOM</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+  div.innerHTML = '<div class="msg-av">COACH</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
   el.appendChild(div); el.scrollTop = el.scrollHeight;
   return div;
 }
@@ -2132,6 +2138,38 @@ document.getElementById('chat-in').addEventListener('keydown', function(e) {
 });
 document.getElementById('api-in').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') startChat();
+});
+
+// ══ DRAG AND DROP IMAGE ══
+const inputBar = document.querySelector('.input-bar');
+
+inputBar.addEventListener('dragover', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  // Only highlight if dragging an image
+  if (e.dataTransfer.types.includes('Files')) {
+    this.classList.add('drag-over');
+  }
+});
+
+inputBar.addEventListener('dragleave', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  this.classList.remove('drag-over');
+});
+
+inputBar.addEventListener('drop', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  this.classList.remove('drag-over');
+  const files = e.dataTransfer.files;
+  if (!files || files.length === 0) return;
+  const file = files[0];
+  if (file.type.startsWith('image/')) {
+    loadImageFile(file);
+  } else {
+    addMsg('ai', '⚠️ Please drop an image file (JPEG, PNG, etc.). For Garmin CSV files use the Garmin button.');
+  }
 });
 
 // ══ DOWNLOAD WEEK AS PRINTABLE HTML ══
