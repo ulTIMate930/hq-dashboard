@@ -1,0 +1,2352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tom's Training Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f7f4ef;
+  --surface: #ffffff;
+  --surface2: #f0ece4;
+  --surface3: #e8e2d8;
+  --border: #ddd7cc;
+  --border2: #c8c0b0;
+  --amber: #c97a1a;
+  --amber-lt: #f0a030;
+  --amber-dim: rgba(201,122,26,0.10);
+  --amber-dim2: rgba(201,122,26,0.18);
+  --text: #1e1a14;
+  --text2: #3d3628;
+  --muted: #8a7e6e;
+  --muted2: #b0a490;
+  --knee: #c03030;
+  --knee-dim: rgba(192,48,48,0.08);
+  --shoulder: #2060a8;
+  --shoulder-dim: rgba(32,96,168,0.08);
+  --green: #2a7a48;
+  --green-dim: rgba(42,122,72,0.09);
+  --orange: #c05820;
+  --orange-dim: rgba(192,88,32,0.09);
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  --shadow2: 0 4px 24px rgba(0,0,0,0.10);
+  --radius: 14px;
+}
+
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ══ TOP BAR ══ */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 28px;
+  height: 62px;
+  background: var(--surface);
+  border-bottom: 2px solid var(--border);
+  flex-shrink: 0;
+  box-shadow: var(--shadow);
+}
+
+.brand {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: 22px;
+  color: var(--amber);
+  letter-spacing: 1px;
+}
+.brand span { color: var(--text); }
+
+.phase-pill {
+  background: var(--amber-dim2);
+  border: 1.5px solid var(--amber);
+  color: var(--amber);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 4px 14px;
+  border-radius: 30px;
+  letter-spacing: 0.5px;
+}
+
+.topbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.athlete-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 30px;
+  padding: 6px 16px 6px 8px;
+}
+
+.athlete-av {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--amber), var(--amber-lt));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+}
+
+.athlete-name { font-weight: 600; font-size: 15px; }
+.athlete-sub { font-size: 12px; color: var(--muted); }
+
+/* ══ LAYOUT ══ */
+.shell { display: flex; flex: 1; overflow: hidden; }
+
+/* ══ SIDEBAR ══ */
+.sidenav {
+  width: 72px;
+  background: var(--surface);
+  border-right: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 0;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.nav-btn {
+  width: 52px; height: 52px;
+  border-radius: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--muted);
+  transition: all 0.15s;
+  position: relative;
+}
+
+.nav-btn:hover { background: var(--surface2); color: var(--text2); }
+.nav-btn.active { background: var(--amber-dim2); color: var(--amber); }
+.nav-btn.active::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 28px;
+  background: var(--amber);
+  border-radius: 3px 0 0 3px;
+}
+
+.nav-icon { font-size: 20px; }
+.nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.3px; }
+
+/* ══ MAIN ══ */
+.main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.view { display: none; flex: 1; overflow: hidden; }
+.view.active { display: flex; }
+
+/* ══ DASHBOARD ══ */
+#view-dashboard {
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 28px;
+  gap: 24px;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+}
+.stat-card.amber::after { background: var(--amber); }
+.stat-card.knee::after { background: var(--knee); }
+.stat-card.shoulder::after { background: var(--shoulder); }
+.stat-card.green::after { background: var(--green); }
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.stat-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 44px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.stat-card.amber .stat-val { color: var(--amber); }
+.stat-card.knee .stat-val { color: var(--knee); }
+.stat-card.shoulder .stat-val { color: var(--shoulder); }
+.stat-card.green .stat-val { color: var(--green); }
+.stat-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+.sec-head {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--text);
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.panel {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.panel-head {
+  padding: 16px 22px;
+  border-bottom: 1.5px solid var(--border);
+  font-weight: 700;
+  font-size: 15px;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-body { padding: 18px 22px; }
+
+/* Phase rows */
+.phase-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.phase-item:last-child { border-bottom: none; }
+
+.ph-num {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: 28px;
+  width: 32px;
+  color: var(--muted2);
+  flex-shrink: 0;
+}
+.phase-item.active .ph-num { color: var(--amber); }
+.phase-item.done .ph-num { color: var(--green); }
+
+.ph-info { flex: 1; }
+.ph-name { font-weight: 600; font-size: 15px; }
+.ph-weeks { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+.ph-track { width: 90px; height: 5px; background: var(--surface3); border-radius: 3px; overflow: hidden; }
+.ph-fill { height: 100%; border-radius: 3px; }
+.phase-item.active .ph-fill { background: var(--amber); }
+.phase-item.done .ph-fill { background: var(--green); }
+
+.ph-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.phase-item.active .ph-badge { background: var(--amber-dim2); color: var(--amber); }
+.phase-item.done .ph-badge { background: var(--green-dim); color: var(--green); }
+.phase-item .ph-badge { background: var(--surface2); color: var(--muted); }
+
+/* HR zones */
+.zone-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+}
+.zone-row:last-child { border-bottom: none; }
+.zone-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+.zone-name { font-weight: 600; width: 100px; }
+.zone-bpm { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; width: 90px; }
+.zone-rpe { color: var(--muted); width: 60px; font-size: 14px; }
+.zone-use { flex: 1; font-size: 13px; color: var(--muted); }
+.zone-bar { height: 5px; border-radius: 3px; }
+
+/* ══ CALENDAR ══ */
+#view-calendar { flex-direction: column; overflow: hidden; }
+
+.cal-top {
+  padding: 22px 28px 18px;
+  background: var(--surface);
+  border-bottom: 2px solid var(--border);
+  flex-shrink: 0;
+  box-shadow: var(--shadow);
+}
+
+.cal-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.wk-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 26px;
+  flex: 1;
+}
+
+.wk-btn {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  color: var(--text2);
+  border-radius: 10px;
+  padding: 8px 18px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.wk-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.day-tab {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 8px 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+.day-tab:hover { border-color: var(--amber-lt); }
+.day-tab.active { background: white; border-color: var(--amber); box-shadow: 0 2px 10px rgba(201,122,26,0.15); }
+
+.day-em { font-size: 20px; margin-bottom: 4px; }
+.day-nm {
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  color: var(--text2);
+}
+.day-tab.active .day-nm { color: var(--amber); }
+.day-tp { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+.cal-scroll { flex: 1; overflow-y: auto; padding: 24px 28px; }
+
+.workout-panel {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.wp-head {
+  padding: 16px 22px;
+  background: var(--surface2);
+  border-bottom: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.type-badge {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+.tb-strength { background: var(--orange-dim); color: var(--orange); border: 1.5px solid var(--orange); }
+.tb-swim { background: var(--shoulder-dim); color: var(--shoulder); border: 1.5px solid var(--shoulder); }
+.tb-bike { background: var(--green-dim); color: var(--green); border: 1.5px solid var(--green); }
+.tb-mobility { background: var(--surface3); color: var(--muted); border: 1.5px solid var(--border2); }
+.tb-rest { background: var(--surface3); color: var(--muted2); border: 1.5px solid var(--border); }
+
+.wp-head-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.alert-bar {
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.alert-bar.gate { background: #fff0f0; color: var(--knee); border-left: 4px solid var(--knee); }
+.alert-bar.collagen { background: #fff8e8; color: var(--amber); border-left: 4px solid var(--amber); }
+.alert-bar.info { background: var(--surface2); color: var(--muted); border-left: 4px solid var(--border2); }
+
+.ex-table { width: 100%; border-collapse: collapse; }
+.ex-table th {
+  text-align: left;
+  padding: 12px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface2);
+  border-bottom: 1.5px solid var(--border);
+}
+.ex-table td {
+  padding: 13px 20px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  font-size: 15px;
+}
+.ex-table tr:last-child td { border-bottom: none; }
+.ex-table tr:hover td { background: var(--surface2); }
+
+.ex-nm { font-weight: 600; font-size: 15px; }
+.ex-sets { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; color: var(--amber); }
+.ex-reps { font-size: 14px; color: var(--text2); }
+.ex-rest { font-size: 14px; color: var(--muted); }
+.ex-cue { font-size: 13px; color: var(--muted); line-height: 1.6; max-width: 300px; }
+
+/* ══ PROTOCOLS ══ */
+#view-protocols { flex-direction: column; overflow-y: auto !important; }
+.protocols-scroll { padding: 28px; display: flex; flex-direction: column; gap: 22px; }
+
+.proto-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.proto-head {
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1.5px solid var(--border);
+  background: var(--surface2);
+}
+
+.proto-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+.pi-knee { background: var(--knee-dim); }
+.pi-shoulder { background: var(--shoulder-dim); }
+.pi-nutrition { background: var(--orange-dim); }
+.pi-sleep { background: rgba(80,60,140,0.08); }
+
+.proto-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 22px;
+}
+.proto-sub { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+.proto-body { padding: 22px 24px; }
+
+.rule-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.rule-item {
+  display: flex;
+  gap: 12px;
+  padding: 13px 16px;
+  border-radius: 10px;
+  font-size: 15px;
+  line-height: 1.6;
+  align-items: flex-start;
+}
+.ri-no { background: #fff0f0; border: 1px solid #f5cccc; }
+.ri-yes { background: #f0fff5; border: 1px solid #c0e8cc; }
+.ri-info { background: var(--surface2); border: 1px solid var(--border); }
+.ri-warn { background: #fffbf0; border: 1px solid #f0dda0; }
+.rule-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+.gates-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+.gate-box {
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+}
+.gate-trig { font-size: 14px; font-weight: 700; color: var(--knee); margin-bottom: 6px; }
+.gate-act { font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+.supp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.supp-box {
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+}
+.supp-nm { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.supp-dose { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 22px; color: var(--amber); }
+.supp-when { font-size: 13px; color: var(--muted); margin-top: 3px; }
+.supp-why { font-size: 12px; color: var(--muted2); margin-top: 5px; line-height: 1.4; }
+
+.protein-tbl { width: 100%; border-collapse: collapse; }
+.protein-tbl th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface2);
+  border-bottom: 1.5px solid var(--border);
+}
+.protein-tbl td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+}
+.protein-tbl tr:last-child td { border-bottom: none; font-weight: 700; }
+.pr-g { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; color: var(--amber); }
+
+/* ══ CHAT ══ */
+#view-chat { flex-direction: column; overflow: hidden; }
+
+.chat-setup-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 40px 28px;
+  gap: 20px;
+}
+
+.setup-box {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  padding: 36px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow2);
+}
+
+.setup-box h2 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: 26px;
+  color: var(--amber);
+  margin-bottom: 8px;
+}
+.setup-box p { color: var(--muted); font-size: 15px; line-height: 1.65; margin-bottom: 22px; }
+.setup-box label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.setup-box input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 16px;
+  color: var(--text);
+  font-family: monospace;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.setup-box input:focus { border-color: var(--amber); }
+
+.go-btn {
+  width: 100%;
+  margin-top: 16px;
+  padding: 15px;
+  background: var(--amber);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+  letter-spacing: 0.5px;
+}
+.go-btn:hover { background: var(--amber-lt); }
+
+.chat-live { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+.chips-bar {
+  display: flex;
+  gap: 8px;
+  padding: 14px 22px;
+  overflow-x: auto;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-bottom: 1.5px solid var(--border);
+  scrollbar-width: none;
+}
+.chips-bar::-webkit-scrollbar { display: none; }
+
+.chip {
+  flex-shrink: 0;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  color: var(--text2);
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.chip:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
+
+.msgs {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.msg { display: flex; gap: 12px; }
+.msg.user { flex-direction: row-reverse; }
+
+.msg-av {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 13px;
+}
+.msg.ai .msg-av { background: var(--amber); color: white; }
+.msg.user .msg-av { background: var(--surface3); color: var(--muted); }
+
+.bubble {
+  max-width: calc(100% - 56px);
+  padding: 14px 18px;
+  border-radius: 16px;
+  font-size: 15px;
+  line-height: 1.75;
+}
+.msg.ai .bubble {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-bottom-left-radius: 4px;
+  box-shadow: var(--shadow);
+}
+.msg.user .bubble {
+  background: var(--surface3);
+  border-bottom-right-radius: 4px;
+  color: var(--text2);
+}
+
+.bubble strong { color: var(--amber); }
+.bubble ul { padding-left: 20px; margin: 8px 0; }
+.bubble li { margin: 4px 0; }
+.bubble p + p { margin-top: 10px; }
+
+.log-confirm-btn {
+  display: inline-block;
+  margin-top: 10px;
+  background: var(--amber);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s;
+}
+.log-confirm-btn:hover { background: var(--amber-lt); }
+
+.typing { display: flex; gap: 5px; align-items: center; padding: 14px 18px; }
+.typing span {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--muted2);
+  animation: bop 1.2s infinite;
+}
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bop {
+  0%,60%,100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
+
+.input-bar {
+  padding: 14px 22px 18px;
+  background: var(--surface);
+  border-top: 1.5px solid var(--border);
+  flex-shrink: 0;
+}
+.input-row { display: flex; gap: 10px; align-items: flex-end; }
+
+.garmin-btn {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0 14px;
+  height: 46px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: border-color 0.15s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text2);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.garmin-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+#chat-in {
+  flex: 1;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  resize: none;
+  min-height: 46px;
+  max-height: 140px;
+  outline: none;
+  transition: border-color 0.2s;
+  line-height: 1.55;
+}
+#chat-in:focus { border-color: var(--amber); background: white; }
+#chat-in::placeholder { color: var(--muted2); }
+
+.send-btn {
+  width: 46px; height: 46px;
+  background: var(--amber);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.send-btn:hover { background: var(--amber-lt); }
+.send-btn:disabled { background: var(--surface3); cursor: not-allowed; }
+.send-btn svg { width: 18px; height: 18px; fill: white; }
+.send-btn:disabled svg { fill: var(--muted2); }
+
+.input-hint { font-size: 12px; color: var(--muted2); margin-top: 7px; }
+
+/* ══ LOG ══ */
+#view-log { flex-direction: column; overflow: hidden; }
+
+.log-top {
+  padding: 22px 28px;
+  background: var(--surface);
+  border-bottom: 2px solid var(--border);
+  flex-shrink: 0;
+  box-shadow: var(--shadow);
+}
+
+.log-top-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.log-form {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.lf-group { display: flex; flex-direction: column; gap: 5px; }
+.lf-label { font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); }
+
+.lf-input {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.lf-input:focus { border-color: var(--amber); background: white; }
+.lf-input option { background: white; }
+
+.lf-notes { flex: 1; min-width: 200px; }
+.lf-notes textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  resize: none;
+  outline: none;
+  min-height: 56px;
+  line-height: 1.5;
+}
+.lf-notes textarea:focus { border-color: var(--amber); background: white; }
+
+.log-submit {
+  background: var(--amber);
+  border: none;
+  border-radius: 10px;
+  padding: 11px 22px;
+  color: white;
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 18px;
+  cursor: pointer;
+  white-space: nowrap;
+  align-self: flex-end;
+  transition: background 0.15s;
+}
+.log-submit:hover { background: var(--amber-lt); }
+
+.garmin-upload-btn {
+  background: var(--surface2);
+  border: 1.5px dashed var(--border2);
+  border-radius: 10px;
+  padding: 10px 18px;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  align-self: flex-end;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.garmin-upload-btn:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
+
+.log-scroll { flex: 1; overflow-y: auto; padding: 24px 28px; }
+
+.log-entry {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  margin-bottom: 14px;
+  display: grid;
+  grid-template-columns: 110px auto auto 1fr;
+  gap: 18px;
+  align-items: start;
+  box-shadow: var(--shadow);
+  animation: fadeUp 0.3s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.le-date { font-size: 13px; font-weight: 600; color: var(--muted); line-height: 1.4; }
+.le-badge {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  align-self: center;
+}
+.le-source {
+  font-size: 11px;
+  color: var(--muted2);
+  margin-top: 3px;
+}
+
+.pain-pair { display: flex; gap: 16px; align-items: center; }
+.pain-item { text-align: center; }
+.pain-lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted2); margin-bottom: 3px; }
+.pain-sc {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: 26px;
+  line-height: 1;
+}
+.sc-low { color: var(--green); }
+.sc-mid { color: var(--amber); }
+.sc-hi { color: var(--knee); }
+
+.le-notes { font-size: 14px; color: var(--muted); line-height: 1.6; }
+.le-garmin { font-size: 13px; color: var(--shoulder); font-weight: 500; }
+
+.empty-state {
+  text-align: center;
+  padding: 70px 20px;
+  color: var(--muted2);
+}
+.empty-icon { font-size: 52px; margin-bottom: 14px; }
+.empty-txt { font-size: 16px; line-height: 1.6; }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--amber-lt); }
+
+/* Hidden file input */
+#garmin-file { display: none; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">Tom's <span>Training</span></div>
+  <div class="phase-pill" id="phase-pill">Phase 1 · Week 2</div>
+  <div id="today-date" style="font-size:13px;color:var(--muted);font-weight:600"></div>
+  <div class="topbar-right">
+    <div class="athlete-chip">
+      <div class="athlete-av">TS</div>
+      <div>
+        <div class="athlete-name">Tom Scanlin</div>
+        <div class="athlete-sub">Age 70 · Return to Running</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <nav class="sidenav">
+    <button class="nav-btn active" onclick="showView('dashboard',this)" title="Dashboard">
+      <span class="nav-icon">📊</span>
+      <span class="nav-label">Home</span>
+    </button>
+    <button class="nav-btn" onclick="showView('calendar',this)" title="Weekly Plan">
+      <span class="nav-icon">📅</span>
+      <span class="nav-label">Plan</span>
+    </button>
+    <button class="nav-btn" onclick="showView('protocols',this)" title="Protocols">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Rules</span>
+    </button>
+    <button class="nav-btn" onclick="showView('chat',this)" title="Coach Chat">
+      <span class="nav-icon">💬</span>
+      <span class="nav-label">Coach</span>
+    </button>
+    <button class="nav-btn" onclick="showView('log',this)" title="Training Log">
+      <span class="nav-icon">📝</span>
+      <span class="nav-label">Log</span>
+    </button>
+  </nav>
+
+  <main class="main">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div id="view-dashboard" class="view active">
+      <div class="stat-row">
+        <div class="stat-card amber">
+          <div class="stat-label">Current Phase</div>
+          <div class="stat-val">1</div>
+          <div class="stat-sub">Foundation & Knee Prehab</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-label">Current Week</div>
+          <div class="stat-val">2</div>
+          <div class="stat-sub">of 52 · ~310 min/week</div>
+        </div>
+        <div class="stat-card knee">
+          <div class="stat-label">Knee Pain</div>
+          <div class="stat-val">3<span style="font-size:22px">/10</span></div>
+          <div class="stat-sub">Left worse · No swelling ✓</div>
+        </div>
+        <div class="stat-card shoulder">
+          <div class="stat-label">Shoulder Pain</div>
+          <div class="stat-val">4<span style="font-size:22px">/10</span></div>
+          <div class="stat-sub">Right · Pull phase · Improving</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head">🗓 12-Month Program Roadmap</div>
+          <div class="panel-body">
+            <div class="phase-item active">
+              <div class="ph-num">1</div>
+              <div class="ph-info"><div class="ph-name">Foundation & Knee Prehab</div><div class="ph-weeks">Weeks 1–4 · No running</div></div>
+              <div class="ph-track"><div class="ph-fill" style="width:50%"></div></div>
+              <div class="ph-badge">IN PROGRESS</div>
+            </div>
+            <div class="phase-item">
+              <div class="ph-num">2</div>
+              <div class="ph-info"><div class="ph-name">Load Tolerance</div><div class="ph-weeks">Weeks 5–8 · Walk intervals</div></div>
+              <div class="ph-track"><div class="ph-fill" style="width:0%"></div></div>
+              <div class="ph-badge">LOCKED</div>
+            </div>
+            <div class="phase-item">
+              <div class="ph-num">3</div>
+              <div class="ph-info"><div class="ph-name">Walk-to-Run Transition</div><div class="ph-weeks">Weeks 9–12 · Run/walk intervals</div></div>
+              <div class="ph-track"><div class="ph-fill" style="width:0%"></div></div>
+              <div class="ph-badge">LOCKED</div>
+            </div>
+            <div class="phase-item">
+              <div class="ph-num">4</div>
+              <div class="ph-info"><div class="ph-name">Running Base Build</div><div class="ph-weeks">Weeks 13–18 · 20 min continuous</div></div>
+              <div class="ph-track"><div class="ph-fill" style="width:0%"></div></div>
+              <div class="ph-badge">LOCKED</div>
+            </div>
+            <div class="phase-item">
+              <div class="ph-num">5</div>
+              <div class="ph-info"><div class="ph-name">Aerobic Running Dev.</div><div class="ph-weeks">Weeks 19–24 · 35 min runs</div></div>
+              <div class="ph-track"><div class="ph-fill" style="width:0%"></div></div>
+              <div class="ph-badge">LOCKED</div>
+            </div>
+            <div class="phase-item">
+              <div class="ph-num">6</div>
+              <div class="ph-info"><div class="ph-name">Running Fitness</div><div class="ph-weeks">Weeks 25–36 · Long run 45 min</div></div>
+              <div class="ph-track"><div class="ph-fill" style="width:0%"></div></div>
+              <div class="ph-badge">LOCKED</div>
+            </div>
+            <div class="phase-item">
+              <div class="ph-num">7</div>
+              <div class="ph-info"><div class="ph-name">Maintenance & Performance</div><div class="ph-weeks">Weeks 37–52 · Race ready</div></div>
+              <div class="ph-track"><div class="ph-fill" style="width:0%"></div></div>
+              <div class="ph-badge">LOCKED</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">❤️ Heart Rate Training Zones</div>
+          <div class="panel-body">
+            <div style="font-size:14px;color:var(--muted);margin-bottom:14px">Max HR est. 150 bpm · RHR 55 bpm · Losartan = zones fully valid ✓</div>
+            <div class="zone-row">
+              <div class="zone-dot" style="background:var(--muted2)"></div>
+              <div class="zone-name">Z1 Recovery</div>
+              <div class="zone-bpm">95–105</div>
+              <div class="zone-rpe">RPE 1–2</div>
+              <div class="zone-use">Warm-up, cool-down, all rehab</div>
+              <div style="width:80px"><div class="zone-bar" style="width:18%;background:var(--muted2)"></div></div>
+            </div>
+            <div class="zone-row">
+              <div class="zone-dot" style="background:var(--green)"></div>
+              <div class="zone-name">Z2 Aerobic ★</div>
+              <div class="zone-bpm">106–120</div>
+              <div class="zone-rpe">RPE 3–4</div>
+              <div class="zone-use"><strong>PRIMARY — all swim, bike, walk</strong></div>
+              <div style="width:80px"><div class="zone-bar" style="width:48%;background:var(--green)"></div></div>
+            </div>
+            <div class="zone-row">
+              <div class="zone-dot" style="background:var(--amber)"></div>
+              <div class="zone-name">Z3 Tempo</div>
+              <div class="zone-bpm">121–132</div>
+              <div class="zone-rpe">RPE 5–6</div>
+              <div class="zone-use">Occasional use, weeks 9+</div>
+              <div style="width:80px"><div class="zone-bar" style="width:66%;background:var(--amber)"></div></div>
+            </div>
+            <div class="zone-row">
+              <div class="zone-dot" style="background:var(--orange)"></div>
+              <div class="zone-name">Z4 Threshold</div>
+              <div class="zone-bpm">133–142</div>
+              <div class="zone-rpe">RPE 7–8</div>
+              <div class="zone-use">Phase 4+ only</div>
+              <div style="width:80px"><div class="zone-bar" style="width:83%;background:var(--orange)"></div></div>
+            </div>
+            <div class="zone-row">
+              <div class="zone-dot" style="background:var(--knee)"></div>
+              <div class="zone-name">Z5 Max</div>
+              <div class="zone-bpm">143+</div>
+              <div class="zone-rpe">RPE 9–10</div>
+              <div class="zone-use">Not used in this program</div>
+              <div style="width:80px"><div class="zone-bar" style="width:100%;background:var(--knee)"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CALENDAR ══ -->
+    <div id="view-calendar" class="view">
+      <div class="cal-top">
+        <div class="cal-nav">
+          <div class="wk-title" id="wk-title">WEEK 2 — PHASE 1</div>
+          <button class="wk-btn" onclick="changeWeek(-1)">← Previous</button>
+          <button class="wk-btn" onclick="changeWeek(1)">Next →</button>
+          <button class="wk-btn" id="build-week-btn" onclick="buildNextWeek()" style="border-color:var(--amber);color:var(--amber)">✨ Build Next Week</button>
+          <div style="flex:1"></div>
+          <button class="wk-btn" onclick="downloadWeek()" title="Download this week as a printable page" style="border-color:var(--green);color:var(--green)">⬇ Download Week</button>
+          <button class="wk-btn" onclick="exportICS()" title="Add this week to your calendar app" style="border-color:var(--shoulder);color:var(--shoulder)">📆 Add to Calendar</button>
+        </div>
+        <div class="day-grid" id="day-grid"></div>
+      </div>
+      <div class="cal-scroll" id="cal-scroll"></div>
+    </div>
+
+    <!-- ══ PROTOCOLS ══ -->
+    <div id="view-protocols" class="view">
+      <div class="protocols-scroll">
+
+      <div class="proto-card">
+        <div class="proto-head">
+          <div class="proto-icon pi-knee">🦵</div>
+          <div>
+            <div class="proto-title" style="color:var(--knee)">Knee Protocol</div>
+            <div class="proto-sub">Bilateral Torn Meniscus · Left knee worse · No surgery · No swelling ✓</div>
+          </div>
+        </div>
+        <div class="proto-body">
+          <ul class="rule-list">
+            <li class="rule-item ri-no"><span class="rule-icon">🚫</span><span><strong>No deep knee flexion</strong> — stop at first pain increase. Most patients max out at 70–90°.</span></li>
+            <li class="rule-item ri-no"><span class="rule-icon">🚫</span><span>No full squats, long-stride lunges, heavy leg press or deep range leg work</span></li>
+            <li class="rule-item ri-no"><span class="rule-icon">🚫</span><span>No running on hard surface until Phase 3 gate is cleared</span></li>
+            <li class="rule-item ri-no"><span class="rule-icon">🚫</span><span>No twisting or pivoting movements under load</span></li>
+            <li class="rule-item ri-yes"><span class="rule-icon">✅</span><span><strong>LEFT knee is worse.</strong> All single-leg exercises: start RIGHT leg first, then match left. Left may lag 1–2 weeks — this is expected and correct.</span></li>
+            <li class="rule-item ri-yes"><span class="rule-icon">🌅</span><span><strong>Morning protocol — before getting out of bed:</strong> 5 min ankle pumps + quad sets. Reduces first-step pain significantly.</span></li>
+            <li class="rule-item ri-warn"><span class="rule-icon">💊</span><span><strong>Collagen protocol:</strong> 15g collagen + 50mg Vitamin C, 30–60 min BEFORE every gym and swim session. Vit C activates synthesis — don't skip it.</span></li>
+          </ul>
+          <div class="gates-grid">
+            <div class="gate-box"><div class="gate-trig">⚡ AM pain ≥ 5/10</div><div class="gate-act">Skip all leg loading. Upper body + swim only.</div></div>
+            <div class="gate-box"><div class="gate-trig">⚡ Pain rises during exercise</div><div class="gate-act">Stop that exercise immediately. Do not push through.</div></div>
+            <div class="gate-box"><div class="gate-trig">⚡ Pain after session</div><div class="gate-act">Ice 15 min, elevate, log it. If next day is worse → pull back 1 week.</div></div>
+            <div class="gate-box"><div class="gate-trig" style="color:var(--green)">✅ Goal every session</div><div class="gate-act">Finish with pain at the same level or lower than when you started.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="proto-card">
+        <div class="proto-head">
+          <div class="proto-icon pi-shoulder">🔵</div>
+          <div>
+            <div class="proto-title" style="color:var(--shoulder)">Shoulder Protocol</div>
+            <div class="proto-sub">Right Swimmer's Shoulder · Pull-phase pain · Subscapularis & biceps tendon</div>
+          </div>
+        </div>
+        <div class="proto-body">
+          <ul class="rule-list">
+            <li class="rule-item ri-no"><span class="rule-icon">🚫</span><span><strong>Never behind-the-head movements</strong> — lat pulldown, tricep extension, etc. Never.</span></li>
+            <li class="rule-item ri-no"><span class="rule-icon">🚫</span><span>No hand paddles — they amplify pull forces and make anterior shoulder pain worse</span></li>
+            <li class="rule-item ri-yes"><span class="rule-icon">🏊</span><span><strong>High elbow catch:</strong> fingertips enter water before elbow, elbow points outward. This is the single most important fix for your pull-phase pain.</span></li>
+            <li class="rule-item ri-yes"><span class="rule-icon">🏊</span><span>Hand entry at shoulder width — don't cross the center line. Crossing causes internal rotation before the pull even starts.</span></li>
+            <li class="rule-item ri-yes"><span class="rule-icon">❄️</span><span>Ice right shoulder 10–15 min after every swim for first 4 weeks.</span></li>
+          </ul>
+          <div style="margin-top:18px">
+            <div class="sec-head" style="font-size:17px">Warm-Up Circuit — Before Every Swim & Strength Session</div>
+            <table class="ex-table">
+              <thead><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Coaching Cue</th></tr></thead>
+              <tbody>
+                <tr><td class="ex-nm">Band External Rotation</td><td class="ex-sets">3</td><td class="ex-reps">15 each</td><td class="ex-cue">Elbow pinned to ribs, lightest band, rotate outward only</td></tr>
+                <tr><td class="ex-nm">Band Internal Rotation</td><td class="ex-sets">3</td><td class="ex-reps">15 each</td><td class="ex-cue">Elbow pinned, rotate inward only</td></tr>
+                <tr><td class="ex-nm">Prone Y / T / W</td><td class="ex-sets">2</td><td class="ex-reps">10 each position</td><td class="ex-cue">Face down, thumbs up, very light or bodyweight only</td></tr>
+                <tr><td class="ex-nm">Band Pull-Apart</td><td class="ex-sets">3</td><td class="ex-reps">20</td><td class="ex-cue">Arms straight in front, pull apart horizontally, squeeze blades at end</td></tr>
+                <tr><td class="ex-nm">Scapular Wall Slides</td><td class="ex-sets">2</td><td class="ex-reps">12</td><td class="ex-cue">Back against wall, arms at 90°, slide up keeping contact throughout</td></tr>
+                <tr><td class="ex-nm">Doorway Pec Stretch</td><td class="ex-sets">2</td><td class="ex-reps">30s each side</td><td class="ex-cue">Opens anterior shoulder — do both sides</td></tr>
+                <tr><td class="ex-nm">Bear Hug Squeeze</td><td class="ex-sets">3</td><td class="ex-reps">10 × 5 sec</td><td class="ex-cue">Cross arms, grip opposite shoulders, squeeze inward. Directly targets subscapularis.</td></tr>
+                <tr><td class="ex-nm">Sleeper Stretch</td><td class="ex-sets">3</td><td class="ex-reps">45 sec</td><td class="ex-cue">Lie on right side, arm at 90°, use other hand to gently press wrist toward floor</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="proto-card">
+        <div class="proto-head">
+          <div class="proto-icon pi-nutrition">🥩</div>
+          <div>
+            <div class="proto-title" style="color:var(--orange)">Nutrition & Supplements</div>
+            <div class="proto-sub">Target 150–160g protein/day · Spread across meals — absorption capped ~40g per meal</div>
+          </div>
+        </div>
+        <div class="proto-body">
+          <div class="two-col">
+            <div>
+              <div class="sec-head" style="font-size:17px">Daily Protein Targets</div>
+              <table class="protein-tbl">
+                <thead><tr><th>Meal</th><th>Target</th><th>Example</th></tr></thead>
+                <tbody>
+                  <tr><td>Breakfast (upgrade needed)</td><td><span class="pr-g">40–50g</span></td><td>3 eggs + Greek yogurt + whey shake. Biggest single change.</td></tr>
+                  <tr><td>Lunch (already solid)</td><td><span class="pr-g">45–55g</span></td><td>Keep current. Add chicken or tuna if under 45g.</td></tr>
+                  <tr><td>Post-workout shake</td><td><span class="pr-g">25–35g</span></td><td>Within 30 min of gym or swim. Easiest win.</td></tr>
+                  <tr><td>Dinner (already solid)</td><td><span class="pr-g">40–50g</span></td><td>Don't overload — ~40g is the absorption ceiling per meal.</td></tr>
+                  <tr><td>Daily Total Target</td><td><span class="pr-g" style="color:var(--green)">150–160g</span></td><td>Breakfast upgrade + post-workout shake gets you there.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <div class="sec-head" style="font-size:17px">Supplement Stack</div>
+              <div class="supp-grid">
+                <div class="supp-box"><div class="supp-nm">✅ Creatine</div><div class="supp-dose">5g/day</div><div class="supp-when">With post-workout shake</div><div class="supp-why">Muscle preservation at 70. Emerging cognitive benefit.</div></div>
+                <div class="supp-box"><div class="supp-nm">✅ Collagen + Vit C</div><div class="supp-dose">15g + 50mg</div><div class="supp-when">30–60 min BEFORE each session</div><div class="supp-why">Vit C required to activate synthesis. Don't skip it.</div></div>
+                <div class="supp-box"><div class="supp-nm">✅ Magnesium Glycinate</div><div class="supp-dose">400mg</div><div class="supp-when">60 min before bed (not dinner)</div><div class="supp-why">Sleep quality. Earlier than you think.</div></div>
+                <div class="supp-box"><div class="supp-nm">➕ Fish Oil</div><div class="supp-dose">2–3g EPA/DHA</div><div class="supp-when">With a meal</div><div class="supp-why">Anti-inflammatory. Direct joint support.</div></div>
+                <div class="supp-box"><div class="supp-nm">➕ Vitamin D3</div><div class="supp-dose">2,000–4,000 IU</div><div class="supp-when">With a meal</div><div class="supp-why">Critical for joint health at 70.</div></div>
+                <div class="supp-box"><div class="supp-nm">😴 Melatonin</div><div class="supp-dose">0.5mg</div><div class="supp-when">90 min before bedtime</div><div class="supp-why">NOT 5mg. Low dose works better — doesn't blunt natural production.</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      </div>
+
+    </div>
+
+    <!-- ══ CHAT ══ -->
+    <div id="view-chat" class="view">
+      <div id="chat-setup" class="chat-setup-wrap">
+        <div class="setup-box">
+          <h2>Coach Chat</h2>
+          <p>Enter your Anthropic API key to activate your personal AI coaching assistant. It knows your full 12-month program, every protocol, your injury history, and your training logs.</p>
+          <label for="api-in">Anthropic API Key</label>
+          <input type="password" id="api-in" placeholder="sk-ant-api03-…" autocomplete="off" />
+          <button class="go-btn" onclick="startChat()">Activate Coach →</button>
+        </div>
+        <div style="font-size:13px;color:var(--muted2);text-align:center;max-width:380px;line-height:1.7">
+          🔒 Your key is stored only in this browser session and sent directly to Anthropic's servers — nowhere else.
+        </div>
+      </div>
+
+      <div id="chat-live" class="chat-live" style="display:none">
+        <div class="chips-bar">
+          <button class="chip" onclick="qsend(`What's my workout today?`)">📅 Today's workout</button>
+          <button class="chip" onclick="qsend(`Walk me through my shoulder warm-up circuit step by step`)">🔵 Shoulder warm-up</button>
+          <button class="chip" onclick="qsend(`What are my knee pain gate rules?`)">🦵 Knee gates</button>
+          <button class="chip" onclick="qsend(`What should my protein look like today and when should I take my collagen?`)">🥩 Nutrition today</button>
+          <button class="chip" onclick="qsend(`What are my heart rate zones?`)">❤️ HR zones</button>
+          <button class="chip" onclick="qsend(`My left knee is stiff this morning — what should I do before I get out of bed, and should I train today?`)">🆘 Stiff knee</button>
+          <button class="chip" onclick="qsend(`Am I ready for Phase 2? Walk me through the gate check.`)">✅ Phase 2 gate</button>
+          <button class="chip" onclick="qsend(`Build out my Week 3 schedule in full detail`)">📋 Build Week 3</button>
+        </div>
+        <div class="msgs" id="msgs"></div>
+        <div class="input-bar">
+          <div id="image-preview-bar" style="display:none;padding:8px 0 4px;display:none;align-items:center;gap:10px">
+            <div style="position:relative;display:inline-block">
+              <img id="image-preview-thumb" style="height:56px;border-radius:8px;border:1.5px solid var(--border);object-fit:cover" />
+              <button onclick="clearImage()" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--knee);border:none;color:white;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">×</button>
+            </div>
+            <span style="font-size:13px;color:var(--muted)">Image ready to send</span>
+          </div>
+          <div class="input-row">
+            <label class="garmin-btn" for="garmin-chat-file" title="Import Garmin CSV">⌚ Garmin</label>
+            <input type="file" id="garmin-chat-file" accept=".csv,.gpx,.fit" onchange="handleGarminChat(this)" style="display:none">
+            <label class="garmin-btn" for="image-file-input" title="Attach a screenshot or photo" style="font-size:18px;padding:0 13px">📷</label>
+            <input type="file" id="image-file-input" accept="image/*" onchange="handleImageFile(this)" style="display:none">
+            <textarea id="chat-in" placeholder="Ask anything, paste a session log, or attach a Garmin screenshot with 📷…" rows="1"></textarea>
+            <button class="send-btn" id="send-btn" onclick="sendMsg()">
+              <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+          </div>
+          <div class="input-hint">Enter to send · Shift+Enter for new line · 📷 attach or paste a Garmin screenshot · text logs auto-save</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LOG ══ -->
+    <div id="view-log" class="view">
+      <div class="log-top">
+        <div class="log-top-title">Training Log</div>
+        <div class="log-form">
+          <div class="lf-group">
+            <div class="lf-label">Date</div>
+            <input type="date" id="lf-date" class="lf-input" style="width:150px" />
+          </div>
+          <div class="lf-group">
+            <div class="lf-label">Session</div>
+            <select id="lf-session" class="lf-input" style="width:140px">
+              <option>Strength</option><option>Swim</option><option>Bike</option>
+              <option>Mobility</option><option>Walk</option><option>Run/Walk</option><option>Rest</option>
+            </select>
+          </div>
+          <div class="lf-group">
+            <div class="lf-label">Knee Before</div>
+            <input type="number" id="lf-kb" class="lf-input" style="width:90px" min="0" max="10" placeholder="0–10" />
+          </div>
+          <div class="lf-group">
+            <div class="lf-label">Knee After</div>
+            <input type="number" id="lf-ka" class="lf-input" style="width:90px" min="0" max="10" placeholder="0–10" />
+          </div>
+          <div class="lf-group">
+            <div class="lf-label">Shoulder Before</div>
+            <input type="number" id="lf-sb" class="lf-input" style="width:90px" min="0" max="10" placeholder="0–10" />
+          </div>
+          <div class="lf-group">
+            <div class="lf-label">Shoulder After</div>
+            <input type="number" id="lf-sa" class="lf-input" style="width:90px" min="0" max="10" placeholder="0–10" />
+          </div>
+          <div class="lf-group lf-notes">
+            <div class="lf-label">Notes</div>
+            <textarea id="lf-notes" class="lf-input" placeholder="How it felt, what you did, anything notable…" rows="2"></textarea>
+          </div>
+          <button class="log-submit" onclick="addLog()">Log It</button>
+          <label class="garmin-upload-btn" for="garmin-file">⌚ Import Garmin CSV</label>
+          <input type="file" id="garmin-file" accept=".csv" onchange="handleGarminUpload(this)">
+        </div>
+      </div>
+      <div class="log-scroll" id="log-scroll">
+        <div class="empty-state" id="log-empty">
+          <div class="empty-icon">📋</div>
+          <div class="empty-txt">No sessions logged yet.<br>Fill in the form above and tap Log It — or paste a text description into the Coach chat and it'll offer to save it for you.</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ══ NAV ══
+function showView(id, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+// ══ LOG STORAGE ══
+let logs = JSON.parse(localStorage.getItem('tnt_logs_v2') || '[]');
+document.getElementById('lf-date').value = new Date().toISOString().split('T')[0];
+
+function painCls(n) {
+  const v = parseInt(n);
+  if (isNaN(v)) return '';
+  if (v <= 3) return 'sc-low';
+  if (v <= 6) return 'sc-mid';
+  return 'sc-hi';
+}
+
+const sessionStyle = {
+  Strength: 'background:#fff3e8;color:var(--orange);border:1.5px solid var(--orange)',
+  Swim: 'background:#e8f0fb;color:var(--shoulder);border:1.5px solid var(--shoulder)',
+  Bike: 'background:#eaf7ef;color:var(--green);border:1.5px solid var(--green)',
+  Mobility: 'background:var(--surface2);color:var(--muted);border:1.5px solid var(--border)',
+  Walk: 'background:var(--surface2);color:var(--muted);border:1.5px solid var(--border)',
+  'Run/Walk': 'background:#eaf7ef;color:var(--green);border:1.5px solid var(--green)',
+  Rest: 'background:var(--surface2);color:var(--muted2);border:1.5px solid var(--border)',
+  Garmin: 'background:#e8f0fb;color:var(--shoulder);border:1.5px solid var(--shoulder)',
+};
+
+function saveAndRender() {
+  localStorage.setItem('tnt_logs_v2', JSON.stringify(logs));
+  renderLogs();
+}
+
+function addLog(entry) {
+  if (!entry) {
+    const date = document.getElementById('lf-date').value;
+    const session = document.getElementById('lf-session').value;
+    const kb = document.getElementById('lf-kb').value;
+    const ka = document.getElementById('lf-ka').value;
+    const sb = document.getElementById('lf-sb').value;
+    const sa = document.getElementById('lf-sa').value;
+    const notes = document.getElementById('lf-notes').value.trim();
+    if (!date) { alert('Please pick a date.'); return; }
+    entry = { id: Date.now(), date, session, kneeBefore: kb, kneeAfter: ka, shoulderBefore: sb, shoulderAfter: sa, notes, source: 'manual' };
+    document.getElementById('lf-kb').value = '';
+    document.getElementById('lf-ka').value = '';
+    document.getElementById('lf-sb').value = '';
+    document.getElementById('lf-sa').value = '';
+    document.getElementById('lf-notes').value = '';
+  }
+  logs.unshift(entry);
+  saveAndRender();
+}
+
+function renderLogs() {
+  const scroll = document.getElementById('log-scroll');
+  const empty = document.getElementById('log-empty');
+  scroll.querySelectorAll('.log-entry').forEach(e => e.remove());
+  empty.style.display = logs.length === 0 ? 'block' : 'none';
+
+  logs.forEach(log => {
+    const div = document.createElement('div');
+    div.className = 'log-entry';
+    const d = new Date((log.date || '') + 'T12:00:00');
+    const ds = isNaN(d) ? log.date : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    const sty = sessionStyle[log.session] || sessionStyle.Mobility;
+    const trend = log.kneeBefore !== '' && log.kneeAfter !== '' && !isNaN(parseInt(log.kneeAfter)) && !isNaN(parseInt(log.kneeBefore))
+      ? (parseInt(log.kneeAfter) < parseInt(log.kneeBefore) ? ' ↓✓' : parseInt(log.kneeAfter) === parseInt(log.kneeBefore) ? ' →' : ' ↑')
+      : '';
+    const trendColor = trend.includes('↓') ? 'var(--green)' : trend.includes('↑') ? 'var(--knee)' : 'var(--muted)';
+    const sTrend = log.shoulderBefore !== '' && log.shoulderAfter !== '' && log.shoulderBefore !== undefined && log.shoulderAfter !== undefined && !isNaN(parseInt(log.shoulderAfter)) && !isNaN(parseInt(log.shoulderBefore))
+      ? (parseInt(log.shoulderAfter) < parseInt(log.shoulderBefore) ? ' ↓✓' : parseInt(log.shoulderAfter) === parseInt(log.shoulderBefore) ? ' →' : ' ↑')
+      : '';
+    const sTrendColor = sTrend.includes('↓') ? 'var(--green)' : sTrend.includes('↑') ? 'var(--knee)' : 'var(--muted)';
+
+    const hasKnee = (log.kneeBefore !== '' && log.kneeBefore !== undefined) || (log.kneeAfter !== '' && log.kneeAfter !== undefined);
+    const hasShoulder = (log.shoulderBefore !== '' && log.shoulderBefore !== undefined) || (log.shoulderAfter !== '' && log.shoulderAfter !== undefined);
+
+    div.innerHTML = `
+      <div>
+        <div class="le-date">${ds}</div>
+        ${log.source === 'garmin' ? '<div class="le-source">⌚ Garmin</div>' : log.source === 'chat' ? '<div class="le-source">💬 From chat</div>' : ''}
+      </div>
+      <div style="align-self:center"><span class="le-badge" style="${sty}">${(log.session||'').toUpperCase()}</span></div>
+      <div class="pain-pair">
+        ${hasKnee ? `<div style="display:flex;flex-direction:column;gap:2px">
+          <div class="pain-lbl" style="color:var(--knee);font-weight:700">🦵 KNEE</div>
+          <div style="display:flex;gap:10px;align-items:center">
+            ${log.kneeBefore !== '' && log.kneeBefore !== undefined ? `<div class="pain-item"><div class="pain-lbl">Before</div><div class="pain-sc ${painCls(log.kneeBefore)}">${log.kneeBefore}</div></div>` : ''}
+            ${log.kneeAfter !== '' && log.kneeAfter !== undefined ? `<div class="pain-item"><div class="pain-lbl">After</div><div class="pain-sc ${painCls(log.kneeAfter)}">${log.kneeAfter}</div></div>` : ''}
+            ${trend ? `<div class="pain-item"><div class="pain-lbl">Trend</div><div class="pain-sc" style="font-size:22px;color:${trendColor}">${trend.trim()}</div></div>` : ''}
+          </div>
+        </div>` : ''}
+        ${hasKnee && hasShoulder ? `<div style="width:1px;background:var(--border);align-self:stretch;margin:0 4px"></div>` : ''}
+        ${hasShoulder ? `<div style="display:flex;flex-direction:column;gap:2px">
+          <div class="pain-lbl" style="color:var(--shoulder);font-weight:700">🔵 SHOULDER</div>
+          <div style="display:flex;gap:10px;align-items:center">
+            ${log.shoulderBefore !== '' && log.shoulderBefore !== undefined ? `<div class="pain-item"><div class="pain-lbl">Before</div><div class="pain-sc ${painCls(log.shoulderBefore)}">${log.shoulderBefore}</div></div>` : ''}
+            ${log.shoulderAfter !== '' && log.shoulderAfter !== undefined ? `<div class="pain-item"><div class="pain-lbl">After</div><div class="pain-sc ${painCls(log.shoulderAfter)}">${log.shoulderAfter}</div></div>` : ''}
+            ${sTrend ? `<div class="pain-item"><div class="pain-lbl">Trend</div><div class="pain-sc" style="font-size:22px;color:${sTrendColor}">${sTrend.trim()}</div></div>` : ''}
+          </div>
+        </div>` : ''}
+        ${!hasKnee && !hasShoulder ? `<div style="color:var(--muted2);font-size:13px;align-self:center">No pain scores recorded</div>` : ''}
+      </div>
+      <div class="le-notes">
+        ${log.notes ? escHtml(log.notes) : '<em style="color:var(--muted2)">No notes</em>'}
+        ${log.garminData ? `<div class="le-garmin">⌚ ${log.garminData}</div>` : ''}
+      </div>
+    `;
+    scroll.insertBefore(div, empty);
+  });
+}
+
+// ══ GARMIN CSV IMPORT (Log page) ══
+function handleGarminUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const entries = parseGarminCSV(e.target.result);
+    if (entries.length === 0) { alert('No activities found in this CSV. Make sure it\'s a Garmin Connect activity export.'); return; }
+    entries.forEach(entry => { logs.unshift(entry); });
+    saveAndRender();
+    alert(`✅ Imported ${entries.length} Garmin activit${entries.length === 1 ? 'y' : 'ies'} into your log!`);
+    showView('log', document.querySelectorAll('.nav-btn')[4]);
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+function parseGarminCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h => h.replace(/"/g,'').trim());
+
+  const findCol = (...names) => {
+    for (const name of names) {
+      const idx = headers.findIndex(h => h.toLowerCase().includes(name.toLowerCase()));
+      if (idx >= 0) return idx;
+    }
+    return -1;
+  };
+
+  const dateCol = findCol('date', 'start time', 'activity date');
+  const typeCol = findCol('activity type', 'type', 'sport');
+  const durCol = findCol('time', 'duration', 'elapsed');
+  const hrCol = findCol('avg hr', 'heart rate', 'avg heart');
+  const distCol = findCol('distance');
+  const calCol = findCol('calories');
+
+  const entries = [];
+  for (let i = 1; i < lines.length; i++) {
+    const cols = parseCSVLine(lines[i]);
+    if (cols.length < 2) continue;
+    const rawDate = dateCol >= 0 ? cols[dateCol]?.replace(/"/g,'').trim() : '';
+    const rawType = typeCol >= 0 ? cols[typeCol]?.replace(/"/g,'').trim() : 'Activity';
+    const dur = durCol >= 0 ? cols[durCol]?.replace(/"/g,'').trim() : '';
+    const hr = hrCol >= 0 ? cols[hrCol]?.replace(/"/g,'').trim() : '';
+    const dist = distCol >= 0 ? cols[distCol]?.replace(/"/g,'').trim() : '';
+    const cals = calCol >= 0 ? cols[calCol]?.replace(/"/g,'').trim() : '';
+
+    // Map Garmin type to our session types
+    const typeMap = { running: 'Run/Walk', cycling: 'Bike', swimming: 'Swim', walking: 'Walk', strength_training: 'Strength', yoga: 'Mobility' };
+    const session = typeMap[rawType.toLowerCase()] || rawType || 'Activity';
+
+    // Build garmin summary string
+    const parts = [];
+    if (dur) parts.push(`Duration: ${dur}`);
+    if (hr) parts.push(`Avg HR: ${hr} bpm`);
+    if (dist && dist !== '0' && dist !== '0.00') parts.push(`Distance: ${dist}`);
+    if (cals && cals !== '0') parts.push(`Calories: ${cals}`);
+    const garminData = parts.join(' · ');
+
+    // Parse date
+    let dateStr = '';
+    if (rawDate) {
+      const d = new Date(rawDate);
+      dateStr = isNaN(d) ? rawDate : d.toISOString().split('T')[0];
+    }
+
+    entries.push({
+      id: Date.now() + i,
+      date: dateStr || new Date().toISOString().split('T')[0],
+      session,
+      kneeBefore: '',
+      kneeAfter: '',
+      shoulderBefore: '',
+      shoulderAfter: '',
+      notes: `Garmin: ${rawType}`,
+      garminData,
+      source: 'garmin'
+    });
+  }
+  return entries;
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    if (line[i] === '"') { inQuotes = !inQuotes; }
+    else if (line[i] === ',' && !inQuotes) { result.push(current); current = ''; }
+    else { current += line[i]; }
+  }
+  result.push(current);
+  return result;
+}
+
+// ══ CALENDAR DATA ══
+const weekData = {
+  1: {
+    label: 'WEEK 1 — PHASE 1',
+    days: [
+      { name: 'MON', type: 'Strength', emoji: '💪', gate: true, collagen: true, exercises: [
+        { name: '🔵 Shoulder Warm-Up Circuit', sets: 1, reps: 'Full circuit', rest: '—', cue: 'External rotation · Internal rotation · Y/T/W · Pull-apart · Wall slides · Pec stretch. Do this FIRST every strength day.' },
+        { name: '🦵 Quad Set — Isometric', sets: 3, reps: '10 × 10-sec holds', rest: '30s', cue: 'Tighten quad, press back of knee into floor. Zero movement. Safe on worst knee days.' },
+        { name: '🦵 Short Arc Quad (SAQ)', sets: 3, reps: '15 each leg', rest: '45s', cue: 'Roll under knee to 30° bend. Straighten to full extension only. Feel VMO fire on inner quad.' },
+        { name: '🦵 Glute Bridge', sets: 3, reps: '15', rest: '60s', cue: 'Feet flat hip-width, drive hips up, squeeze glutes hard at top. Hold 2 sec.' },
+        { name: '🦵 Clamshell', sets: 3, reps: '20 each side', rest: '45s', cue: 'Side-lying, feet stacked, rotate top knee up. Keep hips stacked — don\'t rock back.' },
+        { name: '🦵 Side-Lying Hip Abduction', sets: 3, reps: '15 each side', rest: '45s', cue: 'Straight leg, lift to ~30°. Slow and controlled. Targets glute medius — critical for knee alignment.' },
+        { name: '🔵 Seated Row (cable or band)', sets: 3, reps: '12', rest: '60s', cue: 'Neutral grip, elbows back, squeeze shoulder blades. Don\'t shrug right shoulder.' },
+        { name: '🔵 DB Chest Press — flat, neutral grip', sets: 3, reps: '12', rest: '60s', cue: 'Neutral grip (palms facing each other) reduces shoulder impingement vs barbell.' },
+        { name: 'Dead Bug', sets: 3, reps: '10 each side', rest: '45s', cue: 'Low back pressed flat throughout. Slow. Don\'t let back arch.' },
+      ]},
+      { name: 'TUE', type: 'Swim', emoji: '🏊', gate: true, info: 'Target 700–800m. Form over distance every session.', exercises: [
+        { name: '🔵 Shoulder Warm-Up (poolside)', sets: 1, reps: 'Full circuit', rest: '—', cue: '5 min before entering water.' },
+        { name: '🔵 Warm-Up — Easy Freestyle', sets: 1, reps: '200m easy', rest: '—', cue: 'Very relaxed. High elbow catch. Z1 effort only.' },
+        { name: '🦵 Kickboard Drills (no arms)', sets: 4, reps: '25m each', rest: '30s', cue: 'Removes shoulder load. Builds leg strength. Low impact on knees.' },
+        { name: '🔵 Pull Buoy Freestyle', sets: 4, reps: '50m each', rest: '30s', cue: 'Buoy between thighs. Focus on catch width — don\'t cross center line.' },
+        { name: '🔵 Backstroke Easy', sets: 4, reps: '50m each', rest: '30s', cue: 'Different shoulder mechanics — easier on impingement. Good active recovery.' },
+        { name: 'Easy Cool-Down', sets: 1, reps: '100m', rest: '—', cue: 'Z1 only. Total ~700–800m.' },
+        { name: '🔵 Ice Right Shoulder', sets: 1, reps: '15 min', rest: '—', cue: 'Every swim for first 4 weeks.' },
+      ]},
+      { name: 'WED', type: 'Bike', emoji: '🚴', info: 'Zero knee impact. Keep this consistent every week.', exercises: [
+        { name: 'Warm-Up Easy Spin', sets: 1, reps: '10 min', rest: '—', cue: 'Cadence 80–90 rpm. RPE 3.' },
+        { name: 'Steady Z2 Bike', sets: 1, reps: '35–40 min', rest: '—', cue: '106–120 bpm or RPE 4–5. Conversational pace.' },
+        { name: 'Cool-Down', sets: 1, reps: '5 min', rest: '—', cue: 'RPE 2.' },
+        { name: 'Plank (elbows)', sets: 3, reps: '30 sec', rest: '45s', cue: 'Neutral spine. Build to 60 sec by week 4.' },
+        { name: 'Bird Dog', sets: 3, reps: '10 each side', rest: '45s', cue: 'Opposite arm/leg. Hold 2 sec.' },
+        { name: 'Side Plank', sets: 2, reps: '20 sec each side', rest: '30s', cue: 'Hips stacked and lifted.' },
+        { name: '🦵 TKE — Band', sets: 3, reps: '20 each leg', rest: '30s', cue: 'Band behind knee, slight bend, press knee straight. Best VMO exercise.' },
+      ]},
+      { name: 'THU', type: 'Mobility', emoji: '🧘', info: 'Easy day — this is recovery, not a workout.', exercises: [
+        { name: 'Foam Roll — Full Lower Body', sets: 1, reps: '10 min', rest: '—', cue: 'Calves (avoid directly on knee), quads, IT band, glutes. Slow over tight spots.' },
+        { name: 'Hip Flexor Stretch (kneeling)', sets: 2, reps: '60s each side', rest: '—', cue: 'Front knee 90°, back knee on floor. Push hips forward gently.' },
+        { name: '🦵 Pigeon Pose (chair-modified)', sets: 2, reps: '45s each side', rest: '—', cue: 'Chair version: ankle on opposite knee, lean forward. Skip if knee pain increases.' },
+        { name: '🔵 Doorway Pec Stretch', sets: 2, reps: '45s each side', rest: '—', cue: 'Both sides. Opens chest and improves swim posture.' },
+        { name: 'Seated Spinal Twist', sets: 2, reps: '30s each side', rest: '—', cue: 'Seated, cross leg over, gentle twist.' },
+        { name: 'Ankle Circles + Seated Calf Raises', sets: 2, reps: '20 each', rest: '—', cue: 'Circulation. Zero knee load seated.' },
+      ]},
+      { name: 'FRI', type: 'Strength', emoji: '💪', gate: true, collagen: true, exercises: [
+        { name: '🔵 Shoulder Warm-Up Circuit', sets: 1, reps: 'Full circuit', rest: '—', cue: 'Required before every strength session.' },
+        { name: '🦵 TKE — Band Warm-Up', sets: 2, reps: '20 each leg', rest: '30s', cue: 'Always first knee exercise before any loaded movement.' },
+        { name: '🦵 Step-Up — 4" Step', sets: 3, reps: '10 each leg', rest: '60s', cue: 'Week 1: use a thick book or bottom stair. Step up fully, stand tall, step down slowly (3 sec).' },
+        { name: '🦵 Single-Leg Glute Bridge', sets: 2, reps: '8 each leg', rest: '60s', cue: 'Extend one leg, drive with other glute. Only if bilateral bridge feels easy.' },
+        { name: '🔵 Lat Pulldown — neutral grip, NOT behind head', sets: 3, reps: '12', rest: '60s', cue: 'To chest only. Elbows track down and back.' },
+        { name: '🔵 DB Lateral Raise', sets: 3, reps: '15', rest: '45s', cue: 'Light weight. Shoulder height max — going higher increases impingement.' },
+        { name: 'DB Bicep Curl', sets: 3, reps: '12', rest: '45s', cue: 'Both arms. Watch right shoulder doesn\'t hike up.' },
+        { name: '🔵 Tricep Pushdown (cable or band)', sets: 3, reps: '15', rest: '45s', cue: 'Elbows at side. No overhead tricep extension.' },
+        { name: 'Hollow Hold', sets: 3, reps: '20 sec', rest: '45s', cue: 'Low back pressed down, legs at 45°.' },
+      ]},
+      { name: 'SAT', type: 'Swim', emoji: '🏊', gate: true, info: '~800m. Consistency over volume this week.', exercises: [
+        { name: '🔵 Shoulder Warm-Up (poolside)', sets: 1, reps: 'Full circuit', rest: '—', cue: 'Same as Tuesday.' },
+        { name: 'Warm-Up Easy Freestyle', sets: 1, reps: '150m', rest: '—', cue: 'Z1 only.' },
+        { name: '🔵 Freestyle Technical Focus', sets: 6, reps: '50m each', rest: '45s', cue: 'One cue per set. Set 1: high elbow catch. Set 2: don\'t cross centerline. Set 3: bilateral breathing. Repeat.' },
+        { name: '🔵 Backstroke', sets: 4, reps: '50m each', rest: '30s', cue: 'Easy. Good shoulder mechanics variation.' },
+        { name: 'Cool-Down', sets: 1, reps: '100m', rest: '—', cue: 'Z1 easy.' },
+        { name: '🔵 Ice Right Shoulder', sets: 1, reps: '15 min', rest: '—', cue: 'Post-swim every session.' },
+      ]},
+      { name: 'SUN', type: 'Rest', emoji: '😴', info: 'Rest day. Log the week. Note any pain trends.', exercises: [
+        { name: '🦵 Optional Easy Walk', sets: 1, reps: '20–30 min', rest: '—', cue: 'Z1 only. Flat surface. Stop if knee pain increases above starting level.' },
+        { name: 'Foam Roll + Stretch', sets: 1, reps: '10 min', rest: '—', cue: 'Anything tight from the week.' },
+      ]},
+    ]
+  },
+  2: {
+    label: 'WEEK 2 — PHASE 1',
+    days: [
+      { name: 'MON', type: 'Strength', emoji: '💪', gate: true, collagen: true, exercises: [
+        { name: '🔵 Shoulder Warm-Up Circuit', sets: 1, reps: 'Full circuit', rest: '—', cue: 'Required. Same as week 1.' },
+        { name: '🦵 Quad Set', sets: 3, reps: '12 × 10-sec holds', rest: '30s', cue: '+2 reps from week 1.' },
+        { name: '🦵 Short Arc Quad (SAQ)', sets: 3, reps: '20 each leg', rest: '45s', cue: '+5 reps. Still last 30° only.' },
+        { name: '🦵 Glute Bridge + resistance band', sets: 3, reps: '20', rest: '60s', cue: '+5 reps. Add band above knees for more glute medius activation.' },
+        { name: '🦵 Clamshell with Band', sets: 3, reps: '25 each side', rest: '45s', cue: 'Light band above knees if bodyweight is easy.' },
+        { name: '🦵 Step-Up — 4" step, 3-sec lowering', sets: 3, reps: '12 each leg', rest: '60s', cue: '+2 reps. The slow lowering is where the strength is built.' },
+        { name: '🔵 Seated Row', sets: 3, reps: '12', rest: '60s', cue: 'Focus on shoulder blade squeeze.' },
+        { name: '🔵 DB Chest Press (flat, neutral grip)', sets: 3, reps: '12', rest: '60s', cue: 'Can increase weight slightly if week 1 felt easy.' },
+        { name: 'Dead Bug', sets: 3, reps: '12 each side', rest: '45s', cue: '+2 reps.' },
+        { name: 'Pallof Press (NEW)', sets: 3, reps: '12 each side', rest: '45s', cue: 'Anti-rotation core. Band at chest height, press out, hold 2 sec. Core stability.' },
+      ]},
+      { name: 'TUE', type: 'Swim', emoji: '🏊', gate: true, info: '~1,000–1,050m.', exercises: [
+        { name: '🔵 Shoulder Warm-Up', sets: 1, reps: 'Full circuit', rest: '—', cue: 'Poolside.' },
+        { name: 'Easy Warm-Up', sets: 1, reps: '200m', rest: '—', cue: 'Z1.' },
+        { name: '🦵 Kickboard Drills', sets: 6, reps: '25m each', rest: '20s', cue: '6 sets (up from 4). Add slight flutter kick effort.' },
+        { name: '🔵 Pull Buoy Freestyle', sets: 4, reps: '75m each', rest: '45s', cue: '+25m per set. Keep technical focus.' },
+        { name: '🔵 Backstroke', sets: 4, reps: '50m each', rest: '30s', cue: 'Same.' },
+        { name: 'Easy Cool-Down', sets: 1, reps: '100m', rest: '—', cue: 'Total ~1,000–1,050m.' },
+        { name: '🔵 Ice Right Shoulder', sets: 1, reps: '15 min', rest: '—', cue: 'Still every session.' },
+      ]},
+      { name: 'WED', type: 'Bike', emoji: '🚴', info: 'Stay in Z2. HR cap 120 bpm.', exercises: [
+        { name: 'Warm-Up', sets: 1, reps: '10 min easy', rest: '—', cue: 'Z1.' },
+        { name: 'Steady Z2 Bike', sets: 1, reps: '40–45 min', rest: '—', cue: '+5 min from week 1. Same HR target.' },
+        { name: 'Cool-Down', sets: 1, reps: '5 min', rest: '—', cue: 'Z1.' },
+        { name: 'Plank', sets: 3, reps: '35 sec', rest: '45s', cue: '+5 sec.' },
+        { name: 'Bird Dog', sets: 3, reps: '12 each side', rest: '45s', cue: '+2 reps.' },
+        { name: 'Side Plank', sets: 2, reps: '25 sec each side', rest: '30s', cue: '+5 sec.' },
+        { name: '🦵 TKE (band)', sets: 3, reps: '20 each leg', rest: '30s', cue: 'Permanent exercise — always included.' },
+        { name: '🦵 Standing Hip Abduction band (NEW)', sets: 3, reps: '15 each side', rest: '30s', cue: 'Light band around ankles, kick leg out to side. Glute medius.' },
+      ]},
+      { name: 'THU', type: 'Mobility', emoji: '🧘', info: 'Easy day — recovery only.', exercises: [
+        { name: 'Foam Roll — Full Body', sets: 1, reps: '12 min', rest: '—', cue: 'Add upper back and lats this week.' },
+        { name: '🦵 90/90 Hip Stretch (NEW)', sets: 2, reps: '60s each side', rest: '—', cue: 'Sit on floor, both knees at 90°. Lean over front shin. Hip external rotation — critical for knee alignment.' },
+        { name: 'Hamstring Stretch (lying + strap)', sets: 2, reps: '45s each leg', rest: '—', cue: 'Loop towel around foot, gently pull. No bouncing.' },
+        { name: '🔵 Doorway Pec Stretch', sets: 2, reps: '45s each side', rest: '—', cue: 'Ongoing.' },
+        { name: 'Child\'s Pose', sets: 2, reps: '60s', rest: '—', cue: 'Low back decompression.' },
+        { name: '🔵 Thoracic Extension (foam roller)', sets: 1, reps: '8 vertebral levels', rest: '—', cue: 'Roller perpendicular to spine, lean back gently. Opens chest for swim posture.' },
+      ]},
+      { name: 'FRI', type: 'Strength', emoji: '💪', gate: true, collagen: true, info: 'Goblet squat is a TEST this week — stop at any pain.', exercises: [
+        { name: '🔵 Shoulder Warm-Up Circuit', sets: 1, reps: 'Full circuit', rest: '—', cue: 'Required.' },
+        { name: '🦵 TKE (band warm-up)', sets: 2, reps: '20 each leg', rest: '30s', cue: 'Always first.' },
+        { name: '🦵 Step-Up — 4" step', sets: 3, reps: '12 each leg', rest: '60s', cue: 'Same height. Add 3–4 sec lowering.' },
+        { name: '🦵 Goblet Squat — LIMITED DEPTH (NEW)', sets: 3, reps: '10', rest: '60s', cue: 'Hold DB at chest. STOP at first pain — typically 60–70°. This is a test this week.' },
+        { name: '🦵 Single-Leg Glute Bridge', sets: 2, reps: '10 each leg', rest: '60s', cue: '+2 reps from week 1.' },
+        { name: '🔵 Lat Pulldown (neutral/underhand)', sets: 3, reps: '12', rest: '60s', cue: 'Can increase weight slightly.' },
+        { name: '🔵 DB Lateral Raise', sets: 3, reps: '15', rest: '45s', cue: 'Add small pause at top.' },
+        { name: '🔵 Face Pull (NEW)', sets: 3, reps: '20', rest: '45s', cue: 'Pull to face level, elbows high, externally rotate at end. Best exercise for shoulder health.' },
+        { name: 'Plank Shoulder Tap', sets: 3, reps: '10 each side', rest: '45s', cue: 'Plank, tap opposite shoulder while keeping hips stable.' },
+      ]},
+      { name: 'SAT', type: 'Swim', emoji: '🏊', gate: true, info: '~1,100–1,150m.', exercises: [
+        { name: '🔵 Shoulder Warm-Up', sets: 1, reps: 'Full circuit', rest: '—', cue: 'Poolside.' },
+        { name: 'Easy Warm-Up', sets: 1, reps: '200m', rest: '—', cue: 'Z1.' },
+        { name: '🔵 Freestyle Intervals', sets: 6, reps: '75m each', rest: '45s', cue: 'Up from 50m. Technique: bilateral breathing (every 3 strokes).' },
+        { name: '🔵 Backstroke', sets: 4, reps: '50m each', rest: '30s', cue: 'Keep.' },
+        { name: 'Easy Cool-Down', sets: 1, reps: '100m', rest: '—', cue: 'Total ~1,100–1,150m.' },
+        { name: '🔵 Ice Right Shoulder', sets: 1, reps: '15 min', rest: '—', cue: 'Ongoing habit.' },
+      ]},
+      { name: 'SUN', type: 'Rest', emoji: '😴', info: 'Walk duration building. This transitions to run/walk in week 9+.', exercises: [
+        { name: '🦵 Walk (flat, 25–30 min)', sets: 1, reps: '25–30 min', rest: '—', cue: '+5 min from week 1. Knee gate same — no increase in pain. Log it.' },
+        { name: 'Light Stretch', sets: 1, reps: '10 min', rest: '—', cue: 'Hip flexors, quads, shoulders.' },
+      ]},
+    ]
+  }
+};
+
+// ══ TODAY'S DATE ══
+(function() {
+  const now = new Date();
+  const ds = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  document.getElementById('today-date').textContent = ds;
+  document.getElementById('lf-date').value = now.toISOString().split('T')[0];
+})();
+
+// ══ DYNAMIC WEEK SYSTEM ══
+// savedWeeks: keyed by week number, stored in localStorage
+// allWeeks() merges hardcoded weekData + savedWeeks
+let savedWeeks = JSON.parse(localStorage.getItem('tnt_weeks_v2') || '{}');
+
+function allWeeks() {
+  const merged = {};
+  Object.keys(weekData).forEach(k => merged[parseInt(k)] = weekData[k]);
+  Object.keys(savedWeeks).forEach(k => merged[parseInt(k)] = savedWeeks[k]);
+  return merged;
+}
+
+function maxWeekNum() { return Math.max(...Object.keys(allWeeks()).map(Number)); }
+
+function saveWeek(num, weekObj) {
+  savedWeeks[num] = weekObj;
+  localStorage.setItem('tnt_weeks_v2', JSON.stringify(savedWeeks));
+}
+
+let curWeek = 2, curDay = 0;
+
+function renderCal() {
+  const weeks = allWeeks();
+  const wk = weeks[curWeek];
+  if (!wk) { curWeek = maxWeekNum(); renderCal(); return; }
+
+  // Update topbar pill
+  const phase = curWeek <= 4 ? 1 : curWeek <= 8 ? 2 : curWeek <= 12 ? 3 : curWeek <= 18 ? 4 : curWeek <= 24 ? 5 : curWeek <= 36 ? 6 : 7;
+  document.getElementById('phase-pill').textContent = `Phase ${phase} · Week ${curWeek}`;
+  document.getElementById('wk-title').textContent = wk.label || `WEEK ${curWeek}`;
+
+  // Show/hide next button based on available weeks
+  const nextExists = !!weeks[curWeek + 1];
+  document.getElementById('build-week-btn').style.display = nextExists ? 'none' : 'inline-block';
+
+  const grid = document.getElementById('day-grid');
+  grid.innerHTML = '';
+  (wk.days || []).forEach((d, i) => {
+    const tab = document.createElement('div');
+    tab.className = 'day-tab' + (i === curDay ? ' active' : '');
+    tab.innerHTML = `<div class="day-em">${d.emoji||'📋'}</div><div class="day-nm">${d.name}</div><div class="day-tp">${d.type}</div>`;
+    tab.onclick = () => { curDay = i; renderCal(); };
+    grid.appendChild(tab);
+  });
+
+  if (!wk.days || wk.days.length === 0) {
+    document.getElementById('cal-scroll').innerHTML = `<div style="text-align:center;padding:60px;color:var(--muted)">This week hasn't been built yet. Ask the coach to build it!</div>`;
+    return;
+  }
+
+  const day = wk.days[curDay] || wk.days[0];
+  const typeMap = { Strength: 'tb-strength', Swim: 'tb-swim', Bike: 'tb-bike', Mobility: 'tb-mobility', Rest: 'tb-rest' };
+  const tb = typeMap[day.type] || 'tb-rest';
+
+  let html = `<div class="workout-panel">
+    <div class="wp-head">
+      <span class="type-badge ${tb}">${(day.type||'').toUpperCase()}</span>
+      <span class="wp-head-title">${day.name} · Week ${curWeek}</span>
+    </div>`;
+
+  if (day.gate) html += `<div class="alert-bar gate">⚡ <strong>Pain gate:</strong> If knee pain ≥ 5/10 at start → skip all leg loading, do upper body + swim only</div>`;
+  if (day.collagen) html += `<div class="alert-bar collagen">💊 <strong>Collagen + Vit C:</strong> Take 15g collagen + 50mg Vit C right now — needs 30–45 min before you start</div>`;
+  if (day.info) html += `<div class="alert-bar info">ℹ️ ${day.info}</div>`;
+
+  if (day.exercises && day.exercises.length) {
+    html += `<table class="ex-table">
+      <thead><tr><th>Exercise</th><th>Sets</th><th>Reps / Time</th><th>Rest</th><th>Coaching Cue</th></tr></thead><tbody>`;
+    day.exercises.forEach(ex => {
+      html += `<tr>
+        <td class="ex-nm">${ex.name||''}</td>
+        <td class="ex-sets">${ex.sets||''}</td>
+        <td class="ex-reps">${ex.reps||''}</td>
+        <td class="ex-rest">${ex.rest||'—'}</td>
+        <td class="ex-cue">${ex.cue||''}</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+  } else if (day.rawText) {
+    html += `<div style="padding:20px 22px;font-size:15px;line-height:1.8;color:var(--text2)">${day.rawText}</div>`;
+  }
+
+  html += `</div>`;
+  document.getElementById('cal-scroll').innerHTML = html;
+}
+
+function changeWeek(dir) {
+  const weeks = allWeeks();
+  const n = curWeek + dir;
+  if (weeks[n]) { curWeek = n; curDay = 0; renderCal(); }
+}
+
+// Build next week via AI
+function buildNextWeek() {
+  if (!apiKey) {
+    showView('chat', document.querySelectorAll('.nav-btn')[3]);
+    addMsg('ai', "To build new weeks, I need your API key first. Enter it above and activate the coach, then come back to the calendar and tap **Build Next Week**.");
+    return;
+  }
+  const next = maxWeekNum() + 1;
+  showView('chat', document.querySelectorAll('.nav-btn')[3]);
+  qsend(`Please build Week ${next} for me in full detail. Include all 7 days with every exercise, sets, reps, rest periods, and coaching cues — formatted exactly like the previous weeks.`);
+}
+
+// ══ CHAT ══
+let apiKey = '';
+let chatHistory = [];
+let pendingLogEntry = null;
+
+const SYS = `You are Tom's personal training coach for the TNT Garage 12-Month Return to Running program. Today's date is ${new Date().toLocaleDateString('en-US', {weekday:'long',month:'long',day:'numeric',year:'numeric'})}.
+
+TOM'S PROFILE: Age 70, retired. Weight 148 lb, 5'4". RHR 55 bpm (excellent). BP 120/80 on losartan (an ARB — HR zones fully valid). Self-rated 8/10 fitness, 5 days/week active.
+
+CONDITIONS:
+1. BILATERAL TORN MENISCUS — Left knee worse. No surgery. Pain 6/10. No swelling, stiffness only (good sign). No deep knee flexion. Conservative management only.
+2. SWIMMER'S SHOULDER (Right) — Pain 4/10 on pull phase. Subscapularis/biceps tendon. No behind-head movements. Fix: high elbow catch.
+3. HYPERTENSION — Controlled on losartan. Stay in aerobic zones.
+
+PAIN GATES: AM knee ≥5 → skip leg work. Pain rises mid-exercise → stop. Goal: finish every session at same pain or lower than start.
+
+LEFT KNEE: All single-leg exercises start RIGHT first. Left may lag 1–2 weeks — correct. Morning: ankle pumps + quad sets BEFORE getting out of bed.
+
+SHOULDER WARM-UP (before EVERY session): Band ER 3×15, Band IR 3×15, Prone Y/T/W 2×10 each, Band Pull-Apart 3×20, Scapular Wall Slides 2×12, Doorway Pec Stretch 2×30s, Bear Hug Squeeze 3×10×5s, Sleeper Stretch 3×45s. Ice right shoulder 15 min post-swim for first 4 weeks.
+
+SWIM MECHANICS: High elbow catch (most important), hand entry at shoulder width, no crossing center line, no paddles.
+
+COLLAGEN: 15g + 50mg Vit C, 30–60 min BEFORE each gym and swim session.
+
+SUPPLEMENTS: Creatine 5g/day (post-workout shake), Magnesium glycinate 400mg (60 min before bed), Fish oil 2–3g EPA/DHA, Vit D3 2,000–4,000 IU, Melatonin 0.5mg NOT 5mg (90 min before bed).
+
+PROTEIN TARGETS: Breakfast 40–50g, Lunch 45–55g, Post-workout 25–35g within 30 min, Dinner 40–50g. Total 150–160g/day.
+
+HR ZONES: Z1 95–105 (recovery), Z2 106–120 (PRIMARY), Z3 121–132 (weeks 9+), Z4 133–142 (Phase 4+), Z5 143+ (not used).
+
+PHASES: 1 (Wk 1–4) Foundation, no running. 2 (Wk 5–8) Walk intervals. 3 (Wk 9–12) Walk-to-run. 4 (Wk 13–18) Running base. 5 (Wk 19–24) Aerobic dev. 6 (Wk 25–36) Fitness. 7 (Wk 37–52) Race ready. Knees dictate timeline — gates are pain-based not calendar-based.
+
+PHASE 1 GATE (all 5 YES to advance): 45-min walk with knee ≤3? Strength sessions finish same/lower pain? Shoulder pain held steady or improved? Goblet squat pain-free at limited depth? Shoulder warm-up before every session?
+
+WEEK 1: Mon Strength, Tue Swim (~700–800m), Wed Bike (35–40 min Z2), Thu Mobility, Fri Strength, Sat Swim (~800m), Sun Rest + optional walk.
+WEEK 2: Same structure. Goblet squat test Fri. Swim 1,000–1,050m. Bike 40–45 min. Pallof press + face pull added.
+WEEK 3: RDL added. 6" step-up if 4" pain-free. Swim 1,100–1,400m. Copenhagen plank added.
+WEEK 4: Consolidation week. No new exercises. Swim 1,500–1,800m. Phase 1 gate check Sunday.
+
+TEXT LOG DETECTION: If the user's message looks like a training log entry (mentions exercises, pain scores, session type, how it felt, distance, HR, etc.), you MUST:
+1. Acknowledge what you understood
+2. Provide relevant coaching feedback
+3. End your response with EXACTLY this JSON block on its own line (no markdown, no backticks):
+LOG_ENTRY:{"date":"YYYY-MM-DD","session":"TYPE","kneeBefore":"X","kneeAfter":"Y","shoulderBefore":"X","shoulderAfter":"Y","notes":"1-2 sentence summary"}
+Use today's actual date if no date mentioned. Session: Strength, Swim, Bike, Mobility, Walk, Run/Walk, or Rest. Leave kneeBefore/kneeAfter/shoulderBefore/shoulderAfter as "" if not mentioned.
+
+WEEK GENERATION: When asked to build or generate a week's workout, always end your response with a JSON block in EXACTLY this format on its own line:
+WEEK_DATA:{"weekNum":N,"label":"WEEK N — PHASE P","days":[{"name":"MON","type":"Strength","emoji":"💪","gate":true,"collagen":true,"info":"","exercises":[{"name":"Exercise name","sets":3,"reps":"12","rest":"60s","cue":"coaching cue"}]},{"name":"TUE","type":"Swim","emoji":"🏊","gate":true,"info":"~1000m","exercises":[...]},{"name":"WED","type":"Bike","emoji":"🚴","info":"Z2","exercises":[...]},{"name":"THU","type":"Mobility","emoji":"🧘","info":"","exercises":[...]},{"name":"FRI","type":"Strength","emoji":"💪","gate":true,"collagen":true,"exercises":[...]},{"name":"SAT","type":"Swim","emoji":"🏊","gate":true,"exercises":[...]},{"name":"SUN","type":"Rest","emoji":"😴","info":"Rest day","exercises":[]}]}
+Include gate:true for Strength/Swim days. Include collagen:true for Strength days. Every day must have all 7 days (MON through SUN). Make exercises an array with name, sets (number), reps (string), rest (string), cue (string).
+
+GARMIN DATA: If user shares Garmin CSV or activity data, analyze HR zone compliance, duration, and distance against their program targets. Be specific and encouraging.
+
+STYLE: Warm, encouraging, direct. Tom is 70 and intelligent. Bold key terms. Always mention pain gates for knee work. Practical and actionable.`;
+
+function startChat() {
+  const k = document.getElementById('api-in').value.trim();
+  if (!k.startsWith('sk-ant-')) { alert('Please enter a valid Anthropic API key (starts with sk-ant-)'); return; }
+  apiKey = k;
+  localStorage.setItem('tnt_api_key', k);
+  document.getElementById('chat-setup').style.display = 'none';
+  document.getElementById('chat-live').style.display = 'flex';
+  addMsg('ai', `Hey Tom! 👋 Today is **${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}** and your full program is loaded.\n\nYou can ask me anything, paste a text description of your session and I'll log it, or tap **Build Next Week** on the calendar to add new weeks. What do you need?`);
+}
+
+function qsend(t) { document.getElementById('chat-in').value = t; sendMsg(); }
+
+// ══ IMAGE HANDLING ══
+let pendingImage = null; // { base64, mediaType }
+
+function handleImageFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  loadImageFile(file);
+  input.value = '';
+}
+
+function loadImageFile(file) {
+  const allowed = ['image/jpeg','image/png','image/gif','image/webp'];
+  if (!allowed.includes(file.type)) { alert('Please use a JPEG, PNG, GIF, or WebP image.'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const base64 = e.target.result.split(',')[1];
+    pendingImage = { base64, mediaType: file.type };
+    document.getElementById('image-preview-thumb').src = e.target.result;
+    document.getElementById('image-preview-bar').style.display = 'flex';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearImage() {
+  pendingImage = null;
+  document.getElementById('image-preview-bar').style.display = 'none';
+  document.getElementById('image-preview-thumb').src = '';
+}
+
+async function sendMsg() {
+  const inp = document.getElementById('chat-in');
+  const text = inp.value.trim();
+  if (!text && !pendingImage) return;
+  if (document.getElementById('send-btn').disabled) return;
+  inp.value = ''; inp.style.height = 'auto';
+
+  // Build message content — array only when image is attached
+  let userContent;
+  if (pendingImage) {
+    userContent = [
+      { type: 'image', source: { type: 'base64', media_type: pendingImage.mediaType, data: pendingImage.base64 } },
+      { type: 'text', text: text || 'Please analyze this Garmin screenshot in the context of my training program.' }
+    ];
+    addMsgWithImage(text || 'Here\'s my Garmin screenshot — please analyze it.', document.getElementById('image-preview-thumb').src);
+    clearImage();
+  } else {
+    // Plain text — must be a string, not an array
+    userContent = text;
+    addMsg('user', text);
+  }
+
+  chatHistory.push({ role: 'user', content: userContent });
+  document.getElementById('send-btn').disabled = true;
+  const typing = addTyping();
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, system: SYS, messages: chatHistory })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || 'API error');
+    const raw = data.content?.[0]?.text || 'Sorry, try again.';
+    // Store assistant response as plain string in history
+    chatHistory.push({ role: 'assistant', content: raw });
+    typing.remove();
+    processResponse(raw);
+  } catch(e) {
+    typing.remove();
+    addMsg('ai', `⚠️ Error: ${e.message}`);
+  }
+  document.getElementById('send-btn').disabled = false;
+}
+
+function processResponse(raw) {
+  let displayText = raw;
+  let hasAction = false;
+
+  // Check for WEEK_DATA
+  const weekMatch = raw.match(/WEEK_DATA:(\{[\s\S]*?\})(?:\n|$)/);
+  if (weekMatch) {
+    try {
+      const weekObj = JSON.parse(weekMatch[1]);
+      const wNum = weekObj.weekNum;
+      saveWeek(wNum, weekObj);
+      displayText = raw.replace(/WEEK_DATA:\{[\s\S]*?\}(?:\n|$)/, '').trim();
+      hasAction = true;
+
+      // Show save confirmation button
+      addMsgWithWeekBtn(displayText, wNum);
+      renderCal(); // refresh calendar immediately
+      return;
+    } catch(e) { console.warn('WEEK_DATA parse failed', e); }
+  }
+
+  // Check for LOG_ENTRY
+  const logMatch = raw.match(/LOG_ENTRY:(\{.*?\})(?:\n|$)/s);
+  if (logMatch) {
+    try {
+      const entry = JSON.parse(logMatch[1]);
+      pendingLogEntry = { ...entry, id: Date.now(), source: 'chat' };
+      displayText = raw.replace(/LOG_ENTRY:\{.*?\}(?:\n|$)/s, '').trim();
+      addMsgWithLogBtn(displayText, entry);
+      return;
+    } catch(e) { console.warn('LOG_ENTRY parse failed', e); }
+  }
+
+  addMsg('ai', raw);
+}
+
+function addMsgWithWeekBtn(text, weekNum) {
+  const el = document.getElementById('msgs');
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  const av = document.createElement('div'); av.className = 'msg-av'; av.textContent = 'TOM';
+  const bub = document.createElement('div'); bub.className = 'bubble';
+  bub.innerHTML = fmt(text || `Week ${weekNum} has been built and saved to your calendar! 🎉`);
+  const btn = document.createElement('button');
+  btn.className = 'log-confirm-btn';
+  btn.style.background = 'var(--shoulder)';
+  btn.textContent = `📅 View Week ${weekNum} in Calendar`;
+  btn.onclick = () => {
+    curWeek = weekNum; curDay = 0;
+    showView('calendar', document.querySelectorAll('.nav-btn')[1]);
+    renderCal();
+  };
+  bub.appendChild(btn);
+  div.appendChild(av); div.appendChild(bub);
+  el.appendChild(div); el.scrollTop = el.scrollHeight;
+}
+
+function addMsgWithLogBtn(text, entry) {
+  const el = document.getElementById('msgs');
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  const av = document.createElement('div'); av.className = 'msg-av'; av.textContent = 'TOM';
+  const bub = document.createElement('div'); bub.className = 'bubble';
+  bub.innerHTML = fmt(text);
+  const btn = document.createElement('button');
+  btn.className = 'log-confirm-btn';
+  btn.textContent = `✅ Save to Training Log`;
+  btn.onclick = () => {
+    if (pendingLogEntry) {
+      addLog(pendingLogEntry);
+      pendingLogEntry = null;
+      btn.textContent = '✓ Saved!';
+      btn.disabled = true;
+      btn.style.background = 'var(--green)';
+    }
+  };
+  bub.appendChild(btn);
+  div.appendChild(av); div.appendChild(bub);
+  el.appendChild(div); el.scrollTop = el.scrollHeight;
+}
+
+function handleGarminChat(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const content = e.target.result;
+    const preview = content.length > 2000 ? content.substring(0, 2000) + '…[truncated]' : content;
+    document.getElementById('chat-in').value = `Here's my Garmin activity data — please analyze it against my program:\n\n${preview}`;
+    sendMsg();
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+function addMsg(role, text) {
+  const el = document.getElementById('msgs');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  const av = document.createElement('div'); av.className = 'msg-av';
+  av.textContent = role === 'ai' ? 'TOM' : 'T';
+  const bub = document.createElement('div'); bub.className = 'bubble';
+  bub.innerHTML = role === 'ai' ? fmt(text) : escHtml(text);
+  div.appendChild(av); div.appendChild(bub);
+  el.appendChild(div); el.scrollTop = el.scrollHeight;
+}
+
+function addMsgWithImage(text, imgSrc) {
+  const el = document.getElementById('msgs');
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  const av = document.createElement('div'); av.className = 'msg-av'; av.textContent = 'T';
+  const bub = document.createElement('div'); bub.className = 'bubble';
+  bub.innerHTML = `<img src="${imgSrc}" style="max-width:220px;max-height:160px;border-radius:8px;display:block;margin-bottom:${text ? '8px' : '0'};border:1.5px solid var(--border)">`;
+  if (text) bub.innerHTML += `<span>${escHtml(text)}</span>`;
+  div.appendChild(av); div.appendChild(bub);
+  el.appendChild(div); el.scrollTop = el.scrollHeight;
+}
+
+// Paste image from clipboard (Cmd+V with an image on clipboard)
+document.addEventListener('paste', function(e) {
+  // Only handle if chat is active and visible
+  const chatLive = document.getElementById('chat-live');
+  if (!chatLive || chatLive.style.display === 'none') return;
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      e.preventDefault();
+      const file = item.getAsFile();
+      if (file) loadImageFile(file);
+      break;
+    }
+  }
+});
+
+function addTyping() {
+  const el = document.getElementById('msgs');
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.innerHTML = '<div class="msg-av">TOM</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+  el.appendChild(div); el.scrollTop = el.scrollHeight;
+  return div;
+}
+
+function fmt(t) {
+  t = escHtml(t);
+  t = t.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  t = t.replace(/\*(.*?)\*/g, '<em style="color:var(--muted)">$1</em>');
+  t = t.replace(/^[•\-] (.+)$/gm, '<li>$1</li>');
+  t = t.replace(/(<li>.*?<\/li>\n?)+/gs, m => `<ul>${m}</ul>`);
+  return t.split('\n\n').map(p => p.trim().startsWith('<ul>') ? p : `<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+}
+
+function escHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+document.getElementById('chat-in').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 140) + 'px';
+});
+document.getElementById('chat-in').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+});
+document.getElementById('api-in').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') startChat();
+});
+
+// ══ DOWNLOAD WEEK AS PRINTABLE HTML ══
+function downloadWeek() {
+  const weeks = allWeeks();
+  const wk = weeks[curWeek];
+  if (!wk) return;
+
+  const phase = curWeek <= 4 ? 1 : curWeek <= 8 ? 2 : curWeek <= 12 ? 3 : curWeek <= 18 ? 4 : curWeek <= 24 ? 5 : curWeek <= 36 ? 6 : 7;
+  const typeColors = { Strength: '#c05820', Swim: '#2060a8', Bike: '#2a7a48', Mobility: '#8a7e6e', Rest: '#b0a490' };
+
+  let html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tom's Training — ${wk.label || 'Week ' + curWeek}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; font-size: 13px; color: #1e1a14; background: white; padding: 32px; max-width: 900px; margin: 0 auto; }
+  .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid #c97a1a; padding-bottom: 12px; margin-bottom: 24px; }
+  .brand { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; color: #c97a1a; }
+  .brand span { color: #1e1a14; }
+  .week-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 800; }
+  .athlete { font-size: 12px; color: #8a7e6e; margin-top: 4px; }
+  .day-block { margin-bottom: 20px; page-break-inside: avoid; }
+  .day-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px 8px 0 0; color: white; }
+  .day-name { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; }
+  .day-type { font-size: 11px; font-weight: 700; letter-spacing: 1px; opacity: 0.85; }
+  .alert { padding: 8px 14px; font-size: 12px; font-weight: 500; }
+  .alert.gate { background: #fff0f0; color: #c03030; border-left: 3px solid #c03030; }
+  .alert.collagen { background: #fff8e8; color: #c97a1a; border-left: 3px solid #c97a1a; }
+  .alert.info { background: #f5f3ef; color: #8a7e6e; border-left: 3px solid #ddd7cc; }
+  table { width: 100%; border-collapse: collapse; border: 1px solid #ddd7cc; }
+  th { background: #f5f3ef; padding: 8px 12px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #8a7e6e; border-bottom: 1px solid #ddd7cc; }
+  td { padding: 9px 12px; border-bottom: 1px solid #ede9e2; vertical-align: top; font-size: 12px; }
+  tr:last-child td { border-bottom: none; }
+  .ex-name { font-weight: 600; }
+  .sets { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 16px; color: #c97a1a; }
+  .footer { margin-top: 28px; padding-top: 12px; border-top: 1px solid #ddd7cc; font-size: 11px; color: #b0a490; display: flex; justify-content: space-between; }
+  @media print { body { padding: 16px; } .day-block { page-break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <div class="brand">Tom's <span>Training</span></div>
+    <div class="week-title">${wk.label || 'Week ' + curWeek} — Phase ${phase}</div>
+    <div class="athlete">Tom Scanlin · Age 70 · Return to Running Program</div>
+  </div>
+  <div style="text-align:right;font-size:12px;color:#8a7e6e">
+    Printed: ${new Date().toLocaleDateString('en-US', {weekday:'long',month:'long',day:'numeric',year:'numeric'})}<br>
+    <strong style="color:#c03030">⚡ Pain gate active every strength & swim day</strong>
+  </div>
+</div>`;
+
+  (wk.days || []).forEach(day => {
+    const color = typeColors[day.type] || '#8a7e6e';
+    html += `<div class="day-block">
+      <div class="day-head" style="background:${color}">
+        <span style="font-size:20px">${day.emoji||'📋'}</span>
+        <div>
+          <div class="day-name">${day.name}</div>
+          <div class="day-type">${day.type}</div>
+        </div>
+      </div>`;
+    if (day.gate) html += `<div class="alert gate">⚡ Pain gate: If knee pain ≥ 5/10 → skip leg work, upper body + swim only</div>`;
+    if (day.collagen) html += `<div class="alert collagen">💊 Collagen + Vit C (15g + 50mg) — take 30–45 min before starting</div>`;
+    if (day.info) html += `<div class="alert info">ℹ️ ${day.info}</div>`;
+    if (day.exercises && day.exercises.length) {
+      html += `<table><thead><tr><th>Exercise</th><th>Sets</th><th>Reps / Time</th><th>Rest</th><th>Coaching Cue</th></tr></thead><tbody>`;
+      day.exercises.forEach(ex => {
+        html += `<tr><td class="ex-name">${ex.name||''}</td><td class="sets">${ex.sets||''}</td><td>${ex.reps||''}</td><td>${ex.rest||'—'}</td><td>${ex.cue||''}</td></tr>`;
+      });
+      html += `</tbody></table>`;
+    } else if (day.rawText) {
+      html += `<div style="padding:12px 14px;border:1px solid #ddd7cc;font-size:13px;line-height:1.7">${day.rawText}</div>`;
+    }
+    html += `</div>`;
+  });
+
+  html += `<div class="footer">
+    <span>Tom's Training Dashboard · Tom Scanlin · 12-Month Return to Running</span>
+    <span>🦵 Knee first · 🔵 Shoulder always · ❤️ Stay in Z2</span>
+  </div>
+</body></html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `TNT-Week${curWeek}.html`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ══ EXPORT ICS CALENDAR FILE ══
+function exportICS() {
+  const weeks = allWeeks();
+  const wk = weeks[curWeek];
+  if (!wk) return;
+
+  // Ask user for the Monday start date of this week
+  const today = new Date();
+  // Default to next Monday if today isn't Monday
+  const dayOfWeek = today.getDay();
+  const daysToMonday = dayOfWeek === 1 ? 0 : dayOfWeek === 0 ? 1 : 8 - dayOfWeek;
+  const defaultMonday = new Date(today);
+  defaultMonday.setDate(today.getDate() + (dayOfWeek === 1 ? 0 : daysToMonday));
+  const defaultStr = defaultMonday.toISOString().split('T')[0];
+
+  const input = prompt(`Enter the Monday date for Week ${curWeek} (YYYY-MM-DD):\n\nThis tells your calendar app which week to schedule these workouts.`, defaultStr);
+  if (!input) return;
+
+  const monday = new Date(input + 'T08:00:00');
+  if (isNaN(monday)) { alert('Invalid date. Please use YYYY-MM-DD format.'); return; }
+
+  const dayNames = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+  const sessionTimes = {
+    Strength: ['07:00', '08:30'],
+    Swim:     ['07:00', '08:00'],
+    Bike:     ['07:00', '08:00'],
+    Mobility: ['07:00', '07:45'],
+    Rest:     ['08:00', '08:30'],
+    Walk:     ['08:00', '08:45'],
+    'Run/Walk': ['07:00', '08:00'],
+  };
+
+  function icsDate(date) {
+    return date.toISOString().replace(/[-:]/g,'').split('.')[0] + 'Z';
+  }
+
+  function makeUID() {
+    return 'tnt-' + Date.now() + '-' + Math.random().toString(36).substr(2,9) + '@tntgarage';
+  }
+
+  function foldLine(line) {
+    if (line.length <= 75) return line;
+    let out = '';
+    while (line.length > 75) { out += line.substr(0, 75) + '\r\n '; line = line.substr(75); }
+    return out + line;
+  }
+
+  const phase = curWeek <= 4 ? 1 : curWeek <= 8 ? 2 : curWeek <= 12 ? 3 : curWeek <= 18 ? 4 : curWeek <= 24 ? 5 : curWeek <= 36 ? 6 : 7;
+
+  let ics = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//TNT Garage//Tom's Training//EN\r\nCALSCALE:GREGORIAN\r\nX-WR-CALNAME:TNT Garage Week ${curWeek}\r\nX-WR-CALDESC:Tom Scanlin - Return to Running - Week ${curWeek} Phase ${phase}\r\nX-WR-TIMEZONE:America/Denver\r\n`;
+
+  (wk.days || []).forEach((day, i) => {
+    if (day.type === 'Rest' && (!day.exercises || day.exercises.length === 0)) return;
+
+    const eventDate = new Date(monday);
+    eventDate.setDate(monday.getDate() + i);
+
+    const times = sessionTimes[day.type] || ['07:00','08:00'];
+    const [startH, startM] = times[0].split(':').map(Number);
+    const [endH, endM] = times[1].split(':').map(Number);
+
+    const dtStart = new Date(eventDate);
+    dtStart.setHours(startH, startM, 0, 0);
+    const dtEnd = new Date(eventDate);
+    dtEnd.setHours(endH, endM, 0, 0);
+
+    // Build description from exercises
+    let desc = '';
+    if (day.gate) desc += '⚡ PAIN GATE: Knee ≥5/10 → skip leg work\\n';
+    if (day.collagen) desc += '💊 Collagen 15g + Vit C 50mg — take 30-45 min before\\n';
+    if (day.info) desc += 'ℹ️ ' + day.info + '\\n';
+    desc += '\\n';
+    if (day.exercises && day.exercises.length) {
+      day.exercises.forEach(ex => {
+        desc += `${ex.name}: ${ex.sets} × ${ex.reps}`;
+        if (ex.rest && ex.rest !== '—') desc += ` | Rest: ${ex.rest}`;
+        desc += '\\n';
+        if (ex.cue) desc += `  → ${ex.cue}\\n`;
+      });
+    }
+    desc += '\\nTom's Training Dashboard · Tom Scanlin · Return to Running';
+
+    const summary = `${day.emoji||''} ${day.type} — Week ${curWeek}`;
+
+    ics += `BEGIN:VEVENT\r\n`;
+    ics += foldLine(`UID:${makeUID()}`) + `\r\n`;
+    ics += `DTSTART:${icsDate(dtStart)}\r\n`;
+    ics += `DTEND:${icsDate(dtEnd)}\r\n`;
+    ics += foldLine(`SUMMARY:${summary}`) + `\r\n`;
+    ics += foldLine(`DESCRIPTION:${desc}`) + `\r\n`;
+    ics += `STATUS:CONFIRMED\r\n`;
+    ics += `BEGIN:VALARM\r\nTRIGGER:-PT30M\r\nACTION:DISPLAY\r\n`;
+    ics += foldLine(`DESCRIPTION:${day.collagen ? '💊 Take collagen + Vit C now! ' : ''}${summary} starts in 30 min`) + `\r\n`;
+    ics += `END:VALARM\r\n`;
+    ics += `END:VEVENT\r\n`;
+  });
+
+  ics += `END:VCALENDAR\r\n`;
+
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `TNT-Week${curWeek}.ics`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ══ Init ══
+renderCal();
+renderLogs();
+
+// Auto-login if key was previously saved
+(function() {
+  const saved = localStorage.getItem('tnt_api_key');
+  if (saved && saved.startsWith('sk-ant-')) {
+    apiKey = saved;
+    document.getElementById('chat-setup').style.display = 'none';
+    document.getElementById('chat-live').style.display = 'flex';
+  }
+})();
+</script>
+</body>
+</html>
