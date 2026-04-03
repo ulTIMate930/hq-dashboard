@@ -2276,7 +2276,7 @@ function exportICS() {
 
   const phase = curWeek <= 4 ? 1 : curWeek <= 8 ? 2 : curWeek <= 12 ? 3 : curWeek <= 18 ? 4 : curWeek <= 24 ? 5 : curWeek <= 36 ? 6 : 7;
 
-  let ics = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//TNT Garage//Tom's Training//EN\r\nCALSCALE:GREGORIAN\r\nX-WR-CALNAME:TNT Garage Week ${curWeek}\r\nX-WR-CALDESC:Tom Scanlin - Return to Running - Week ${curWeek} Phase ${phase}\r\nX-WR-TIMEZONE:America/Denver\r\n`;
+  let ics = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Tom Training//EN\r\nCALSCALE:GREGORIAN\r\nX-WR-CALNAME:Tom Training Week ${curWeek}\r\nX-WR-CALDESC:Tom Scanlin - Return to Running - Week ${curWeek} Phase ${phase}\r\nX-WR-TIMEZONE:America/Denver\r\n`;
 
   (wk.days || []).forEach((day, i) => {
     if (day.type === 'Rest' && (!day.exercises || day.exercises.length === 0)) return;
@@ -2307,7 +2307,7 @@ function exportICS() {
         if (ex.cue) desc += `  → ${ex.cue}\\n`;
       });
     }
-    desc += '\\nTom's Training Dashboard · Tom Scanlin · Return to Running';
+    desc += '\\nTom\\'s Training Dashboard · Tom Scanlin · Return to Running';
 
     const summary = `${day.emoji||''} ${day.type} — Week ${curWeek}`;
 
