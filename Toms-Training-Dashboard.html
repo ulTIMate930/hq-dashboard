@@ -974,6 +974,311 @@ body {
 
 /* Hidden file input */
 #garmin-file { display: none; }
+
+/* ══ FONT SCALE ══ */
+body.fs-sm  { font-size: 15px; }
+body.fs-md  { font-size: 18px; }
+body.fs-lg  { font-size: 21px; }
+body.fs-xl  { font-size: 24px; }
+
+/* ══ SETTINGS PANEL ══ */
+.settings-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(14,26,42,0.4);
+  z-index: 200;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 70px 16px 0 0;
+}
+.settings-overlay.open { display: flex; }
+
+.settings-panel {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow2);
+  padding: 24px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.settings-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.settings-section { display: flex; flex-direction: column; gap: 10px; }
+.settings-label { font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+
+.font-btns { display: flex; gap: 8px; }
+.font-btn {
+  flex: 1;
+  padding: 10px 6px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface2);
+  color: var(--text2);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  transition: all 0.15s;
+  text-align: center;
+}
+.font-btn:hover { border-color: var(--amber); color: var(--amber); }
+.font-btn.active { background: var(--amber-dim2); border-color: var(--amber); color: var(--amber); }
+
+.font-btn.sz-sm { font-size: 13px; }
+.font-btn.sz-md { font-size: 16px; }
+.font-btn.sz-lg { font-size: 19px; }
+.font-btn.sz-xl { font-size: 22px; }
+
+.settings-divider { height: 1px; background: var(--border); }
+
+.export-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--amber);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-align: center;
+}
+.export-btn:hover { background: var(--amber-lt); }
+.export-btn.secondary {
+  background: var(--surface2);
+  color: var(--text2);
+  border: 1.5px solid var(--border);
+}
+.export-btn.secondary:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
+
+.settings-gear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.15s;
+  line-height: 1;
+}
+.settings-gear:hover { background: var(--surface2); }
+
+/* ══ DOCS SIDEBAR ══ */
+.docs-sidebar {
+  width: 0;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--surface);
+  border-left: 0px solid var(--border);
+  transition: width 0.25s ease, border-left-width 0.25s ease, min-width 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.docs-sidebar.open {
+  width: 340px;
+  min-width: 340px;
+  border-left-width: 2px;
+}
+
+.docs-sidebar-inner {
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.docs-header {
+  padding: 16px 18px 12px;
+  border-bottom: 1.5px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface2);
+}
+
+.docs-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.docs-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--muted);
+  padding: 4px 8px;
+  border-radius: 6px;
+  line-height: 1;
+}
+.docs-close:hover { background: var(--surface3); color: var(--text); }
+
+.docs-tabs {
+  display: flex;
+  border-bottom: 1.5px solid var(--border);
+  flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.docs-tabs::-webkit-scrollbar { display: none; }
+
+.docs-tab {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2.5px solid transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: 'DM Sans', sans-serif;
+}
+.docs-tab:hover { color: var(--text2); }
+.docs-tab.active { color: var(--amber); border-bottom-color: var(--amber); }
+
+.docs-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+.doc-pane { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+.doc-pane.active { display: flex; }
+
+.doc-textarea {
+  flex: 1;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--surface);
+}
+.doc-textarea::placeholder { color: var(--muted2); }
+
+.doc-saved-indicator {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--green);
+  font-weight: 600;
+  border-top: 1px solid var(--border);
+  background: var(--surface2);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.docs-toggle-btn {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  transition: all 0.15s;
+  color: var(--muted);
+}
+.docs-toggle-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+/* ══ JOURNAL / GOALS LOG ══ */
+.log-type-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.log-type-tab {
+  flex: 1;
+  padding: 10px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--surface2);
+  color: var(--muted);
+  text-align: center;
+}
+.log-type-tab:first-child { border-right: 1px solid var(--border); }
+.log-type-tab.active { background: var(--amber); color: white; }
+
+.journal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.journal-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.mood-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.mood-btn {
+  padding: 8px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface2);
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  color: var(--text2);
+  transition: all 0.15s;
+}
+.mood-btn:hover { border-color: var(--amber); }
+.mood-btn.selected { background: var(--amber-dim2); border-color: var(--amber); color: var(--amber); font-weight: 700; }
+
+.journal-entry {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+  animation: fadeUp 0.3s ease;
+  border-left: 4px solid var(--amber);
+}
+
+.je-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.je-date { font-size: 13px; font-weight: 600; color: var(--muted); }
+.je-mood { font-size: 14px; font-weight: 700; padding: 3px 12px; border-radius: 20px; background: var(--amber-dim2); color: var(--amber); }
+.je-energy { font-size: 14px; color: var(--muted); }
+.je-goals { font-size: 15px; color: var(--text2); font-weight: 600; margin-bottom: 4px; }
+.je-text { font-size: 15px; color: var(--muted); line-height: 1.65; }
+.je-type-badge { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 10px; background: var(--amber-dim); color: var(--amber); margin-left: auto; }
+
 </style>
 </head>
 <body>
@@ -984,12 +1289,49 @@ body {
   <div class="phase-pill" id="phase-pill">Phase 1 · Week 2</div>
   <div id="today-date" style="font-size:13px;color:var(--muted);font-weight:600"></div>
   <div class="topbar-right">
+    <button class="docs-toggle-btn" onclick="toggleDocs()" title="Documents & Notes">📚</button>
+    <button class="settings-gear" onclick="toggleSettings()" title="Settings">⚙️</button>
     <div class="athlete-chip">
       <div class="athlete-av">TS</div>
       <div>
         <div class="athlete-name">Tom Scanlin</div>
         <div class="athlete-sub">Age 70 · Return to Running</div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS OVERLAY -->
+<div class="settings-overlay" id="settings-overlay" onclick="closeSettingsIfOutside(event)">
+  <div class="settings-panel" onclick="event.stopPropagation()">
+    <div class="settings-title">⚙️ Settings</div>
+
+    <div class="settings-section">
+      <div class="settings-label">Text Size</div>
+      <div class="font-btns">
+        <button class="font-btn sz-sm" onclick="setFontSize('sm',this)">Small</button>
+        <button class="font-btn sz-md active" onclick="setFontSize('md',this)">Medium</button>
+        <button class="font-btn sz-lg" onclick="setFontSize('lg',this)">Large</button>
+        <button class="font-btn sz-xl" onclick="setFontSize('xl',this)">X-Large</button>
+      </div>
+    </div>
+
+    <div class="settings-divider"></div>
+
+    <div class="settings-section">
+      <div class="settings-label">Data Backup</div>
+      <button class="export-btn" onclick="exportAllData()">⬇ Export All My Data</button>
+      <label class="export-btn secondary" for="import-file-input" style="cursor:pointer;display:block;text-align:center">⬆ Import Data from Backup</label>
+      <input type="file" id="import-file-input" accept=".json" onchange="importAllData(this)" style="display:none">
+      <div style="font-size:13px;color:var(--muted);line-height:1.5">Export saves all logs, journal entries, generated weeks, and documents to a single file. Import restores everything on any browser or device.</div>
+    </div>
+
+    <div class="settings-divider"></div>
+
+    <div class="settings-section">
+      <div class="settings-label">API Key</div>
+      <input type="password" id="settings-api-key" placeholder="sk-ant-api03-…" style="width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-family:monospace;font-size:13px;color:var(--text);outline:none" />
+      <button class="export-btn" onclick="saveApiKeyFromSettings()">Save Key</button>
     </div>
   </div>
 </div>
@@ -1323,53 +1665,148 @@ body {
     <!-- ══ LOG ══ -->
     <div id="view-log" class="view">
       <div class="log-top">
-        <div class="log-top-title">Training Log</div>
-        <div class="log-form">
-          <div class="lf-group">
-            <div class="lf-label">Date</div>
-            <input type="date" id="lf-date" class="lf-input" style="width:150px" />
+        <div class="log-top-title">Training Log & Journal</div>
+
+        <!-- Tab switcher -->
+        <div class="log-type-tabs">
+          <button class="log-type-tab active" id="tab-workout" onclick="switchLogTab('workout')">💪 Workout Log</button>
+          <button class="log-type-tab" id="tab-journal" onclick="switchLogTab('journal')">📓 Journal & Goals</button>
+        </div>
+
+        <!-- Workout log form -->
+        <div id="workout-form">
+          <div class="log-form">
+            <div class="lf-group">
+              <div class="lf-label">Date</div>
+              <input type="date" id="lf-date" class="lf-input" style="width:150px" />
+            </div>
+            <div class="lf-group">
+              <div class="lf-label">Session</div>
+              <select id="lf-session" class="lf-input" style="width:140px">
+                <option>Strength</option><option>Swim</option><option>Bike</option>
+                <option>Mobility</option><option>Walk</option><option>Run/Walk</option><option>Rest</option>
+              </select>
+            </div>
+            <div class="lf-group">
+              <div class="lf-label">Knee Before</div>
+              <input type="number" id="lf-kb" class="lf-input" style="width:90px" min="0" max="10" placeholder="0–10" />
+            </div>
+            <div class="lf-group">
+              <div class="lf-label">Knee After</div>
+              <input type="number" id="lf-ka" class="lf-input" style="width:90px" min="0" max="10" placeholder="0–10" />
+            </div>
+            <div class="lf-group">
+              <div class="lf-label">Shoulder Before</div>
+              <input type="number" id="lf-sb" class="lf-input" style="width:90px" min="0" max="10" placeholder="0–10" />
+            </div>
+            <div class="lf-group">
+              <div class="lf-label">Shoulder After</div>
+              <input type="number" id="lf-sa" class="lf-input" style="width:90px" min="0" max="10" placeholder="0–10" />
+            </div>
+            <div class="lf-group lf-notes">
+              <div class="lf-label">Notes</div>
+              <textarea id="lf-notes" class="lf-input" placeholder="How it felt, what you did, anything notable…" rows="2"></textarea>
+            </div>
+            <button class="log-submit" onclick="addLog()">Log It</button>
+            <label class="garmin-upload-btn" for="garmin-file">⌚ Import Garmin CSV</label>
+            <input type="file" id="garmin-file" accept=".csv" onchange="handleGarminUpload(this)">
           </div>
-          <div class="lf-group">
-            <div class="lf-label">Session</div>
-            <select id="lf-session" class="lf-input" style="width:140px">
-              <option>Strength</option><option>Swim</option><option>Bike</option>
-              <option>Mobility</option><option>Walk</option><option>Run/Walk</option><option>Rest</option>
-            </select>
+        </div>
+
+        <!-- Journal form -->
+        <div id="journal-form" style="display:none">
+          <div class="journal-form">
+            <div class="journal-row">
+              <div class="lf-group">
+                <div class="lf-label">Date</div>
+                <input type="date" id="jf-date" class="lf-input" style="width:150px" />
+              </div>
+              <div class="lf-group">
+                <div class="lf-label">Energy Level (1–10)</div>
+                <input type="number" id="jf-energy" class="lf-input" style="width:100px" min="1" max="10" placeholder="1–10" />
+              </div>
+              <div class="lf-group">
+                <div class="lf-label">Overall Pain (1–10)</div>
+                <input type="number" id="jf-pain" class="lf-input" style="width:100px" min="0" max="10" placeholder="0–10" />
+              </div>
+            </div>
+            <div class="lf-group">
+              <div class="lf-label">Mood / How you feel today</div>
+              <div class="mood-btns" id="mood-btns">
+                <button class="mood-btn" onclick="selectMood(this,'Great')">😊 Great</button>
+                <button class="mood-btn" onclick="selectMood(this,'Good')">🙂 Good</button>
+                <button class="mood-btn" onclick="selectMood(this,'Okay')">😐 Okay</button>
+                <button class="mood-btn" onclick="selectMood(this,'Tired')">😴 Tired</button>
+                <button class="mood-btn" onclick="selectMood(this,'Sore')">😣 Sore</button>
+                <button class="mood-btn" onclick="selectMood(this,'Frustrated')">😤 Frustrated</button>
+                <button class="mood-btn" onclick="selectMood(this,'Motivated')">🔥 Motivated</button>
+              </div>
+            </div>
+            <div class="lf-group">
+              <div class="lf-label">Goals & Intentions (what are you working toward this week?)</div>
+              <textarea id="jf-goals" class="lf-input" placeholder="e.g. Get through all 4 strength sessions. Focus on the shoulder warm-up. Try to hit 120g protein at breakfast…" rows="2" style="width:100%"></textarea>
+            </div>
+            <div class="lf-group">
+              <div class="lf-label">General Notes (how are things going overall?)</div>
+              <textarea id="jf-notes" class="lf-input" placeholder="Anything on your mind — sleep, stress, life stuff, progress you've noticed, questions for the coach…" rows="3" style="width:100%"></textarea>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center">
+              <button class="log-submit" onclick="addJournalEntry()">Save Journal Entry</button>
+              <span style="font-size:13px;color:var(--muted)">The coach reads your recent journal entries to give better advice</span>
+            </div>
           </div>
-          <div class="lf-group">
-            <div class="lf-label">Knee Before</div>
-            <input type="number" id="lf-kb" class="lf-input" style="width:90px" min="0" max="10" placeholder="0–10" />
-          </div>
-          <div class="lf-group">
-            <div class="lf-label">Knee After</div>
-            <input type="number" id="lf-ka" class="lf-input" style="width:90px" min="0" max="10" placeholder="0–10" />
-          </div>
-          <div class="lf-group">
-            <div class="lf-label">Shoulder Before</div>
-            <input type="number" id="lf-sb" class="lf-input" style="width:90px" min="0" max="10" placeholder="0–10" />
-          </div>
-          <div class="lf-group">
-            <div class="lf-label">Shoulder After</div>
-            <input type="number" id="lf-sa" class="lf-input" style="width:90px" min="0" max="10" placeholder="0–10" />
-          </div>
-          <div class="lf-group lf-notes">
-            <div class="lf-label">Notes</div>
-            <textarea id="lf-notes" class="lf-input" placeholder="How it felt, what you did, anything notable…" rows="2"></textarea>
-          </div>
-          <button class="log-submit" onclick="addLog()">Log It</button>
-          <label class="garmin-upload-btn" for="garmin-file">⌚ Import Garmin CSV</label>
-          <input type="file" id="garmin-file" accept=".csv" onchange="handleGarminUpload(this)">
         </div>
       </div>
+
       <div class="log-scroll" id="log-scroll">
         <div class="empty-state" id="log-empty">
           <div class="empty-icon">📋</div>
-          <div class="empty-txt">No sessions logged yet.<br>Fill in the form above and tap Log It — or paste a text description into the Coach chat and it'll offer to save it for you.</div>
+          <div class="empty-txt">No entries yet.<br>Log a workout above, or switch to Journal to record how you're feeling and set weekly goals.</div>
         </div>
       </div>
     </div>
 
   </main>
+
+  <!-- ══ DOCS SIDEBAR ══ -->
+  <div class="docs-sidebar" id="docs-sidebar">
+    <div class="docs-sidebar-inner">
+      <div class="docs-header">
+        <div class="docs-title">📚 Documents</div>
+        <button class="docs-close" onclick="toggleDocs()">×</button>
+      </div>
+      <div class="docs-tabs">
+        <button class="docs-tab active" onclick="switchDoc('intake',this)">Intake</button>
+        <button class="docs-tab" onclick="switchDoc('plan12',this)">12-Mo Plan</button>
+        <button class="docs-tab" onclick="switchDoc('weeknotes',this)">Week Notes</button>
+        <button class="docs-tab" onclick="switchDoc('goals',this)">Goals</button>
+        <button class="docs-tab" onclick="switchDoc('general',this)">General</button>
+      </div>
+      <div class="docs-body">
+        <div class="doc-pane active" id="doc-intake">
+          <textarea class="doc-textarea" id="doc-intake-text" placeholder="Paste Tom's intake form here — age, weight, conditions, medications, goals, exercise history, equipment, schedule…&#10;&#10;This gets included in every coach conversation so the AI always has full context." onchange="saveDoc('intake')" oninput="saveDoc('intake')"></textarea>
+          <div class="doc-saved-indicator"><span id="doc-intake-saved">Auto-saves as you type</span></div>
+        </div>
+        <div class="doc-pane" id="doc-plan12">
+          <textarea class="doc-textarea" id="doc-plan12-text" placeholder="Paste the full 12-month program overview here…&#10;&#10;Phase summaries, progression logic, gate criteria, key principles. The coach references this when building new weeks." onchange="saveDoc('plan12')" oninput="saveDoc('plan12')"></textarea>
+          <div class="doc-saved-indicator"><span id="doc-plan12-saved">Auto-saves as you type</span></div>
+        </div>
+        <div class="doc-pane" id="doc-weeknotes">
+          <textarea class="doc-textarea" id="doc-weeknotes-text" placeholder="Notes about specific weeks — what changed, why, any adjustments made…&#10;&#10;e.g. Week 3: Reduced step-up height due to left knee flare. Week 5: Added backstroke sets as shoulder improved." onchange="saveDoc('weeknotes')" oninput="saveDoc('weeknotes')"></textarea>
+          <div class="doc-saved-indicator"><span id="doc-weeknotes-saved">Auto-saves as you type</span></div>
+        </div>
+        <div class="doc-pane" id="doc-goals">
+          <textarea class="doc-textarea" id="doc-goals-text" placeholder="Tom's goals — short term and long term…&#10;&#10;e.g. Short term: Walk 45 min pain-free by week 4. Run 1 mile by month 4. Long term: Complete a 5K. Keep up with grandkids." onchange="saveDoc('goals')" oninput="saveDoc('goals')"></textarea>
+          <div class="doc-saved-indicator"><span id="doc-goals-saved">Auto-saves as you type</span></div>
+        </div>
+        <div class="doc-pane" id="doc-general">
+          <textarea class="doc-textarea" id="doc-general-text" placeholder="Anything else worth remembering…&#10;&#10;Doctor's notes, equipment list, preferred workout times, food preferences, sleep notes, anything the coach should know." onchange="saveDoc('general')" oninput="saveDoc('general')"></textarea>
+          <div class="doc-saved-indicator"><span id="doc-general-saved">Auto-saves as you type</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -1406,7 +1843,7 @@ const sessionStyle = {
 
 function saveAndRender() {
   localStorage.setItem('tnt_logs_v2', JSON.stringify(logs));
-  renderLogs();
+  renderAllLogEntries();
 }
 
 function addLog(entry) {
@@ -1430,65 +1867,6 @@ function addLog(entry) {
   saveAndRender();
 }
 
-function renderLogs() {
-  const scroll = document.getElementById('log-scroll');
-  const empty = document.getElementById('log-empty');
-  scroll.querySelectorAll('.log-entry').forEach(e => e.remove());
-  empty.style.display = logs.length === 0 ? 'block' : 'none';
-
-  logs.forEach(log => {
-    const div = document.createElement('div');
-    div.className = 'log-entry';
-    const d = new Date((log.date || '') + 'T12:00:00');
-    const ds = isNaN(d) ? log.date : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-    const sty = sessionStyle[log.session] || sessionStyle.Mobility;
-    const trend = log.kneeBefore !== '' && log.kneeAfter !== '' && !isNaN(parseInt(log.kneeAfter)) && !isNaN(parseInt(log.kneeBefore))
-      ? (parseInt(log.kneeAfter) < parseInt(log.kneeBefore) ? ' ↓✓' : parseInt(log.kneeAfter) === parseInt(log.kneeBefore) ? ' →' : ' ↑')
-      : '';
-    const trendColor = trend.includes('↓') ? 'var(--green)' : trend.includes('↑') ? 'var(--knee)' : 'var(--muted)';
-    const sTrend = log.shoulderBefore !== '' && log.shoulderAfter !== '' && log.shoulderBefore !== undefined && log.shoulderAfter !== undefined && !isNaN(parseInt(log.shoulderAfter)) && !isNaN(parseInt(log.shoulderBefore))
-      ? (parseInt(log.shoulderAfter) < parseInt(log.shoulderBefore) ? ' ↓✓' : parseInt(log.shoulderAfter) === parseInt(log.shoulderBefore) ? ' →' : ' ↑')
-      : '';
-    const sTrendColor = sTrend.includes('↓') ? 'var(--green)' : sTrend.includes('↑') ? 'var(--knee)' : 'var(--muted)';
-
-    const hasKnee = (log.kneeBefore !== '' && log.kneeBefore !== undefined) || (log.kneeAfter !== '' && log.kneeAfter !== undefined);
-    const hasShoulder = (log.shoulderBefore !== '' && log.shoulderBefore !== undefined) || (log.shoulderAfter !== '' && log.shoulderAfter !== undefined);
-
-    div.innerHTML = `
-      <div>
-        <div class="le-date">${ds}</div>
-        ${log.source === 'garmin' ? '<div class="le-source">⌚ Garmin</div>' : log.source === 'chat' ? '<div class="le-source">💬 From chat</div>' : ''}
-      </div>
-      <div style="align-self:center"><span class="le-badge" style="${sty}">${(log.session||'').toUpperCase()}</span></div>
-      <div class="pain-pair">
-        ${hasKnee ? `<div style="display:flex;flex-direction:column;gap:2px">
-          <div class="pain-lbl" style="color:var(--knee);font-weight:700">🦵 KNEE</div>
-          <div style="display:flex;gap:10px;align-items:center">
-            ${log.kneeBefore !== '' && log.kneeBefore !== undefined ? `<div class="pain-item"><div class="pain-lbl">Before</div><div class="pain-sc ${painCls(log.kneeBefore)}">${log.kneeBefore}</div></div>` : ''}
-            ${log.kneeAfter !== '' && log.kneeAfter !== undefined ? `<div class="pain-item"><div class="pain-lbl">After</div><div class="pain-sc ${painCls(log.kneeAfter)}">${log.kneeAfter}</div></div>` : ''}
-            ${trend ? `<div class="pain-item"><div class="pain-lbl">Trend</div><div class="pain-sc" style="font-size:22px;color:${trendColor}">${trend.trim()}</div></div>` : ''}
-          </div>
-        </div>` : ''}
-        ${hasKnee && hasShoulder ? `<div style="width:1px;background:var(--border);align-self:stretch;margin:0 4px"></div>` : ''}
-        ${hasShoulder ? `<div style="display:flex;flex-direction:column;gap:2px">
-          <div class="pain-lbl" style="color:var(--shoulder);font-weight:700">🔵 SHOULDER</div>
-          <div style="display:flex;gap:10px;align-items:center">
-            ${log.shoulderBefore !== '' && log.shoulderBefore !== undefined ? `<div class="pain-item"><div class="pain-lbl">Before</div><div class="pain-sc ${painCls(log.shoulderBefore)}">${log.shoulderBefore}</div></div>` : ''}
-            ${log.shoulderAfter !== '' && log.shoulderAfter !== undefined ? `<div class="pain-item"><div class="pain-lbl">After</div><div class="pain-sc ${painCls(log.shoulderAfter)}">${log.shoulderAfter}</div></div>` : ''}
-            ${sTrend ? `<div class="pain-item"><div class="pain-lbl">Trend</div><div class="pain-sc" style="font-size:22px;color:${sTrendColor}">${sTrend.trim()}</div></div>` : ''}
-          </div>
-        </div>` : ''}
-        ${!hasKnee && !hasShoulder ? `<div style="color:var(--muted2);font-size:13px;align-self:center">No pain scores recorded</div>` : ''}
-      </div>
-      <div class="le-notes">
-        ${log.notes ? escHtml(log.notes) : '<em style="color:var(--muted2)">No notes</em>'}
-        ${log.garminData ? `<div class="le-garmin">⌚ ${log.garminData}</div>` : ''}
-      </div>
-    `;
-    scroll.insertBefore(div, empty);
-  });
-}
-
 // ══ GARMIN CSV IMPORT (Log page) ══
 function handleGarminUpload(input) {
   const file = input.files[0];
@@ -1496,10 +1874,10 @@ function handleGarminUpload(input) {
   const reader = new FileReader();
   reader.onload = e => {
     const entries = parseGarminCSV(e.target.result);
-    if (entries.length === 0) { alert('No activities found in this CSV. Make sure it\'s a Garmin Connect activity export.'); return; }
+    if (entries.length === 0) { alert("No activities found in this CSV. Make sure it's a Garmin Connect activity export."); return; }
     entries.forEach(entry => { logs.unshift(entry); });
     saveAndRender();
-    alert(`✅ Imported ${entries.length} Garmin activit${entries.length === 1 ? 'y' : 'ies'} into your log!`);
+    alert(`Imported ${entries.length} Garmin activit${entries.length === 1 ? 'y' : 'ies'} into your log!`);
     showView('log', document.querySelectorAll('.nav-btn')[4]);
   };
   reader.readAsText(file);
@@ -1884,7 +2262,20 @@ Include gate:true for Strength/Swim days. Include collagen:true for Strength day
 
 GARMIN DATA: If user shares Garmin CSV or activity data, analyze HR zone compliance, duration, and distance against their program targets. Be specific and encouraging.
 
+JOURNAL & MOOD: If recent journal entries are provided below, reference them naturally. If Tom mentions feeling tired, frustrated, or motivated — acknowledge it and adjust your advice accordingly. Track mood and energy trends over time.
+
+DOCUMENTS: If document context is provided below, use it to supplement your knowledge of Tom's situation.
+
 STYLE: Warm, encouraging, direct. Tom is 70 and intelligent. Bold key terms. Always mention pain gates for knee work. Practical and actionable.`;
+
+function buildSystemPrompt() {
+  let prompt = SYS;
+  const journalCtx = getJournalContext();
+  const docsCtx = getDocsContext();
+  if (journalCtx) prompt += `\n\n== RECENT JOURNAL ENTRIES (most recent first) ==\n${journalCtx}`;
+  if (docsCtx) prompt += `\n\n== REFERENCE DOCUMENTS ==\n${docsCtx}`;
+  return prompt;
+}
 
 function startChat() {
   const k = document.getElementById('api-in').value.trim();
@@ -1956,7 +2347,12 @@ async function sendMsg() {
     const res = await fetch('https://purple-bar-209d.ultimate86.workers.dev/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, system: SYS, messages: chatHistory })
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: buildSystemPrompt(),
+        messages: chatHistory
+      })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error?.message || 'API error');
@@ -2371,9 +2767,303 @@ function exportICS() {
   URL.revokeObjectURL(a.href);
 }
 
+// ══ SETTINGS ══
+function toggleSettings() {
+  document.getElementById('settings-overlay').classList.toggle('open');
+  const saved = localStorage.getItem('tnt_api_key') || '';
+  document.getElementById('settings-api-key').value = saved ? '••••••••••••••••' : '';
+}
+
+function closeSettingsIfOutside(e) {
+  if (e.target === document.getElementById('settings-overlay')) {
+    document.getElementById('settings-overlay').classList.remove('open');
+  }
+}
+
+function saveApiKeyFromSettings() {
+  const val = document.getElementById('settings-api-key').value.trim();
+  if (val && val.startsWith('sk-ant-')) {
+    apiKey = val;
+    localStorage.setItem('tnt_api_key', val);
+    document.getElementById('chat-setup').style.display = 'none';
+    document.getElementById('chat-live').style.display = 'flex';
+    alert('API key saved!');
+    document.getElementById('settings-overlay').classList.remove('open');
+  } else if (val && !val.startsWith('•')) {
+    alert('Please enter a valid key starting with sk-ant-');
+  }
+}
+
+// ══ FONT SIZE ══
+function setFontSize(size, btn) {
+  document.body.className = document.body.className.replace(/fs-\w+/g, '').trim();
+  document.body.classList.add('fs-' + size);
+  localStorage.setItem('tnt_font_size', size);
+  document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+(function initFontSize() {
+  const saved = localStorage.getItem('tnt_font_size') || 'md';
+  document.body.classList.add('fs-' + saved);
+  // Mark active button after DOM ready
+  setTimeout(() => {
+    const btn = document.querySelector(`.font-btn.sz-${saved}`);
+    if (btn) { document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+  }, 0);
+})();
+
+// ══ DOCS SIDEBAR ══
+let docsSidebarOpen = false;
+let activeDocTab = 'intake';
+let docSaveTimers = {};
+
+function toggleDocs() {
+  docsSidebarOpen = !docsSidebarOpen;
+  document.getElementById('docs-sidebar').classList.toggle('open', docsSidebarOpen);
+}
+
+function switchDoc(name, btn) {
+  activeDocTab = name;
+  document.querySelectorAll('.doc-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.docs-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('doc-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+function saveDoc(name) {
+  clearTimeout(docSaveTimers[name]);
+  docSaveTimers[name] = setTimeout(() => {
+    const val = document.getElementById('doc-' + name + '-text').value;
+    localStorage.setItem('tnt_doc_' + name, val);
+    const ind = document.getElementById('doc-' + name + '-saved');
+    if (ind) { ind.textContent = 'Saved ✓'; setTimeout(() => { ind.textContent = 'Auto-saves as you type'; }, 2000); }
+  }, 800);
+}
+
+function loadDocs() {
+  ['intake','plan12','weeknotes','goals','general'].forEach(name => {
+    const val = localStorage.getItem('tnt_doc_' + name) || '';
+    const el = document.getElementById('doc-' + name + '-text');
+    if (el) el.value = val;
+  });
+}
+
+function getDocsContext() {
+  const parts = [];
+  const labels = { intake: 'INTAKE FORM', plan12: '12-MONTH PLAN', weeknotes: 'WEEK NOTES', goals: 'GOALS', general: 'GENERAL NOTES' };
+  ['intake','plan12','weeknotes','goals','general'].forEach(name => {
+    const val = localStorage.getItem('tnt_doc_' + name) || '';
+    if (val.trim()) parts.push(`=== ${labels[name]} ===\n${val.trim()}`);
+  });
+  return parts.join('\n\n');
+}
+
+// ══ JOURNAL / GOALS ══
+let journalEntries = JSON.parse(localStorage.getItem('tnt_journal_v1') || '[]');
+let selectedMood = '';
+
+function switchLogTab(tab) {
+  document.getElementById('workout-form').style.display = tab === 'workout' ? 'block' : 'none';
+  document.getElementById('journal-form').style.display = tab === 'journal' ? 'block' : 'none';
+  document.getElementById('tab-workout').classList.toggle('active', tab === 'workout');
+  document.getElementById('tab-journal').classList.toggle('active', tab === 'journal');
+  renderAllLogEntries();
+}
+
+function selectMood(btn, mood) {
+  selectedMood = mood;
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function addJournalEntry() {
+  const date = document.getElementById('jf-date').value;
+  const energy = document.getElementById('jf-energy').value;
+  const pain = document.getElementById('jf-pain').value;
+  const goals = document.getElementById('jf-goals').value.trim();
+  const notes = document.getElementById('jf-notes').value.trim();
+  if (!date) { alert('Please pick a date.'); return; }
+  if (!goals && !notes && !selectedMood) { alert('Please add at least a mood, goals, or some notes.'); return; }
+
+  const entry = { id: Date.now(), date, energy, pain, mood: selectedMood, goals, notes, type: 'journal' };
+  journalEntries.unshift(entry);
+  localStorage.setItem('tnt_journal_v1', JSON.stringify(journalEntries));
+
+  // Clear form
+  document.getElementById('jf-goals').value = '';
+  document.getElementById('jf-notes').value = '';
+  document.getElementById('jf-energy').value = '';
+  document.getElementById('jf-pain').value = '';
+  selectedMood = '';
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+  renderAllLogEntries();
+}
+
+function getJournalContext() {
+  if (!journalEntries.length) return '';
+  const recent = journalEntries.slice(0, 10);
+  return recent.map(e => {
+    const d = new Date(e.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const parts = [`[${d}]`];
+    if (e.mood) parts.push(`Mood: ${e.mood}`);
+    if (e.energy) parts.push(`Energy: ${e.energy}/10`);
+    if (e.pain) parts.push(`Pain: ${e.pain}/10`);
+    if (e.goals) parts.push(`Goals: ${e.goals}`);
+    if (e.notes) parts.push(`Notes: ${e.notes}`);
+    return parts.join(' | ');
+  }).join('\n');
+}
+
+function renderAllLogEntries() {
+  const scroll = document.getElementById('log-scroll');
+  const empty = document.getElementById('log-empty');
+  scroll.querySelectorAll('.log-entry,.journal-entry').forEach(e => e.remove());
+
+  // Merge and sort all entries by date desc
+  const allEntries = [
+    ...logs.map(l => ({ ...l, entryType: 'workout' })),
+    ...journalEntries.map(j => ({ ...j, entryType: 'journal' }))
+  ].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  empty.style.display = allEntries.length === 0 ? 'block' : 'none';
+
+  allEntries.forEach(entry => {
+    if (entry.entryType === 'journal') {
+      renderJournalEntry(entry, scroll, empty);
+    } else {
+      renderWorkoutEntry(entry, scroll, empty);
+    }
+  });
+}
+
+function renderJournalEntry(e, scroll, empty) {
+  const div = document.createElement('div');
+  div.className = 'journal-entry';
+  const d = new Date(e.date + 'T12:00:00');
+  const ds = isNaN(d) ? e.date : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+
+  div.innerHTML = `
+    <div class="je-header">
+      <div class="je-date">📓 ${ds}</div>
+      ${e.mood ? `<div class="je-mood">${e.mood}</div>` : ''}
+      ${e.energy ? `<div class="je-energy">Energy ${e.energy}/10</div>` : ''}
+      ${e.pain ? `<div class="je-energy" style="color:var(--knee)">Pain ${e.pain}/10</div>` : ''}
+      <div class="je-type-badge">JOURNAL</div>
+    </div>
+    ${e.goals ? `<div class="je-goals">🎯 ${escHtml(e.goals)}</div>` : ''}
+    ${e.notes ? `<div class="je-text">${escHtml(e.notes)}</div>` : ''}
+  `;
+  scroll.insertBefore(div, empty);
+}
+
+function renderWorkoutEntry(log, scroll, empty) {
+  const div = document.createElement('div');
+  div.className = 'log-entry';
+  const d = new Date((log.date || '') + 'T12:00:00');
+  const ds = isNaN(d) ? log.date : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  const sty = sessionStyle[log.session] || sessionStyle.Mobility;
+
+  const trend = log.kneeBefore !== '' && log.kneeAfter !== '' && !isNaN(parseInt(log.kneeAfter)) && !isNaN(parseInt(log.kneeBefore))
+    ? (parseInt(log.kneeAfter) < parseInt(log.kneeBefore) ? ' ↓✓' : parseInt(log.kneeAfter) === parseInt(log.kneeBefore) ? ' →' : ' ↑') : '';
+  const trendColor = trend.includes('↓') ? 'var(--green)' : trend.includes('↑') ? 'var(--knee)' : 'var(--muted)';
+  const sTrend = log.shoulderBefore !== '' && log.shoulderAfter !== '' && log.shoulderBefore !== undefined && log.shoulderAfter !== undefined && !isNaN(parseInt(log.shoulderAfter)) && !isNaN(parseInt(log.shoulderBefore))
+    ? (parseInt(log.shoulderAfter) < parseInt(log.shoulderBefore) ? ' ↓✓' : parseInt(log.shoulderAfter) === parseInt(log.shoulderBefore) ? ' →' : ' ↑') : '';
+  const sTrendColor = sTrend.includes('↓') ? 'var(--green)' : sTrend.includes('↑') ? 'var(--knee)' : 'var(--muted)';
+  const hasKnee = (log.kneeBefore !== '' && log.kneeBefore !== undefined) || (log.kneeAfter !== '' && log.kneeAfter !== undefined);
+  const hasShoulder = (log.shoulderBefore !== '' && log.shoulderBefore !== undefined) || (log.shoulderAfter !== '' && log.shoulderAfter !== undefined);
+
+  div.innerHTML = `
+    <div>
+      <div class="le-date">${ds}</div>
+      ${log.source === 'garmin' ? '<div class="le-source">⌚ Garmin</div>' : log.source === 'chat' ? '<div class="le-source">💬 From chat</div>' : ''}
+    </div>
+    <div style="align-self:center"><span class="le-badge" style="${sty}">${(log.session||'').toUpperCase()}</span></div>
+    <div class="pain-pair">
+      ${hasKnee ? `<div style="display:flex;flex-direction:column;gap:2px">
+        <div class="pain-lbl" style="color:var(--knee);font-weight:700">🦵 KNEE</div>
+        <div style="display:flex;gap:10px;align-items:center">
+          ${log.kneeBefore !== '' && log.kneeBefore !== undefined ? `<div class="pain-item"><div class="pain-lbl">Before</div><div class="pain-sc ${painCls(log.kneeBefore)}">${log.kneeBefore}</div></div>` : ''}
+          ${log.kneeAfter !== '' && log.kneeAfter !== undefined ? `<div class="pain-item"><div class="pain-lbl">After</div><div class="pain-sc ${painCls(log.kneeAfter)}">${log.kneeAfter}</div></div>` : ''}
+          ${trend ? `<div class="pain-item"><div class="pain-lbl">Trend</div><div class="pain-sc" style="font-size:22px;color:${trendColor}">${trend.trim()}</div></div>` : ''}
+        </div>
+      </div>` : ''}
+      ${hasKnee && hasShoulder ? `<div style="width:1px;background:var(--border);align-self:stretch;margin:0 4px"></div>` : ''}
+      ${hasShoulder ? `<div style="display:flex;flex-direction:column;gap:2px">
+        <div class="pain-lbl" style="color:var(--shoulder);font-weight:700">🔵 SHOULDER</div>
+        <div style="display:flex;gap:10px;align-items:center">
+          ${log.shoulderBefore !== '' && log.shoulderBefore !== undefined ? `<div class="pain-item"><div class="pain-lbl">Before</div><div class="pain-sc ${painCls(log.shoulderBefore)}">${log.shoulderBefore}</div></div>` : ''}
+          ${log.shoulderAfter !== '' && log.shoulderAfter !== undefined ? `<div class="pain-item"><div class="pain-lbl">After</div><div class="pain-sc ${painCls(log.shoulderAfter)}">${log.shoulderAfter}</div></div>` : ''}
+          ${sTrend ? `<div class="pain-item"><div class="pain-lbl">Trend</div><div class="pain-sc" style="font-size:22px;color:${sTrendColor}">${sTrend.trim()}</div></div>` : ''}
+        </div>
+      </div>` : ''}
+      ${!hasKnee && !hasShoulder ? `<div style="color:var(--muted2);font-size:13px;align-self:center">No pain scores</div>` : ''}
+    </div>
+    <div class="le-notes">
+      ${log.notes ? escHtml(log.notes) : '<em style="color:var(--muted2)">No notes</em>'}
+      ${log.garminData ? `<div class="le-garmin">⌚ ${log.garminData}</div>` : ''}
+    </div>
+  `;
+  scroll.insertBefore(div, empty);
+}
+
+// ══ EXPORT / IMPORT ALL DATA ══
+function exportAllData() {
+  const data = {
+    version: 2,
+    exported: new Date().toISOString(),
+    logs: logs,
+    journalEntries: journalEntries,
+    savedWeeks: savedWeeks,
+    docs: {},
+    fontsize: localStorage.getItem('tnt_font_size') || 'md',
+  };
+  ['intake','plan12','weeknotes','goals','general'].forEach(name => {
+    data.docs[name] = localStorage.getItem('tnt_doc_' + name) || '';
+  });
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `TomTraining-Backup-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importAllData(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.version) throw new Error('Invalid backup file');
+
+      if (confirm(`This will replace all your current logs, journal entries, and documents with the backup from ${data.exported ? new Date(data.exported).toLocaleDateString() : 'unknown date'}. Continue?`)) {
+        if (data.logs) { logs = data.logs; localStorage.setItem('tnt_logs_v2', JSON.stringify(logs)); }
+        if (data.journalEntries) { journalEntries = data.journalEntries; localStorage.setItem('tnt_journal_v1', JSON.stringify(journalEntries)); }
+        if (data.savedWeeks) { savedWeeks = data.savedWeeks; localStorage.setItem('tnt_weeks_v2', JSON.stringify(savedWeeks)); }
+        if (data.docs) { Object.keys(data.docs).forEach(name => { localStorage.setItem('tnt_doc_' + name, data.docs[name]); }); loadDocs(); }
+        if (data.fontsize) { setFontSize(data.fontsize, document.querySelector(`.font-btn.sz-${data.fontsize}`)); }
+        renderAllLogEntries();
+        renderCal();
+        alert('Data imported successfully!');
+        document.getElementById('settings-overlay').classList.remove('open');
+      }
+    } catch(err) {
+      alert('Could not read backup file: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
 // ══ Init ══
 renderCal();
-renderLogs();
+renderAllLogEntries();
+loadDocs();
+
+// Set journal date
+document.getElementById('jf-date').value = new Date().toISOString().split('T')[0];
 
 // Auto-login if key was previously saved
 (function() {
