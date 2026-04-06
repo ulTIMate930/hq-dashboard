@@ -128,6 +128,9 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
 .hist-table .neg{color:var(--rust);font-weight:700;}
 .hist-table tr:first-child td{background:var(--sage-bg);}
 
+input[type=number]:focus,input[type=text]:focus{outline:none;border-color:var(--slate)!important;box-shadow:0 0 0 2px rgba(45,74,107,.12);}
+input[type=number]{-moz-appearance:textfield;}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
 @media(max-width:680px){
   .g4{grid-template-columns:1fr 1fr;}
   .g3{grid-template-columns:1fr 1fr;}
@@ -159,6 +162,7 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
   <div class="nav-tab" onclick="switchTab('expenses',this)">Expenses</div>
   <div class="nav-tab" onclick="switchTab('history',this)">History</div>
   <div class="nav-tab" onclick="switchTab('tasks',this)">Tasks</div>
+  <div class="nav-tab" onclick="switchTab('update',this)">📝 Update</div>
 </div>
 
 <div class="main">
@@ -299,6 +303,23 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
     <div class="card"><div class="card-label">Cash (Chase)</div><div class="card-fig" style="color:var(--slate)" id="inv-cash">—</div><div class="card-note">CHK + SAV + Biz</div></div>
   </div>
 
+  <div class="sec-label">Cash — Chase Accounts</div>
+  <div class="card mb20">
+    <div class="inv-header">
+      <div class="inv-dot" style="background:var(--slate)"></div>
+      <div class="inv-name">Chase Bank</div>
+      <div class="inv-total-fig" style="color:var(--slate)" id="chase-bank-total">—</div>
+    </div>
+    <div class="row"><div class="lbl">CPC Checking (...7382)</div><div class="val" id="chase-chk" style="color:var(--slate)">—</div><div class="meta">Personal checking</div></div>
+    <div class="row"><div class="lbl">Chase Savings (...1810)</div><div class="val" id="chase-sav1" style="color:var(--slate)">—</div><div class="meta">Savings</div></div>
+    <div class="row"><div class="lbl">Chase Savings (...5520)</div><div class="val" id="chase-sav2" style="color:var(--slate)">—</div><div class="meta">Savings</div></div>
+    <div class="row" style="border:none"><div class="lbl">Bus Complete CHK (...6783)</div><div class="val" id="chase-biz" style="color:var(--slate)">—</div><div class="meta">ABDJS business</div></div>
+    <div style="padding:10px 0 4px;display:flex;justify-content:space-between;border-top:1px solid var(--cream2);margin-top:4px;">
+      <span style="font-size:11px;color:var(--ink4);">Update in 📊 Current → Section A  or use the Update tab</span>
+      <a href="https://chase.com" target="_blank" class="inv-link" style="color:var(--slate);">chase.com ↗</a>
+    </div>
+  </div>
+
   <div class="sec-label">Betterment</div>
   <div class="card mb20">
     <div class="inv-header">
@@ -373,6 +394,153 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
   <div style="text-align:right;"><a href="index.html" style="font-family:var(--font-mono);font-size:10px;color:var(--slate);text-decoration:none;">← Manage all tasks in HQ</a></div>
 </div>
 
+<!-- ══ UPDATE ══ -->
+<div class="panel" id="panel-update">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+    <div>
+      <div class="sec-label" style="margin:0 0 4px;border:none;padding:0;">Monthly Update Form</div>
+      <div style="font-size:13px;color:var(--ink4);">Pre-filled from your sheet. Change what moved, then save.</div>
+    </div>
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--sage);background:var(--sage-bg);border:1px solid rgba(58,107,74,.2);padding:5px 12px;border-radius:20px;" id="upd-month-label">March 2026</div>
+  </div>
+
+  <!-- SNAPSHOT MONTH -->
+  <div class="card mb20">
+    <div class="card-label">Snapshot Month</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
+      <input type="text" id="upd-snapshot" placeholder="e.g. April 2026"
+        style="flex:1;font-size:14px;padding:8px 12px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);font-family:var(--font-mono);">
+      <span style="font-size:12px;color:var(--ink4);">Update this before saving</span>
+    </div>
+  </div>
+
+  <!-- SECTION A: CHASE BANK -->
+  <div class="card mb20">
+    <div class="card-label" style="margin-bottom:14px;">A · Chase Bank Accounts</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div>
+        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">CPC Checking (...7382)</div>
+        <input type="number" id="upd-chk" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--slate);">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Chase Savings (...1810)</div>
+        <input type="number" id="upd-sav1" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--slate);">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Chase Savings (...5520)</div>
+        <input type="number" id="upd-sav2" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--slate);">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Bus Complete CHK (...6783)</div>
+        <input type="number" id="upd-biz" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--slate);">
+      </div>
+    </div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--cream2);display:flex;justify-content:space-between;font-size:12px;">
+      <span style="color:var(--ink4);">Total Cash</span>
+      <span style="color:var(--slate);font-weight:600;font-family:var(--font-mono);" id="upd-cash-total">—</span>
+    </div>
+  </div>
+
+  <!-- SECTION B: CHASE CCs -->
+  <div class="card mb20">
+    <div class="card-label" style="margin-bottom:6px;">B · Chase Credit Cards</div>
+    <div style="font-size:11px;color:var(--ink4);margin-bottom:14px;">$0 cards are shown for reference — update if a balance appears</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div>
+        <div style="font-size:12px;color:var(--rust);margin-bottom:5px;">Prime Visa (...7376) ⚠</div>
+        <input type="number" id="upd-prime" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--rust);border-radius:6px;background:var(--paper);color:var(--ink);">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Venmo (...5265)</div>
+        <input type="number" id="upd-venmo" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+      </div>
+    </div>
+    <div style="margin-top:14px;padding:10px 12px;background:var(--cream);border-radius:6px;font-size:12px;color:var(--ink4);">
+      <div style="font-weight:600;color:var(--ink3);margin-bottom:6px;">$0 Balance Cards (included in Chase total formula)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;">
+        <span>Freedom (...2035)</span><span>Freedom Unlimited (...0163)</span>
+        <span>Sapphire Preferred (...5377)</span><span>Ink Preferred (...2118)</span>
+        <span>Southwest Plus (...1749)</span><span>Ink Business Cash (...0526)</span>
+      </div>
+      <div style="margin-top:6px;color:var(--slate);font-style:italic;">Update directly in 📊 Current tab (rows 19–24) if any get a balance</div>
+    </div>
+  </div>
+
+  <!-- SECTION C: OTHER CARDS -->
+  <div class="card mb20">
+    <div class="card-label" style="margin-bottom:14px;">C · Other Cards <span style="font-weight:400;color:var(--amber);font-size:11px;margin-left:8px;">← most important to update</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div>
+        <div style="font-size:12px;color:var(--rust);margin-bottom:5px;">Crypto.com Visa 🚨 NO AUTOPAY</div>
+        <input type="number" id="upd-cdc" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--rust);border-radius:6px;background:var(--paper);color:var(--ink);">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--amber);margin-bottom:5px;">Best Buy BB1 ⏰ Deferred — Jul 14</div>
+        <input type="number" id="upd-bb1" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--amber);border-radius:6px;background:var(--paper);color:var(--ink);">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Best Buy BB2 (0% Jan 2027)</div>
+        <input type="number" id="upd-bb2" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Best Buy BB3 (0% Mar 2027)</div>
+        <input type="number" id="upd-bb3" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">BOA (...8769) (0% Jun 2026)</div>
+        <input type="number" id="upd-boa1" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--amber);margin-bottom:5px;">BOA (...7720) ⚠ Verify APR</div>
+        <input type="number" id="upd-boa2" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--amber);border-radius:6px;background:var(--paper);color:var(--ink);">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">EIDL Loan (SBA)</div>
+        <input type="number" id="upd-eidl" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION D: INVESTMENTS -->
+  <div class="card mb20">
+    <div class="card-label" style="margin-bottom:14px;">D · Investments</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+      <div>
+        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Betterment Total</div>
+        <input type="number" id="upd-bet" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Robinhood Total</div>
+        <input type="number" id="upd-rh" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--amber);margin-bottom:5px;">Crypto (optional)</div>
+        <input type="number" id="upd-crypto" step="0.01" placeholder="0" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTION BUTTONS -->
+  <div style="display:flex;gap:12px;margin-bottom:12px;">
+    <button onclick="saveUpdate(false)"
+      style="flex:1;padding:12px;font-size:13px;font-weight:600;font-family:var(--font-mono);letter-spacing:1px;background:var(--paper);border:1px solid var(--cream2);border-radius:8px;cursor:pointer;color:var(--slate);transition:background .15s;"
+      onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background='var(--paper)'">
+      SAVE TO SHEET
+    </button>
+    <button onclick="saveUpdate(true)"
+      style="flex:2;padding:12px;font-size:13px;font-weight:600;font-family:var(--font-mono);letter-spacing:1px;background:var(--sage);color:#fff;border:none;border-radius:8px;cursor:pointer;transition:background .15s;"
+      onmouseover="this.style.background='var(--sage-l)'" onmouseout="this.style.background='var(--sage)'">
+      SAVE + LOG MONTH →
+    </button>
+  </div>
+  <div style="font-size:11px;color:var(--ink4);text-align:center;font-family:var(--font-mono);">
+    Save — writes values to sheet &nbsp;·&nbsp; Save + Log — writes values AND records a History row
+  </div>
+  <div id="upd-status" style="margin-top:14px;text-align:center;font-size:13px;min-height:20px;"></div>
+
+</div>
+
 </div><!-- /main -->
 
 <script>
@@ -392,6 +560,8 @@ const DEFAULTS = {
     monthly_exp:1980, net_worth:52390.20, total_debt:-12618.14,
     crypto_com:4844, bb1:973, bb2:1614, bb3:2164,
     boa1:1148, boa2:905, prime_visa:970.14, venmo:0,
+    chase_chk:286.57, chase_sav1:250, chase_sav2:200, chase_biz:100,
+    eidl:0,
   },
   history:[
     {month:'Feb 2026',cash:1982,crypto:0,betterment:0,robinhood:0,invest_total:0,debt:11122,net_worth:-9140,monthly_exp:1980},
@@ -667,6 +837,127 @@ async function logMonth() {
     alert('Failed: ' + e.message);
   } finally {
     btn.textContent = '\uD83D\uDCC5 Log Month'; btn.disabled = false;
+  }
+}
+
+// ── POPULATE UPDATE FORM ─────────────────────────────────────────────────
+function populateUpdateForm(cur) {
+  if (!cur) return;
+  const set = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = parseFloat(val) || 0; };
+  const snap = cur.snapshot_mo || 'March 2026';
+  const snapEl = document.getElementById('upd-snapshot');
+  if (snapEl) snapEl.value = snap;
+  const lbl = document.getElementById('upd-month-label');
+  if (lbl) lbl.textContent = snap;
+  // Chase bank
+  set('upd-chk',  cur.chase_chk  || 286.57);
+  set('upd-sav1', cur.chase_sav1 || 250);
+  set('upd-sav2', cur.chase_sav2 || 200);
+  set('upd-biz',  cur.chase_biz  || 100);
+  // Chase CCs
+  set('upd-prime', cur.prime_visa || 970.14);
+  set('upd-venmo', cur.venmo      || 0);
+  // Other cards
+  set('upd-cdc',  cur.crypto_com || 4844);
+  set('upd-bb1',  cur.bb1        || 973);
+  set('upd-bb2',  cur.bb2        || 1614);
+  set('upd-bb3',  cur.bb3        || 2164);
+  set('upd-boa1', cur.boa1       || 1148);
+  set('upd-boa2', cur.boa2       || 905);
+  set('upd-eidl', cur.eidl       || 0);
+  // Investments
+  set('upd-bet',    cur.betterment || 31897.98);
+  set('upd-rh',     cur.robinhood  || 32273.79);
+  set('upd-crypto', cur.crypto     || 0);
+  // Live cash total
+  updateCashTotal();
+}
+
+function updateCashTotal() {
+  const ids = ['upd-chk','upd-sav1','upd-sav2','upd-biz'];
+  const total = ids.reduce((sum, id) => {
+    const el = document.getElementById(id);
+    return sum + (parseFloat(el && el.value) || 0);
+  }, 0);
+  const el = document.getElementById('upd-cash-total');
+  if (el) el.textContent = '$' + total.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+// Wire live cash total update
+['upd-chk','upd-sav1','upd-sav2','upd-biz'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', updateCashTotal);
+});
+
+// ── SAVE UPDATE ───────────────────────────────────────────────────────────
+async function saveUpdate(andLog) {
+  const get = id => { const el = document.getElementById(id); return el ? (parseFloat(el.value) || 0) : 0; };
+  const getText = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  const status = document.getElementById('upd-status');
+
+  const snap = getText('upd-snapshot');
+  if (!snap) { status.textContent = '⚠ Please enter a Snapshot Month before saving.'; status.style.color = 'var(--amber)'; return; }
+
+  const data = {
+    snapshot_mo: snap,
+    chase_chk:   get('upd-chk'),
+    chase_sav1:  get('upd-sav1'),
+    chase_sav2:  get('upd-sav2'),
+    chase_biz:   get('upd-biz'),
+    prime_visa:  get('upd-prime'),
+    venmo:       get('upd-venmo'),
+    crypto_com:  get('upd-cdc'),
+    bb1:         get('upd-bb1'),
+    bb2:         get('upd-bb2'),
+    bb3:         get('upd-bb3'),
+    boa1:        get('upd-boa1'),
+    boa2:        get('upd-boa2'),
+    eidl:        get('upd-eidl'),
+    betterment:  get('upd-bet'),
+    rh_total:    get('upd-rh'),
+    crypto:      get('upd-crypto'),
+    monthly_exp: 1980,
+  };
+
+  status.textContent = 'Saving to sheet...';
+  status.style.color = 'var(--ink4)';
+
+  try {
+    // Step 1: Save values to sheet
+    const r1 = await fetch(SCRIPT_URL, {
+      method:'POST', redirect:'follow',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'saveCurrent', data})
+    });
+    const j1 = await r1.json();
+    if (!j1.ok) throw new Error(j1.error || 'Save failed');
+
+    if (!andLog) {
+      status.textContent = '✅ Saved to sheet — ' + snap;
+      status.style.color = 'var(--sage)';
+      loadData();
+      return;
+    }
+
+    // Step 2: Log month
+    status.textContent = 'Logging month...';
+    const r2 = await fetch(SCRIPT_URL, {
+      method:'POST', redirect:'follow',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'logMonth'})
+    });
+    const j2 = await r2.json();
+    if (!j2.ok) throw new Error(j2.error || 'Log failed');
+
+    const nw = j2.net_worth;
+    status.innerHTML = '✅ ' + j2.logged + ' saved + logged!&nbsp; Net Worth: ' +
+      (nw < 0 ? '−' : '') + '$' + Math.abs(nw).toLocaleString('en-US', {maximumFractionDigits:0});
+    status.style.color = 'var(--sage)';
+    loadData();
+
+  } catch(e) {
+    status.textContent = '❌ ' + e.message;
+    status.style.color = 'var(--rust)';
   }
 }
 
