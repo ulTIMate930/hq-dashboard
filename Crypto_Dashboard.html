@@ -425,12 +425,50 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
 
 <!-- ══ TASKS ══ -->
 <div class="panel" id="panel-tasks">
-  <div class="sec-label">Crypto &amp; Trading Tasks</div>
-  <div class="card mb20" id="task-list">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+    <div class="sec-label" style="margin:0;border:none;padding:0;">Crypto &amp; Trading Tasks</div>
+    <div style="display:flex;gap:8px;">
+      <select id="task-area-filter" onchange="renderTasks(window._allTasks||[])" style="font-family:var(--font-mono);font-size:10px;padding:5px 8px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink4);">
+        <option value="Crypto">Crypto only</option>
+        <option value="all">All areas</option>
+      </select>
+      <button onclick="showAddTask()" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:5px 12px;background:var(--amber);color:var(--ink);border:none;border-radius:6px;cursor:pointer;">+ ADD TASK</button>
+    </div>
+  </div>
+
+  <!-- Add task form (hidden by default) -->
+  <div id="add-task-form" style="display:none;background:var(--amber-bg);border:1px solid rgba(192,122,26,.2);border-radius:8px;padding:14px;margin-bottom:14px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div>
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--ink4);margin-bottom:4px;">TASK</div>
+        <input id="new-task-item" type="text" placeholder="What needs to happen..." style="width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+      </div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--ink4);margin-bottom:4px;">AREA</div>
+        <select id="new-task-area" style="width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+          <option>Crypto</option><option>ABDJS</option><option>TradFi</option>
+          <option>Rescue</option><option>Fitness</option><option>Life</option><option>Camaro</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--ink4);margin-bottom:4px;">PRIORITY</div>
+        <select id="new-task-priority" style="width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+          <option>Do Now</option><option>This Week</option><option>Someday</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="hideAddTask()" style="font-family:var(--font-mono);font-size:10px;padding:6px 14px;background:var(--paper);border:1px solid var(--cream2);border-radius:6px;cursor:pointer;color:var(--ink4);">Cancel</button>
+      <button onclick="addTask()" style="font-family:var(--font-mono);font-size:10px;padding:6px 14px;background:var(--amber);color:var(--ink);border:none;border-radius:6px;cursor:pointer;font-weight:600;">ADD TASK</button>
+    </div>
+  </div>
+
+  <div class="card" id="task-list">
     <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">Loading tasks from HQ...</div>
   </div>
-  <div style="text-align:right;">
-    <a href="index.html" style="font-family:var(--font-mono);font-size:10px;color:var(--amber);text-decoration:none;letter-spacing:1px;">← Manage all tasks in HQ ↗</a>
+  <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-size:12px;color:var(--ink4);font-family:var(--font-mono);" id="task-count"></div>
+    <a href="index.html" style="font-family:var(--font-mono);font-size:10px;color:var(--amber);text-decoration:none;letter-spacing:1px;">← All tasks in HQ ↗</a>
   </div>
 </div>
 
@@ -603,21 +641,93 @@ function applyData(d) {
 
 // ── TASKS ──────────────────────────────────────────────────────────────────
 function renderTasks(rows) {
-  const tasks = rows.filter(r=>r.area==='Crypto'&&!r.done);
+  window._allTasks = rows; // cache for filtering
+  const filterEl = document.getElementById('task-area-filter');
+  const area = filterEl ? filterEl.value : 'Crypto';
+  const tasks = area === 'all'
+    ? rows.filter(r=>!r.done)
+    : rows.filter(r=>r.area===area&&!r.done);
+  const done  = area === 'all'
+    ? rows.filter(r=>r.done)
+    : rows.filter(r=>r.area===area&&r.done);
   const el = document.getElementById('task-list');
-  if(!tasks.length){el.innerHTML='<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No open crypto tasks. Add in HQ → RAM Dump.</div>';return;}
+  const cnt = document.getElementById('task-count');
+  if(!tasks.length && !done.length){
+    el.innerHTML='<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No tasks. Click + ADD TASK to create one.</div>';
+    if(cnt) cnt.textContent='';
+    return;
+  }
   const pc={'Do Now':'badge-now','This Week':'badge-week','Someday':'badge-someday'};
-  el.innerHTML = tasks.map(t=>`<div class="task-item"><div class="task-check"></div><div class="task-text">${t.item}</div><span class="task-badge ${pc[t.priority]||'badge-someday'}">${t.priority||'—'}</span></div>`).join('');
+  const areaColors={Crypto:'color:var(--amber)',ABDJS:'color:var(--sage)',TradFi:'color:var(--slate)',
+    Rescue:'color:var(--rust)',Fitness:'color:var(--violet)',Life:'color:var(--teal)',Camaro:'color:var(--amber)'};
+  const taskRow = (t, isDone) => `
+    <div class="task-item${isDone?' done':''}" style="opacity:${isDone?0.5:1}">
+      <div class="task-check" onclick="toggleTask(${t.id})" style="cursor:pointer;${isDone?'background:var(--sage-l);border-color:var(--sage-l);':''}">
+        ${isDone?'<span style="font-size:9px;color:#fff;font-weight:700;line-height:15px;display:block;text-align:center;">✓</span>':''}
+      </div>
+      <div class="task-text" style="${isDone?'text-decoration:line-through;color:var(--ink4);':''}">
+        ${t.item}
+        ${area==='all'?`<span style="font-family:var(--font-mono);font-size:9px;margin-left:6px;${areaColors[t.area]||''}">${t.area}</span>`:''}
+      </div>
+      <span class="task-badge ${pc[t.priority]||'badge-someday'}">${t.priority||'—'}</span>
+    </div>`;
+  el.innerHTML =
+    tasks.map(t=>taskRow(t,false)).join('') +
+    (done.length ? `<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--ink4);padding:10px 0 4px;margin-top:6px;border-top:1px solid var(--cream2);">COMPLETED</div>` + done.slice(0,5).map(t=>taskRow(t,true)).join('') : '');
+  if(cnt) cnt.textContent = tasks.length + ' open' + (done.length ? ' · ' + done.length + ' done' : '');
+}
+
+// ── TASK TOGGLE ───────────────────────────────────────────────────────────
+async function toggleTask(id) {
+  const rows = window._allTasks || [];
+  const idx  = rows.findIndex(r=>r.id===id);
+  if (idx === -1) return;
+  rows[idx].done = !rows[idx].done;
+  renderTasks(rows);  // optimistic UI update
+  try {
+    await fetch(CRYPTO_SCRIPT_URL, {
+      method:'POST', redirect:'follow',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'saveTasks', data:{rows}})
+    });
+  } catch(e) { console.warn('toggleTask save failed:', e); }
+}
+
+// ── ADD TASK ──────────────────────────────────────────────────────────────
+function showAddTask() { document.getElementById('add-task-form').style.display='block'; document.getElementById('new-task-item').focus(); }
+function hideAddTask() { document.getElementById('add-task-form').style.display='none'; }
+
+async function addTask() {
+  const item     = document.getElementById('new-task-item').value.trim();
+  const area     = document.getElementById('new-task-area').value;
+  const priority = document.getElementById('new-task-priority').value;
+  if (!item) { document.getElementById('new-task-item').focus(); return; }
+  const rows = window._allTasks || [];
+  const maxId = rows.reduce((m,r)=>Math.max(m,r.id||0), 0);
+  const newTask = {id: maxId+1, item, type:'Task', area, priority, week:'', done:false};
+  rows.push(newTask);
+  hideAddTask();
+  document.getElementById('new-task-item').value = '';
+  renderTasks(rows);  // optimistic update
+  try {
+    await fetch(CRYPTO_SCRIPT_URL, {
+      method:'POST', redirect:'follow',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'saveTasks', data:{rows}})
+    });
+  } catch(e) { console.warn('addTask save failed:', e); }
 }
 
 // ── SAVE NOTES ─────────────────────────────────────────────────────────────
 async function saveNotes() {
   const text = document.getElementById('crypto-notes').value;
-  try { await fetch(SCRIPT_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveNotes',data:{Crypto:[{date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),text}]}})}); } catch(e){}
+  const btn = event && event.target; if(btn){btn.textContent='Saving...';btn.disabled=true;}
+  try { await fetch(CRYPTO_SCRIPT_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveNotes',data:{Crypto:[{date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),text}]}})}); if(btn){btn.textContent='SAVE NOTE';btn.disabled=false;} } catch(e){if(btn){btn.textContent='SAVE NOTE';btn.disabled=false;}}
 }
 async function saveJournalNotes() {
   const text = document.getElementById('journal-notes').value;
-  try { await fetch(SCRIPT_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveNotes',data:{CryptoJournal:[{date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),text}]}})}); } catch(e){}
+  const btn = event && event.target; if(btn){btn.textContent='Saving...';btn.disabled=true;}
+  try { await fetch(CRYPTO_SCRIPT_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveNotes',data:{CryptoJournal:[{date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),text}]}})}); if(btn){btn.textContent='SAVE';btn.disabled=false;} } catch(e){if(btn){btn.textContent='SAVE';btn.disabled=false;}}
 }
 
 // ── POSITION CALCULATOR ────────────────────────────────────────────────────
