@@ -189,7 +189,9 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
     <div class="logo">🔐 Crypto &amp; Trading <span class="logo-sub">Answer Back</span></div>
   </div>
   <div class="topbar-right">
+    <button onclick="refreshPrices()" id="refresh-btn" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:5px 12px;background:rgba(91,74,138,.15);color:var(--violet-l);border:1px solid rgba(91,74,138,.3);border-radius:5px;cursor:pointer;transition:background .2s;" onmouseover="this.style.background='rgba(91,74,138,.25)'" onmouseout="this.style.background='rgba(91,74,138,.15)'">⚡ Refresh Prices</button>
     <a id="sheet-link" href="https://docs.google.com/spreadsheets/d/1xddVPIQwcixtpcP6s9pOzUPa6DvZXnJzgGWy1q9DqRg/edit" id="sheet-link" target="_blank" class="sheet-btn">📊 Sheet ↗</a>
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink4);letter-spacing:1px;" id="price-stamp"></div>
     <div class="conn-chip" id="conn-chip"><div class="cdot"></div><span id="conn-text">Connecting...</span></div>
   </div>
 </div>
@@ -582,7 +584,13 @@ function applyData(d) {
   if(d.btc_dom) document.getElementById('mkt-dom').textContent = d.btc_dom+'%';
   if(d.mkt_cap) document.getElementById('mkt-cap').textContent = '$'+d.mkt_cap+'T';
   // Portfolio highlights
+  // Show live portfolio total (spot + defi)
   if(d.crypto_total) document.getElementById('port-total').textContent = fmtUSD(parseFloat(d.crypto_total));
+  // Price stamp
+  if(d.price_count){
+    const ps = document.getElementById('price-stamp');
+    if(ps) ps.textContent = d.price_count + ' prices live';
+  }
   if(d.btc_value) document.getElementById('port-btc').textContent = fmtUSD(parseFloat(d.btc_value));
   if(d.eth_value) document.getElementById('port-eth').textContent = fmtUSD(parseFloat(d.eth_value));
   if(d.sol_value) document.getElementById('port-sol').textContent = fmtUSD(parseFloat(d.sol_value));
@@ -707,6 +715,28 @@ function renderHoldings() {
     </tr>`).join('');
   const ce=document.getElementById('holdings-count');
   if(ce) ce.textContent=`${data.length} holdings · ${fmtUSD(tot)} shown`;
+}
+
+// ── REFRESH PRICES ────────────────────────────────────────────────────────
+async function refreshPrices() {
+  const btn = document.getElementById('refresh-btn');
+  const ps  = document.getElementById('price-stamp');
+  if(btn){ btn.textContent = '⚡ Fetching...'; btn.disabled = true; }
+  try {
+    const r = await fetch(CRYPTO_SCRIPT_URL+'?action=refreshPrices',{redirect:'follow'});
+    const j = await r.json();
+    if(j.ok){
+      if(ps) ps.textContent = j.updated + ' prices updated';
+      // Reload full data to reflect new values
+      await loadData();
+    } else {
+      if(ps) ps.textContent = 'Refresh failed';
+    }
+  } catch(e){
+    if(ps) ps.textContent = 'Offline';
+  } finally {
+    if(btn){ btn.textContent = '⚡ Refresh Prices'; btn.disabled = false; }
+  }
 }
 
 // ── LOAD TASKS FROM HQ ────────────────────────────────────────────────────
