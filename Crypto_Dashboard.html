@@ -617,10 +617,10 @@ function applyData(d) {
   const ph = document.getElementById('mkt-phase');
   ph.textContent = phase;
   ph.className = 'regime-phase ' + (phase.toLowerCase().includes('bull')?'phase-bull':phase.toLowerCase().includes('bear')?'phase-bear':'phase-sideways');
-  if(d.btc_price) document.getElementById('mkt-btc').textContent = '$'+parseFloat(d.btc_price).toLocaleString('en-US',{maximumFractionDigits:0});
-  if(d.fear_greed) document.getElementById('mkt-fg').textContent = d.fear_greed+' / 100';
-  if(d.btc_dom) document.getElementById('mkt-dom').textContent = d.btc_dom+'%';
-  if(d.mkt_cap) document.getElementById('mkt-cap').textContent = '$'+d.mkt_cap+'T';
+  if(d.btc_price && d.btc_price>0) document.getElementById('mkt-btc').textContent = '$'+parseFloat(d.btc_price).toLocaleString('en-US',{maximumFractionDigits:0});
+  if(d.fear_greed && d.fear_greed!=='—') document.getElementById('mkt-fg').textContent = d.fear_greed;
+  if(d.btc_dom && d.btc_dom>0) document.getElementById('mkt-dom').textContent = parseFloat(d.btc_dom).toFixed(1)+'%';
+  if(d.mkt_cap && d.mkt_cap>0) document.getElementById('mkt-cap').textContent = '$'+parseFloat(d.mkt_cap).toFixed(2)+'T';
   // Portfolio highlights
   // Show live portfolio total (spot + defi)
   if(d.crypto_total) document.getElementById('port-total').textContent = fmtUSD(parseFloat(d.crypto_total));
@@ -721,13 +721,29 @@ async function addTask() {
 // ── SAVE NOTES ─────────────────────────────────────────────────────────────
 async function saveNotes() {
   const text = document.getElementById('crypto-notes').value;
-  const btn = event && event.target; if(btn){btn.textContent='Saving...';btn.disabled=true;}
-  try { await fetch(CRYPTO_SCRIPT_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveNotes',data:{Crypto:[{date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),text}]}})}); if(btn){btn.textContent='SAVE NOTE';btn.disabled=false;} } catch(e){if(btn){btn.textContent='SAVE NOTE';btn.disabled=false;}}
+  const btn = event && event.target;
+  if(btn){btn.textContent='Saving...';btn.disabled=true;}
+  try {
+    const r = await fetch(CRYPTO_SCRIPT_URL,{method:'POST',redirect:'follow',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'saveNotes',data:{crypto_notes:text}})});
+    const j = await r.json();
+    if(btn){btn.textContent = j.ok ? '✓ Saved' : '✗ Failed'; btn.disabled=false;}
+    setTimeout(()=>{if(btn){btn.textContent='SAVE NOTE';}},2000);
+  } catch(e){if(btn){btn.textContent='SAVE NOTE';btn.disabled=false;}}
 }
 async function saveJournalNotes() {
   const text = document.getElementById('journal-notes').value;
-  const btn = event && event.target; if(btn){btn.textContent='Saving...';btn.disabled=true;}
-  try { await fetch(CRYPTO_SCRIPT_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveNotes',data:{CryptoJournal:[{date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),text}]}})}); if(btn){btn.textContent='SAVE';btn.disabled=false;} } catch(e){if(btn){btn.textContent='SAVE';btn.disabled=false;}}
+  const btn = event && event.target;
+  if(btn){btn.textContent='Saving...';btn.disabled=true;}
+  try {
+    const r = await fetch(CRYPTO_SCRIPT_URL,{method:'POST',redirect:'follow',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'saveNotes',data:{journal_notes:text}})});
+    const j = await r.json();
+    if(btn){btn.textContent = j.ok ? '✓ Saved' : '✗ Failed'; btn.disabled=false;}
+    setTimeout(()=>{if(btn){btn.textContent='SAVE';}},2000);
+  } catch(e){if(btn){btn.textContent='SAVE';btn.disabled=false;}}
 }
 
 // ── POSITION CALCULATOR ────────────────────────────────────────────────────
