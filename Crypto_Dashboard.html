@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Crypto Portfolio — Answer Back</title>
+<title>Crypto & Trading — Answer Back</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --cream:#f5f0e8;--cream2:#ede7d9;--cream3:#e4dccb;
-  --paper:#faf7f2;--ink:#1e1a14;--ink2:#3d3629;--ink3:#6b6050;--ink4:#a89880;
+  --paper:#faf7f2;--ink:#1e1a14;--ink2:#3d3629;--ink3:#6b6050;--ink4:#a89880;--ink5:#c8b99a;
   --rust:#c44b2b;--rust-l:#e8705a;--rust-bg:#fdf0ed;
   --amber:#c07a1a;--amber-l:#e8a030;--amber-bg:#fdf5e6;
   --sage:#3a6b4a;--sage-l:#5a9a6a;--sage-bg:#eef4f0;
@@ -18,6 +18,8 @@
   --font-serif:'Playfair Display',Georgia,serif;
   --font-sans:'DM Sans',sans-serif;
   --font-mono:'DM Mono',monospace;
+  --shadow-sm:0 1px 3px rgba(30,26,20,.06);
+  --shadow-md:0 4px 12px rgba(30,26,20,.08);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-size:14px;min-height:100vh;}
@@ -27,39 +29,47 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
 .logo-sub{font-family:var(--font-mono);font-size:10px;color:var(--ink4);letter-spacing:2px;}
 .back-link{font-family:var(--font-mono);font-size:10px;color:var(--ink4);text-decoration:none;letter-spacing:1px;transition:color .2s;}
 .back-link:hover{color:var(--cream);}
-.topbar-right{display:flex;align-items:center;gap:10px;}
-.last-updated{font-family:var(--font-mono);font-size:10px;color:var(--ink4);letter-spacing:1px;}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.sheet-btn{font-family:var(--font-mono);font-size:10px;color:var(--amber-l);background:rgba(192,122,26,.12);border:1px solid rgba(192,122,26,.3);padding:5px 12px;border-radius:5px;text-decoration:none;letter-spacing:1px;transition:background .2s;}
+.sheet-btn:hover{background:rgba(192,122,26,.22);}
+.conn-chip{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:5px 12px;border-radius:4px;border:1px solid rgba(255,255,255,.1);color:var(--ink4);}
+.conn-chip.ok{color:var(--sage-l);border-color:rgba(90,154,106,.3);background:rgba(90,154,106,.08);}
+.conn-chip.err{color:var(--rust-l);border-color:rgba(196,75,43,.3);}
+.cdot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.conn-chip.ok .cdot{box-shadow:0 0 4px currentColor;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
 .nav-strip{background:var(--paper);border-bottom:1px solid var(--cream2);padding:0 28px;display:flex;overflow-x:auto;}
 .nav-tab{padding:13px 16px;font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;}
 .nav-tab:hover{color:var(--ink2);}
-.nav-tab.active{color:var(--violet);border-bottom-color:var(--violet);}
+.nav-tab.active{color:var(--amber);border-bottom-color:var(--amber);}
 
-.main{max-width:1080px;margin:0 auto;padding:28px 20px 80px;}
-.panel{display:none;}
-.panel.active{display:block;}
+.main{max-width:1000px;margin:0 auto;padding:28px 20px 80px;}
+.panel{display:none;}.panel.active{display:block;}
 
-/* HERO */
-.hero{background:var(--ink);border-radius:12px;padding:26px 30px;margin-bottom:24px;}
-.hero-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:5px;}
-.hero-total{font-family:var(--font-serif);font-size:42px;font-weight:700;color:#f5f0e8;line-height:1.05;margin-bottom:8px;}
-.hero-sub{font-size:12px;color:var(--ink4);margin-bottom:20px;}
-.hero-row{display:flex;gap:24px;flex-wrap:wrap;}
-.hero-stat label{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);display:block;margin-bottom:2px;}
-.hero-stat .fig{font-family:var(--font-serif);font-size:20px;font-weight:600;}
+/* REGIME CARD */
+.regime-card{background:var(--ink);border-radius:12px;padding:22px 26px;color:#f5f0e8;margin-bottom:20px;}
+.regime-meta{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:8px;}
+.regime-phase{font-family:var(--font-serif);font-size:28px;font-weight:700;margin-bottom:16px;}
+.phase-bull{color:var(--sage-l);}
+.phase-bear{color:var(--rust-l);}
+.phase-sideways{color:var(--amber-l);}
+.regime-stats{display:flex;gap:28px;flex-wrap:wrap;}
+.regime-stat label{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--ink4);display:block;margin-bottom:3px;}
+.regime-stat .val{font-family:var(--font-serif);font-size:18px;font-weight:600;color:#f5f0e8;}
 
 /* CARDS */
-.card{background:var(--paper);border:1px solid var(--cream2);border-radius:10px;padding:18px;box-shadow:0 1px 3px rgba(30,26,20,.05);}
+.card{background:var(--paper);border:1px solid var(--cream2);border-radius:10px;padding:18px;box-shadow:var(--shadow-sm);}
 .card-label{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:7px;}
 .card-fig{font-family:var(--font-serif);font-size:24px;font-weight:700;line-height:1.1;}
 .card-note{font-size:11px;color:var(--ink4);margin-top:4px;}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
 .mb20{margin-bottom:20px;}
 .sec-label{font-family:var(--font-mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--ink4);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--cream2);}
 
-/* TYPE BADGE */
+/* TYPE BADGES */
 .type-badge{display:inline-block;font-family:var(--font-mono);font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:10px;font-weight:600;white-space:nowrap;}
 .tb-core{background:var(--slate-bg);color:var(--slate);}
 .tb-legacy{background:var(--teal-bg);color:var(--teal);}
@@ -72,61 +82,101 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
 .tb-unclass{background:var(--cream2);color:var(--ink3);}
 
 /* ALLOCATION BARS */
-.alloc-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--cream2);}
+.alloc-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--cream2);}
 .alloc-row:last-child{border-bottom:none;}
 .alloc-label{font-size:13px;color:var(--ink);min-width:110px;}
-.alloc-bar-wrap{flex:1;height:8px;background:var(--cream2);border-radius:4px;overflow:hidden;}
+.alloc-bar-wrap{flex:1;height:7px;background:var(--cream2);border-radius:4px;overflow:hidden;}
 .alloc-bar{height:100%;border-radius:4px;transition:width .6s ease;}
 .alloc-val{font-family:var(--font-mono);font-size:12px;color:var(--ink3);min-width:72px;text-align:right;}
 .alloc-pct{font-family:var(--font-mono);font-size:11px;color:var(--ink4);min-width:36px;text-align:right;}
 
 /* HOLDINGS TABLE */
 .htable{width:100%;border-collapse:collapse;font-size:13px;}
-.htable th{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:8px 10px;text-align:left;border-bottom:1px solid var(--cream2);background:var(--cream2);cursor:pointer;white-space:nowrap;}
+.htable th{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:7px 10px;text-align:left;border-bottom:1px solid var(--cream2);background:var(--cream2);cursor:pointer;white-space:nowrap;user-select:none;}
 .htable th:hover{color:var(--ink2);}
-.htable th.sort-asc::after{content:' ↑';}
-.htable th.sort-desc::after{content:' ↓';}
-.htable td{padding:9px 10px;border-bottom:1px solid var(--cream2);color:var(--ink3);vertical-align:middle;}
+.htable td{padding:8px 10px;border-bottom:1px solid var(--cream2);color:var(--ink3);vertical-align:middle;}
 .htable tr:last-child td{border-bottom:none;}
 .htable tr:hover td{background:var(--cream);}
 .htable .sym{font-family:var(--font-mono);font-weight:600;color:var(--ink);font-size:13px;}
 .htable .val{font-family:var(--font-mono);font-size:12px;color:var(--ink);text-align:right;}
 .htable .pct{font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:right;}
 .htable .plat{font-size:11px;color:var(--ink4);}
-.htable tr.dust td{opacity:.6;}
+.htable tr.dust td{opacity:.55;}
 
 /* FILTER PILLS */
-.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
 .fpill{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:5px 12px;border-radius:20px;border:1px solid var(--cream2);background:var(--paper);color:var(--ink4);cursor:pointer;transition:all .15s;}
 .fpill:hover{background:var(--cream2);color:var(--ink);}
-.fpill.active{background:var(--violet);color:#fff;border-color:var(--violet);}
+.fpill.active{background:var(--amber);color:#fff;border-color:var(--amber);}
+
+/* SEARCH */
+.search-wrap{position:relative;margin-bottom:14px;}
+.search-wrap input{width:100%;padding:9px 12px 9px 34px;font-size:13px;border:1px solid var(--cream2);border-radius:8px;background:var(--paper);color:var(--ink);font-family:var(--font-sans);}
+.search-wrap input:focus{outline:none;border-color:var(--amber);}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;}
 
 /* ALERTS */
 .alert{display:flex;gap:12px;padding:14px;border-radius:8px;margin-bottom:10px;font-size:13px;line-height:1.6;}
 .alert-icon{font-size:18px;flex-shrink:0;}
 .alert-head{font-weight:600;margin-bottom:2px;}
 .alert.amber{background:var(--amber-bg);border:1px solid rgba(192,122,26,.2);}
+.alert.red{background:var(--rust-bg);border:1px solid rgba(196,75,43,.2);}
 .alert.slate{background:var(--slate-bg);border:1px solid rgba(45,74,107,.2);}
+.alert.sage{background:var(--sage-bg);border:1px solid rgba(58,107,74,.2);}
 
-/* DEFI TABLE */
-.defi-block{padding:14px 0;border-bottom:1px solid var(--cream2);}
+/* DEFI */
+.defi-block{padding:13px 0;border-bottom:1px solid var(--cream2);}
 .defi-block:last-child{border-bottom:none;}
 .defi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
 .defi-name{font-size:14px;font-weight:600;color:var(--ink);}
 .defi-val{font-family:var(--font-serif);font-size:18px;font-weight:700;color:var(--violet);}
-.defi-meta{display:flex;gap:14px;font-family:var(--font-mono);font-size:11px;color:var(--ink4);flex-wrap:wrap;margin-bottom:6px;}
+.defi-meta{display:flex;gap:14px;font-family:var(--font-mono);font-size:11px;color:var(--ink4);flex-wrap:wrap;margin-bottom:5px;}
 .oor{color:var(--rust);font-weight:600;}
 
-/* SEARCH */
-.search-wrap{position:relative;margin-bottom:16px;}
-.search-wrap input{width:100%;padding:9px 12px 9px 36px;font-size:13px;border:1px solid var(--cream2);border-radius:8px;background:var(--paper);color:var(--ink);font-family:var(--font-sans);}
-.search-wrap input:focus{outline:none;border-color:var(--violet);}
-.search-wrap::before{content:'🔍';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;}
+/* FW CARDS */
+.fw-card{background:var(--paper);border:1px solid var(--cream2);border-radius:10px;padding:18px;margin-bottom:10px;}
+.fw-num{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:5px;}
+.fw-title{font-family:var(--font-serif);font-size:15px;font-weight:700;color:var(--amber);margin-bottom:7px;}
+.fw-body{font-size:13px;color:var(--ink3);line-height:1.7;margin-bottom:9px;}
+.fw-rule{font-family:var(--font-mono);font-size:11px;color:var(--ink2);border-left:3px solid var(--amber);padding-left:10px;font-style:italic;}
+
+/* TASKS */
+.task-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--cream2);}
+.task-item:last-child{border-bottom:none;}
+.task-check{width:15px;height:15px;min-width:15px;border:1.5px solid var(--cream3);border-radius:4px;}
+.task-text{font-size:13px;color:var(--ink);flex:1;}
+.task-badge{font-family:var(--font-mono);font-size:9px;padding:2px 7px;border-radius:10px;flex-shrink:0;}
+.badge-now{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-l);}
+.badge-week{background:var(--slate-bg);color:var(--slate);border:1px solid var(--slate-l);}
+.badge-someday{background:var(--cream2);color:var(--ink4);}
+
+/* LINKS */
+.links-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.link-card{background:var(--paper);border:1px solid var(--cream2);border-radius:8px;padding:13px 15px;text-decoration:none;color:var(--ink);transition:all .2s;display:block;}
+.link-card:hover{border-color:var(--amber);background:var(--amber-bg);transform:translateY(-1px);box-shadow:var(--shadow-md);}
+.lc-cat{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--amber);margin-bottom:4px;}
+.lc-name{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;}
+.lc-url{font-family:var(--font-mono);font-size:10px;color:var(--ink4);}
+
+/* CALC */
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.calc-field label{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--ink4);display:block;margin-bottom:5px;}
+.calc-input{width:100%;background:var(--cream);border:1px solid var(--cream3);border-radius:6px;padding:8px 10px;font-family:var(--font-mono);font-size:13px;color:var(--ink);outline:none;}
+.calc-input:focus{border-color:var(--amber);}
+.calc-result{background:var(--ink);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:12px;color:var(--ink4);line-height:1.8;margin-top:10px;}
+.calc-result .r-val{color:var(--amber-l);font-weight:600;font-size:14px;}
+
+/* NOTES */
+.notes{width:100%;background:var(--cream);border:1px solid var(--cream3);border-radius:6px;padding:12px;font-family:var(--font-sans);font-size:13px;color:var(--ink);outline:none;resize:vertical;line-height:1.6;min-height:130px;}
+.notes:focus{border-color:var(--amber);}
+.notes::placeholder{color:var(--ink5);}
+.save-btn{font-family:var(--font-mono);font-size:10px;padding:5px 14px;background:var(--amber);color:var(--ink);border:none;border-radius:5px;cursor:pointer;letter-spacing:1px;transition:all .15s;}
+.save-btn:hover{background:var(--amber-l);}
 
 @media(max-width:700px){
   .g4{grid-template-columns:1fr 1fr;}
   .g3{grid-template-columns:1fr 1fr;}
-  .hero-row{gap:16px;}
+  .links-grid{grid-template-columns:1fr 1fr;}
 }
 </style>
 </head>
@@ -136,119 +186,112 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
 <div class="topbar">
   <div style="display:flex;align-items:center;gap:14px;">
     <a href="index.html" class="back-link">← HQ</a>
-    <div class="logo">🔐 Crypto Portfolio <span class="logo-sub">Answer Back</span></div>
+    <div class="logo">🔐 Crypto &amp; Trading <span class="logo-sub">Answer Back</span></div>
   </div>
   <div class="topbar-right">
-    <div class="last-updated" id="last-updated">Data: Feb 18, 2026</div>
+    <a id="sheet-link" href="#" id="sheet-link" target="_blank" class="sheet-btn">📊 Sheet ↗</a>
+    <div class="conn-chip" id="conn-chip"><div class="cdot"></div><span id="conn-text">Connecting...</span></div>
   </div>
 </div>
 
 <!-- NAV -->
 <div class="nav-strip">
   <div class="nav-tab active" onclick="switchTab('overview',this)">Overview</div>
+  <div class="nav-tab" onclick="switchTab('portfolio',this)">Portfolio</div>
   <div class="nav-tab" onclick="switchTab('bytype',this)">By Type</div>
   <div class="nav-tab" onclick="switchTab('bylocation',this)">By Location</div>
   <div class="nav-tab" onclick="switchTab('defi',this)">DeFi / LPs</div>
   <div class="nav-tab" onclick="switchTab('holdings',this)">All Holdings</div>
+  <div class="nav-tab" onclick="switchTab('framework',this)">Framework</div>
+  <div class="nav-tab" onclick="switchTab('tools',this)">Tools</div>
+  <div class="nav-tab" onclick="switchTab('journal',this)">Journal</div>
+  <div class="nav-tab" onclick="switchTab('tasks',this)">Tasks</div>
 </div>
 
 <div class="main">
 
 <!-- ══ OVERVIEW ══ -->
 <div class="panel active" id="panel-overview">
-  <div class="hero">
-    <div class="hero-eyebrow">Total Portfolio Value · Feb 18, 2026</div>
-    <div class="hero-total">$280,025</div>
-    <div class="hero-sub">Spot holdings + DeFi/LP positions · Crypto excluded from TradFi net worth until Coinstats value confirmed</div>
-    <div class="hero-row">
-      <div class="hero-stat"><label>Spot Holdings</label><div class="fig" style="color:var(--slate-l)">$272,748</div></div>
-      <div class="hero-stat"><label>DeFi / LPs</label><div class="fig" style="color:var(--violet-l)">$7,276</div></div>
-      <div class="hero-stat"><label>Stablecoins</label><div class="fig" style="color:var(--sage-l)">$3,897</div></div>
-      <div class="hero-stat"><label>Unique Assets</label><div class="fig" style="color:var(--amber-l)">62</div></div>
-      <div class="hero-stat"><label>Locations</label><div class="fig" style="color:var(--amber-l)">12</div></div>
+  <div class="regime-card">
+    <div class="regime-meta">Market Conditions — update in Sheet</div>
+    <div class="regime-phase phase-sideways" id="mkt-phase">Update in Sheet</div>
+    <div class="regime-stats">
+      <div class="regime-stat"><label>BTC Price</label><div class="val" id="mkt-btc">—</div></div>
+      <div class="regime-stat"><label>Fear &amp; Greed</label><div class="val" id="mkt-fg">—</div></div>
+      <div class="regime-stat"><label>BTC Dominance</label><div class="val" id="mkt-dom">—</div></div>
+      <div class="regime-stat"><label>Total Mkt Cap</label><div class="val" id="mkt-cap">—</div></div>
     </div>
   </div>
 
-  <!-- ALLOCATION BY TYPE -->
+  <div class="g4">
+    <div class="card"><div class="card-label">Total Portfolio</div><div class="card-fig" style="color:var(--amber)" id="port-total">$280,025</div><div class="card-note">Spot + DeFi · Feb 18</div></div>
+    <div class="card"><div class="card-label">BTC</div><div class="card-fig" id="port-btc">—</div><div class="card-note">Value in USD</div></div>
+    <div class="card"><div class="card-label">ETH</div><div class="card-fig" id="port-eth">—</div><div class="card-note">Value in USD</div></div>
+    <div class="card"><div class="card-label">SOL</div><div class="card-fig" id="port-sol">—</div><div class="card-note">Value in USD</div></div>
+  </div>
+
   <div class="sec-label">Allocation by Asset Type</div>
   <div class="card mb20">
-    <div class="alloc-row">
-      <div class="alloc-label"><span class="type-badge tb-core">Core</span></div>
-      <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:49.7%;background:var(--slate);"></div></div>
-      <div class="alloc-val">$139,059</div><div class="alloc-pct">49.7%</div>
-    </div>
-    <div class="alloc-row">
-      <div class="alloc-label"><span class="type-badge tb-unclass">Unclassified</span></div>
-      <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:37.2%;background:var(--ink3);"></div></div>
-      <div class="alloc-val">$104,124</div><div class="alloc-pct">37.2%</div>
-    </div>
-    <div class="alloc-row">
-      <div class="alloc-label"><span class="type-badge tb-lp">DeFi / LP</span></div>
-      <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:2.6%;background:#3050a0;"></div></div>
-      <div class="alloc-val">$7,276</div><div class="alloc-pct">2.6%</div>
-    </div>
-    <div class="alloc-row">
-      <div class="alloc-label"><span class="type-badge tb-legacy">Legacy Core</span></div>
-      <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:5.3%;background:var(--teal);"></div></div>
-      <div class="alloc-val">$14,893</div><div class="alloc-pct">5.3%</div>
-    </div>
-    <div class="alloc-row">
-      <div class="alloc-label"><span class="type-badge tb-alt">Alt</span></div>
-      <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:2.8%;background:var(--violet);"></div></div>
-      <div class="alloc-val">$7,829</div><div class="alloc-pct">2.8%</div>
-    </div>
-    <div class="alloc-row">
-      <div class="alloc-label"><span class="type-badge tb-stable">Stablecoin</span></div>
-      <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:1.4%;background:var(--sage);"></div></div>
-      <div class="alloc-val">$3,897</div><div class="alloc-pct">1.4%</div>
-    </div>
-    <div class="alloc-row">
-      <div class="alloc-label"><span class="type-badge tb-infra">Infra</span></div>
-      <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:0.8%;background:var(--amber);"></div></div>
-      <div class="alloc-val">$2,182</div><div class="alloc-pct">0.8%</div>
-    </div>
-    <div class="alloc-row">
-      <div class="alloc-label"><span class="type-badge tb-dust">Dust/Meme</span></div>
-      <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:0.2%;background:var(--ink4);"></div></div>
-      <div class="alloc-val">$741</div><div class="alloc-pct">0.3%</div>
-    </div>
+    <div class="alloc-row"><div class="alloc-label"><span class="type-badge tb-core">Core</span></div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:49.7%;background:var(--slate);"></div></div><div class="alloc-val">$139,059</div><div class="alloc-pct">49.7%</div></div>
+    <div class="alloc-row"><div class="alloc-label"><span class="type-badge tb-unclass">Unclassified</span></div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:37.2%;background:var(--ink3);"></div></div><div class="alloc-val">$104,124</div><div class="alloc-pct">37.2%</div></div>
+    <div class="alloc-row"><div class="alloc-label"><span class="type-badge tb-lp">DeFi / LP</span></div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:2.6%;background:#3050a0;"></div></div><div class="alloc-val">$7,276</div><div class="alloc-pct">2.6%</div></div>
+    <div class="alloc-row"><div class="alloc-label"><span class="type-badge tb-legacy">Legacy Core</span></div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:5.3%;background:var(--teal);"></div></div><div class="alloc-val">$14,893</div><div class="alloc-pct">5.3%</div></div>
+    <div class="alloc-row"><div class="alloc-label"><span class="type-badge tb-alt">Alt</span></div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:2.8%;background:var(--violet);"></div></div><div class="alloc-val">$7,829</div><div class="alloc-pct">2.8%</div></div>
+    <div class="alloc-row"><div class="alloc-label"><span class="type-badge tb-stable">Stablecoin</span></div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:1.4%;background:var(--sage);"></div></div><div class="alloc-val">$3,897</div><div class="alloc-pct">1.4%</div></div>
+    <div class="alloc-row"><div class="alloc-label"><span class="type-badge tb-infra">Infra</span></div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:0.8%;background:var(--amber);"></div></div><div class="alloc-val">$2,182</div><div class="alloc-pct">0.8%</div></div>
+    <div class="alloc-row"><div class="alloc-label"><span class="type-badge tb-dust">Dust/Meme</span></div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:0.2%;background:var(--ink4);"></div></div><div class="alloc-val">$741</div><div class="alloc-pct">0.3%</div></div>
   </div>
 
-  <!-- TOP HOLDINGS -->
-  <div class="sec-label">Top Holdings by Value</div>
+  <div class="sec-label">Action Items</div>
+  <div class="alert amber"><div class="alert-icon">⚠️</div><div><div class="alert-head">37% Unclassified — all exchange holdings ($104k)</div>BTC, XTZ, KNC and others on Binance.US, Pionex, Kraken need type classification to enter regime-based decision matrix.</div></div>
+  <div class="alert red"><div class="alert-icon">⏰</div><div><div class="alert-head">ZEC/BSC LP positions out of range — $5,207 total, −$3,796 P/L</div>All 3 concentrated LP positions are out of range. Accumulated earnings: $1,298. Consider closing or reranging.</div></div>
+  <div class="alert slate"><div class="alert-icon">🔄</div><div><div class="alert-head">RENDER possibly double-counted — $2,729 total across 2 Solana addresses</div>Appears in two Ledger Solana entries. Verify before using in net worth calculation.</div></div>
+
+  <div class="sec-label" style="margin-top:24px;">Web3 Watchlist &amp; Ideas</div>
+  <div class="card">
+    <textarea class="notes" id="crypto-notes" placeholder="Projects researching, business ideas, Web3 concepts, on-chain observations..." onblur="saveNotes()"></textarea>
+    <div style="text-align:right;margin-top:8px;"><button class="save-btn" onclick="saveNotes()">SAVE NOTE</button></div>
+  </div>
+</div>
+
+<!-- ══ PORTFOLIO (from Coinstats / live) ══ -->
+<div class="panel" id="panel-portfolio">
+  <div class="g3">
+    <div class="card"><div class="card-label">Spot Holdings</div><div class="card-fig" style="color:var(--slate)">$272,748</div><div class="card-note">Feb 18, 2026 snapshot</div></div>
+    <div class="card"><div class="card-label">DeFi / LPs</div><div class="card-fig" style="color:var(--violet)">$7,276</div><div class="card-note">LPs + Farms + Vaults</div></div>
+    <div class="card"><div class="card-label">Stablecoins</div><div class="card-fig" style="color:var(--sage)">$3,897</div><div class="card-note">USDT + USDC · dry powder</div></div>
+  </div>
+  <div class="g3">
+    <div class="card"><div class="card-label">Hardware Wallet</div><div class="card-fig" style="color:var(--slate)">$166,952</div><div class="card-note">Ledger Nano X · self-custody</div></div>
+    <div class="card"><div class="card-label">Exchanges</div><div class="card-fig" style="color:var(--amber)">$104,124</div><div class="card-note">Binance.US · Pionex · Kraken · Blofin</div></div>
+    <div class="card"><div class="card-label">Hot Wallets</div><div class="card-fig" style="color:var(--ink3)">$1,672</div><div class="card-note">VFAT · HLP · MEW · Slush</div></div>
+  </div>
+
+  <div class="sec-label">Top Holdings</div>
   <div class="card mb20">
-    <table class="htable">
-      <thead><tr>
-        <th>Asset</th><th>Symbol</th><th>Type</th><th>Location</th><th style="text-align:right">Value</th><th style="text-align:right">% Portfolio</th>
-      </tr></thead>
-      <tbody id="top-holdings-body"></tbody>
-    </table>
+    <table class="htable"><thead><tr>
+      <th>Symbol</th><th>Asset</th><th>Type</th><th>Location</th><th style="text-align:right">Value</th><th style="text-align:right">% Port.</th>
+    </tr></thead><tbody id="top-holdings-body"></tbody></table>
   </div>
 
-  <!-- ALERTS -->
-  <div class="sec-label">Notes & Action Items</div>
-  <div class="alert amber"><div class="alert-icon">⚠️</div><div><div class="alert-head">37% of portfolio is "Unclassified" — all exchange holdings</div>BTC ($67,329), XTZ ($4,657), KNC ($896) and others on Binance.US, Pionex, Kraken need asset type classification to be included in regime-based decision matrix.</div></div>
-  <div class="alert amber"><div class="alert-icon">⏰</div><div><div class="alert-head">ZEC/BSC LP positions out of range — $5,207 total, -$3,796 unrealized P/L</div>All 3 concentrated LP positions on BSC are out of range. Accumulated earnings: $1,298. Consider closing or reranging.</div></div>
-  <div class="alert slate"><div class="alert-icon">🔄</div><div><div class="alert-head">RENDER duplicated — appears in both Ledger Solana addresses</div>RENDER shows $1,750 and $978 across two different Solana wallet entries. Verify this isn't double-counted — total RENDER exposure: $2,729.</div></div>
-  <div class="alert slate"><div class="alert-icon">📊</div><div><div class="alert-head">Regime decision matrix — coming next</div>Once asset types are classified, each holding gets a regime score column (Bull/Neutral/Bear) and action (Hold/Reduce/Exit/Accumulate). Stablecoins and Infra behave differently across regimes.</div></div>
+  <div class="alert slate"><div class="alert-icon">📊</div><div><div class="alert-head">To update portfolio values</div>Update the crypto holdings sheet and re-upload, or connect Coinstats API. The 📊 Sheet button above links to your Google Sheet for manual updates.</div></div>
 </div>
 
 <!-- ══ BY TYPE ══ -->
 <div class="panel" id="panel-bytype">
   <div class="g4">
-    <div class="card"><div class="card-label">Core</div><div class="card-fig" style="color:var(--slate)">$139,059</div><div class="card-note">ETH, BTC, BNB, ZEC, SOL…</div></div>
-    <div class="card"><div class="card-label">Legacy Core</div><div class="card-fig" style="color:var(--teal)">$14,893</div><div class="card-note">ETC, LTC</div></div>
-    <div class="card"><div class="card-label">Alt</div><div class="card-fig" style="color:var(--violet)">$7,829</div><div class="card-note">BAT, RENDER, INFRA…</div></div>
-    <div class="card"><div class="card-label">Stablecoin</div><div class="card-fig" style="color:var(--sage)">$3,897</div><div class="card-note">USDT, USDC</div></div>
+    <div class="card"><div class="card-label">Core</div><div class="card-fig" style="color:var(--slate)">$139,059</div><div class="card-note">ETH · BTC · BNB · ZEC · SOL…</div></div>
+    <div class="card"><div class="card-label">Legacy Core</div><div class="card-fig" style="color:var(--teal)">$14,893</div><div class="card-note">ETC · LTC</div></div>
+    <div class="card"><div class="card-label">Alt</div><div class="card-fig" style="color:var(--violet)">$7,829</div><div class="card-note">BAT · RENDER · INFRA…</div></div>
+    <div class="card"><div class="card-label">Stablecoin</div><div class="card-fig" style="color:var(--sage)">$3,897</div><div class="card-note">USDT · USDC · dry powder</div></div>
   </div>
-
   <div id="bytype-content"></div>
 </div>
 
 <!-- ══ BY LOCATION ══ -->
 <div class="panel" id="panel-bylocation">
   <div class="g3">
-    <div class="card"><div class="card-label">Hardware Wallet</div><div class="card-fig" style="color:var(--slate)">$166,952</div><div class="card-note">Ledger Nano X · Self-custody</div></div>
+    <div class="card"><div class="card-label">Hardware Wallet</div><div class="card-fig" style="color:var(--slate)">$166,952</div><div class="card-note">Ledger Nano X</div></div>
     <div class="card"><div class="card-label">Exchanges</div><div class="card-fig" style="color:var(--amber)">$104,124</div><div class="card-note">Binance.US · Pionex · Kraken · Blofin</div></div>
     <div class="card"><div class="card-label">Hot Wallets</div><div class="card-fig" style="color:var(--ink3)">$1,672</div><div class="card-note">VFAT · HLP · MEW · Slush</div></div>
   </div>
@@ -260,71 +303,27 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
   <div class="g3">
     <div class="card"><div class="card-label">Total DeFi Value</div><div class="card-fig" style="color:var(--violet)">$7,276</div><div class="card-note">LPs + Farms + Vaults</div></div>
     <div class="card"><div class="card-label">ZEC LP Earnings</div><div class="card-fig" style="color:var(--sage)">$1,298</div><div class="card-note">Accumulated · 3 positions</div></div>
-    <div class="card"><div class="card-label">ZEC LP P/L</div><div class="card-fig" style="color:var(--rust)">−$3,796</div><div class="card-note">All 3 positions out of range</div></div>
+    <div class="card"><div class="card-label">ZEC LP P/L</div><div class="card-fig" style="color:var(--rust)">−$3,796</div><div class="card-note">All 3 out of range</div></div>
   </div>
-
   <div class="sec-label">All DeFi Positions</div>
   <div class="card">
-    <div class="defi-block">
-      <div class="defi-top"><span class="defi-name">ZEC/BSC-USD LP #1</span><span class="defi-val">$3,124.90</span></div>
-      <div class="defi-meta"><span>Protocol: PancakeSwap V3</span><span>Chain: BSC</span><span>Type: Concentrated LP</span><span class="oor">⚠ OUT OF RANGE</span></div>
-      <div style="font-size:12px;color:var(--ink4);">Earnings: $651.06 &nbsp;·&nbsp; Unrealized P/L: <span style="color:var(--rust);">−$2,136.51</span></div>
-    </div>
-    <div class="defi-block">
-      <div class="defi-top"><span class="defi-name">ZEC/BSC-USD LP #3</span><span class="defi-val">$1,852.77</span></div>
-      <div class="defi-meta"><span>Protocol: PancakeSwap V3</span><span>Chain: BSC</span><span>Type: Concentrated LP</span><span class="oor">⚠ OUT OF RANGE</span></div>
-      <div style="font-size:12px;color:var(--ink4);">Earnings: $594.10 &nbsp;·&nbsp; Unrealized P/L: <span style="color:var(--rust);">−$1,508.31</span></div>
-    </div>
-    <div class="defi-block">
-      <div class="defi-top"><span class="defi-name">RENDER + SOL LP</span><span class="defi-val">$1,163.53</span></div>
-      <div class="defi-meta"><span>Protocol: Orca</span><span>Chain: Solana</span><span>Type: Concentrated LP</span></div>
-      <div style="font-size:12px;color:var(--ink4);">Rewards: 0.001873 SOL · 0.0845 RENDER</div>
-    </div>
-    <div class="defi-block">
-      <div class="defi-top"><span class="defi-name">AERO Farm</span><span class="defi-val">$383.41</span></div>
-      <div class="defi-meta"><span>Protocol: Extra Finance</span><span>Chain: Base</span><span>Type: Farm</span></div>
-      <div style="font-size:12px;color:var(--ink4);">Rewards: 86.27 EXTRA (~$0.66)</div>
-    </div>
-    <div class="defi-block">
-      <div class="defi-top"><span class="defi-name">OVN + USD+ LP</span><span class="defi-val">$264.81</span></div>
-      <div class="defi-meta"><span>Protocol: Aerodrome</span><span>Chain: Base</span><span>Type: LP</span></div>
-      <div style="font-size:12px;color:var(--ink4);">Rewards: 29.29 AERO (~$8.95)</div>
-    </div>
-    <div class="defi-block">
-      <div class="defi-top"><span class="defi-name">SUI Vaults</span><span class="defi-val">$139.14</span></div>
-      <div class="defi-meta"><span>Protocol: SUI Vaults</span><span>Chain: SUI</span><span>Type: Vault</span></div>
-    </div>
-    <div class="defi-block">
-      <div class="defi-top"><span class="defi-name">Polymarket USDC</span><span class="defi-val">$59.92</span></div>
-      <div class="defi-meta"><span>Protocol: Polymarket</span><span>Chain: EVM</span><span>Type: Deposit</span></div>
-    </div>
-    <div class="defi-block">
-      <div class="defi-top"><span class="defi-name">SUI Lending</span><span class="defi-val">$21.51</span></div>
-      <div class="defi-meta"><span>Chain: SUI</span><span>Type: Lending</span></div>
-    </div>
-    <div class="defi-block">
-      <div class="defi-top"><span class="defi-name">OVN Vault</span><span class="defi-val">$21.64</span></div>
-      <div class="defi-meta"><span>Protocol: Extra Finance</span><span>Chain: Base</span><span>Type: Vault</span></div>
-    </div>
-    <div class="defi-block">
-      <div class="defi-top"><span class="defi-name">USDC + PURR</span><span class="defi-val">$11.62</span></div>
-      <div class="defi-meta"><span>Protocol: Hyperliquid</span><span>Chain: EVM</span><span>Type: Spot Position</span></div>
-    </div>
-    <div class="defi-block">
-      <div class="defi-top"><span class="defi-name">ZEC/BSC-USD LP #2</span><span class="defi-val">$229.49</span></div>
-      <div class="defi-meta"><span>Protocol: PancakeSwap V3</span><span>Chain: BSC</span><span>Type: Concentrated LP</span><span class="oor">⚠ OUT OF RANGE</span></div>
-      <div style="font-size:12px;color:var(--ink4);">Earnings: $52.51 &nbsp;·&nbsp; Unrealized P/L: <span style="color:var(--rust);">−$151.20</span></div>
-    </div>
-    <div class="defi-block" style="border:none">
-      <div class="defi-top"><span class="defi-name">Curve stXTZ + WXTZ</span><span class="defi-val">$3.50</span></div>
-      <div class="defi-meta"><span>Protocol: Curve</span><span>Chain: EVM</span><span>Type: LP</span></div>
-    </div>
+    <div class="defi-block"><div class="defi-top"><span class="defi-name">ZEC/BSC-USD LP #1</span><span class="defi-val">$3,124.90</span></div><div class="defi-meta"><span>PancakeSwap V3</span><span>BSC</span><span>Concentrated LP</span><span class="oor">⚠ OUT OF RANGE</span></div><div style="font-size:12px;color:var(--ink4);">Earnings: $651.06 · P/L: <span style="color:var(--rust)">−$2,136.51</span></div></div>
+    <div class="defi-block"><div class="defi-top"><span class="defi-name">ZEC/BSC-USD LP #3</span><span class="defi-val">$1,852.77</span></div><div class="defi-meta"><span>PancakeSwap V3</span><span>BSC</span><span>Concentrated LP</span><span class="oor">⚠ OUT OF RANGE</span></div><div style="font-size:12px;color:var(--ink4);">Earnings: $594.10 · P/L: <span style="color:var(--rust)">−$1,508.31</span></div></div>
+    <div class="defi-block"><div class="defi-top"><span class="defi-name">RENDER + SOL LP</span><span class="defi-val">$1,163.53</span></div><div class="defi-meta"><span>Orca</span><span>Solana</span><span>Concentrated LP</span></div><div style="font-size:12px;color:var(--ink4);">Rewards: 0.001873 SOL · 0.0845 RENDER</div></div>
+    <div class="defi-block"><div class="defi-top"><span class="defi-name">AERO Farm</span><span class="defi-val">$383.41</span></div><div class="defi-meta"><span>Extra Finance</span><span>Base</span><span>Farm</span></div><div style="font-size:12px;color:var(--ink4);">Rewards: 86.27 EXTRA (~$0.66)</div></div>
+    <div class="defi-block"><div class="defi-top"><span class="defi-name">OVN + USD+ LP</span><span class="defi-val">$264.81</span></div><div class="defi-meta"><span>Aerodrome</span><span>Base</span><span>LP</span></div><div style="font-size:12px;color:var(--ink4);">Rewards: 29.29 AERO (~$8.95)</div></div>
+    <div class="defi-block"><div class="defi-top"><span class="defi-name">ZEC/BSC-USD LP #2</span><span class="defi-val">$229.49</span></div><div class="defi-meta"><span>PancakeSwap V3</span><span>BSC</span><span>Concentrated LP</span><span class="oor">⚠ OUT OF RANGE</span></div><div style="font-size:12px;color:var(--ink4);">Earnings: $52.51 · P/L: <span style="color:var(--rust)">−$151.20</span></div></div>
+    <div class="defi-block"><div class="defi-top"><span class="defi-name">SUI Vaults</span><span class="defi-val">$139.14</span></div><div class="defi-meta"><span>SUI Vaults</span><span>SUI</span><span>Vault</span></div></div>
+    <div class="defi-block"><div class="defi-top"><span class="defi-name">Polymarket USDC</span><span class="defi-val">$59.92</span></div><div class="defi-meta"><span>Polymarket</span><span>EVM</span><span>Deposit</span></div></div>
+    <div class="defi-block"><div class="defi-top"><span class="defi-name">OVN Vault</span><span class="defi-val">$21.64</span></div><div class="defi-meta"><span>Extra Finance</span><span>Base</span><span>Vault</span></div></div>
+    <div class="defi-block"><div class="defi-top"><span class="defi-name">SUI Lending</span><span class="defi-val">$21.51</span></div><div class="defi-meta"><span>SUI</span><span>Lending</span></div></div>
+    <div class="defi-block" style="border:none"><div class="defi-top"><span class="defi-name">USDC + PURR · Curve stXTZ+WXTZ</span><span class="defi-val">$15.12</span></div><div class="defi-meta"><span>Hyperliquid · Curve</span><span>EVM</span></div></div>
   </div>
 </div>
 
 <!-- ══ ALL HOLDINGS ══ -->
 <div class="panel" id="panel-holdings">
-  <div class="filter-row" id="filter-row">
+  <div class="filter-row">
     <button class="fpill active" onclick="filterType('all',this)">All</button>
     <button class="fpill" onclick="filterType('Core',this)">Core</button>
     <button class="fpill" onclick="filterType('Legacy Core',this)">Legacy Core</button>
@@ -332,40 +331,129 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
     <button class="fpill" onclick="filterType('Infra',this)">Infra</button>
     <button class="fpill" onclick="filterType('Stablecoin',this)">Stablecoin</button>
     <button class="fpill" onclick="filterType('Unclassified',this)">Unclassified</button>
-    <button class="fpill" onclick="filterType('meme',this)">Meme/Dust</button>
+    <button class="fpill" onclick="filterType('meme',this)">Meme / Dust</button>
   </div>
   <div class="search-wrap">
-    <input type="text" id="holdings-search" placeholder="Search symbol, asset, or platform..." oninput="filterHoldings()">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="holdings-search" placeholder="Search symbol, asset, or platform..." oninput="renderHoldings()">
   </div>
   <div class="card">
-    <table class="htable" id="holdings-table">
-      <thead><tr>
-        <th onclick="sortTable('sym')">Symbol</th>
-        <th onclick="sortTable('asset')">Asset</th>
-        <th onclick="sortTable('type')">Type</th>
-        <th onclick="sortTable('plat')">Location</th>
-        <th onclick="sortTable('chain')">Chain</th>
-        <th onclick="sortTable('val')" style="text-align:right">Value</th>
-        <th onclick="sortTable('pct')" style="text-align:right">% Port.</th>
-      </tr></thead>
-      <tbody id="holdings-body"></tbody>
-    </table>
+    <table class="htable"><thead><tr>
+      <th onclick="sortTable('sym')">Symbol</th>
+      <th onclick="sortTable('asset')">Asset</th>
+      <th onclick="sortTable('type')">Type</th>
+      <th onclick="sortTable('plat')">Location</th>
+      <th onclick="sortTable('chain')">Chain</th>
+      <th onclick="sortTable('val')" style="text-align:right">Value</th>
+      <th onclick="sortTable('pct')" style="text-align:right">% Port.</th>
+    </tr></thead><tbody id="holdings-body"></tbody></table>
   </div>
-  <div style="margin-top:10px;font-size:12px;color:var(--ink4);font-family:var(--font-mono);" id="holdings-count"></div>
+  <div style="margin-top:8px;font-size:12px;color:var(--ink4);font-family:var(--font-mono);" id="holdings-count"></div>
+</div>
+
+<!-- ══ FRAMEWORK ══ -->
+<div class="panel" id="panel-framework">
+  <div class="sec-label">Trading Framework — 6 Principles</div>
+  <div class="fw-card"><div class="fw-num">01 / Define the Edge</div><div class="fw-title">Know Why Before You Buy</div><div class="fw-body">A repeatable reason the trade should work — market structure, on-chain signal, macro catalyst. If you can't state it in one sentence, you don't have an edge yet.</div><div class="fw-rule">"If I can't explain why, I'm gambling."</div></div>
+  <div class="fw-card"><div class="fw-num">02 / Risk First</div><div class="fw-title">Size the Position</div><div class="fw-body">Decide max loss before entry. Never risk more than <strong>2%</strong> of total portfolio per trade. Use the calculator below. Size the position, not the conviction.</div><div class="fw-rule">"Size the position, not the conviction."</div></div>
+  <div class="fw-card"><div class="fw-num">03 / Cycle Awareness</div><div class="fw-title">Trade the Market You're In</div><div class="fw-body">Bull: trend-follow, hold longer. Bear: short bias, stay liquid. Sideways: range-trade or step aside. The strategy must match the environment.</div><div class="fw-rule">"Trade the market you're in."</div></div>
+  <div class="fw-card"><div class="fw-num">04 / On-Chain First</div><div class="fw-title">Data Before Price</div><div class="fw-body">LTH supply, MVRV, funding rates, exchange netflow, open interest. Price is the last thing to move. Glassnode, CryptoQuant, LookIntoBitcoin.</div><div class="fw-rule">"Follow the coins, not the candles."</div></div>
+  <div class="fw-card"><div class="fw-num">05 / Trade Journal</div><div class="fw-title">Log Everything</div><div class="fw-body">Entry reason, entry price, stop, target, outcome, lesson. Review monthly. Patterns in your losses are tuition.</div><div class="fw-rule">"If it's not logged, it didn't happen."</div></div>
+  <div class="fw-card"><div class="fw-num">06 / Exit Planning</div><div class="fw-title">Tops Are a Process</div><div class="fw-body">Plan exits before entries. Know your stop before your target. Take profits in tranches as levels hit. Never let a winner fully retrace.</div><div class="fw-rule">"Top is a process. Exit is a plan."</div></div>
+
+  <div class="sec-label" style="margin-top:24px;">Position Size Calculator</div>
+  <div class="card">
+    <div class="calc-grid">
+      <div class="calc-field"><label>Portfolio Total ($)</label><input class="calc-input" id="calc-port" type="number" placeholder="e.g. 280000" oninput="calcPosition()"></div>
+      <div class="calc-field"><label>Risk % per Trade</label><input class="calc-input" id="calc-risk" type="number" value="2" step="0.5" oninput="calcPosition()"></div>
+      <div class="calc-field"><label>Entry Price ($)</label><input class="calc-input" id="calc-entry" type="number" placeholder="e.g. 85000" oninput="calcPosition()"></div>
+      <div class="calc-field"><label>Stop Loss ($)</label><input class="calc-input" id="calc-stop" type="number" placeholder="e.g. 80000" oninput="calcPosition()"></div>
+    </div>
+    <div class="calc-result" id="calc-out">Enter values above to calculate position size.</div>
+  </div>
+</div>
+
+<!-- ══ TOOLS ══ -->
+<div class="panel" id="panel-tools">
+  <div class="sec-label">Trading Platforms</div>
+  <div class="links-grid">
+    <a class="link-card" href="https://www.tradingview.com" target="_blank"><div class="lc-cat">Charting</div><div class="lc-name">TradingView</div><div class="lc-url">tradingview.com</div></a>
+    <a class="link-card" href="https://altfins.com" target="_blank"><div class="lc-cat">Screener + MCP</div><div class="lc-name">altFINS</div><div class="lc-url">altfins.com</div></a>
+    <a class="link-card" href="https://app.hyperliquid.xyz" target="_blank"><div class="lc-cat">Perps DEX</div><div class="lc-name">Hyperliquid</div><div class="lc-url">hyperliquid.xyz</div></a>
+  </div>
+  <div class="sec-label">Portfolio Tracking</div>
+  <div class="links-grid">
+    <a class="link-card" href="https://coinstats.app" target="_blank"><div class="lc-cat">Portfolio</div><div class="lc-name">Coinstats</div><div class="lc-url">coinstats.app</div></a>
+    <a class="link-card" href="https://debank.com" target="_blank"><div class="lc-cat">DeFi Tracker</div><div class="lc-name">DeBank</div><div class="lc-url">debank.com</div></a>
+    <a class="link-card" href="https://defillama.com" target="_blank"><div class="lc-cat">TVL + Protocols</div><div class="lc-name">DeFiLlama</div><div class="lc-url">defillama.com</div></a>
+  </div>
+  <div class="sec-label">On-Chain Data</div>
+  <div class="links-grid">
+    <a class="link-card" href="https://glassnode.com" target="_blank"><div class="lc-cat">On-Chain</div><div class="lc-name">Glassnode</div><div class="lc-url">glassnode.com</div></a>
+    <a class="link-card" href="https://cryptoquant.com" target="_blank"><div class="lc-cat">On-Chain</div><div class="lc-name">CryptoQuant</div><div class="lc-url">cryptoquant.com</div></a>
+    <a class="link-card" href="https://lookintobitcoin.com" target="_blank"><div class="lc-cat">Cycle Indicators</div><div class="lc-name">LookIntoBitcoin</div><div class="lc-url">lookintobitcoin.com</div></a>
+    <a class="link-card" href="https://www.coingecko.com" target="_blank"><div class="lc-cat">Data</div><div class="lc-name">CoinGecko</div><div class="lc-url">coingecko.com</div></a>
+    <a class="link-card" href="https://revert.finance" target="_blank"><div class="lc-cat">LP Analytics</div><div class="lc-name">Revert Finance</div><div class="lc-url">revert.finance</div></a>
+    <a class="link-card" href="https://theblock.co" target="_blank"><div class="lc-cat">Research</div><div class="lc-name">The Block</div><div class="lc-url">theblock.co</div></a>
+  </div>
+  <div class="sec-label">Exchanges &amp; Wallets</div>
+  <div class="links-grid">
+    <a class="link-card" href="https://www.binance.us" target="_blank"><div class="lc-cat">Exchange</div><div class="lc-name">Binance.US</div><div class="lc-url">binance.us</div></a>
+    <a class="link-card" href="https://www.kraken.com" target="_blank"><div class="lc-cat">Exchange</div><div class="lc-name">Kraken</div><div class="lc-url">kraken.com</div></a>
+    <a class="link-card" href="https://www.pionex.com" target="_blank"><div class="lc-cat">Exchange + Bots</div><div class="lc-name">Pionex</div><div class="lc-url">pionex.com</div></a>
+    <a class="link-card" href="https://blofin.com" target="_blank"><div class="lc-cat">Exchange</div><div class="lc-name">Blofin</div><div class="lc-url">blofin.com</div></a>
+    <a class="link-card" href="https://www.coinbase.com" target="_blank"><div class="lc-cat">Off-Ramp</div><div class="lc-name">Coinbase</div><div class="lc-url">coinbase.com</div></a>
+    <a class="link-card" href="https://rabby.io" target="_blank"><div class="lc-cat">EVM Wallet</div><div class="lc-name">Rabby</div><div class="lc-url">rabby.io</div></a>
+  </div>
+</div>
+
+<!-- ══ JOURNAL ══ -->
+<div class="panel" id="panel-journal">
+  <div class="card mb20" style="border-left:3px solid var(--amber);">
+    <div style="font-size:13px;color:var(--ink3);line-height:1.7;">Log trades in your <strong>Crypto Sheet</strong> — columns: Date, Asset, Entry $, Stop $, Target $, Size, Outcome, Lesson. Review monthly for patterns.</div>
+    <div style="margin-top:10px;font-family:var(--font-mono);font-size:11px;color:var(--amber);">Key metric: Did you follow the framework? Win/loss ratio matters less than process.</div>
+  </div>
+  <div class="sec-label">Monthly Reflection</div>
+  <div class="card">
+    <div class="card-label" style="margin-bottom:10px;">Notes &amp; Observations</div>
+    <textarea class="notes" id="journal-notes" placeholder="What did the market do this month?&#10;What trades worked — and why?&#10;What didn't — and what would you do differently?&#10;What is the regime telling you going forward?" onblur="saveJournalNotes()"></textarea>
+    <div style="text-align:right;margin-top:8px;"><button class="save-btn" onclick="saveJournalNotes()">SAVE</button></div>
+  </div>
+</div>
+
+<!-- ══ TASKS ══ -->
+<div class="panel" id="panel-tasks">
+  <div class="sec-label">Crypto &amp; Trading Tasks</div>
+  <div class="card mb20" id="task-list">
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">Loading tasks from HQ...</div>
+  </div>
+  <div style="text-align:right;">
+    <a href="index.html" style="font-family:var(--font-mono);font-size:10px;color:var(--amber);text-decoration:none;letter-spacing:1px;">← Manage all tasks in HQ ↗</a>
+  </div>
 </div>
 
 </div><!-- /main -->
 
 <script>
 // ══════════════════════════════════════════════════════════════════════════
-// PORTFOLIO DATA — from 2_18_C_Port_Master.xlsx
+// CONFIG
 // ══════════════════════════════════════════════════════════════════════════
-const GRAND_TOTAL = 280024.70;
-const SPOT_TOTAL  = 272748.46;
-const DEFI_TOTAL  = 7276.24;
+// Crypto Backend script (Crypto_Backend.gs attached to Crypto_Data sheet)
+const CRYPTO_SCRIPT_URL = 'PASTE_CRYPTO_SCRIPT_URL_HERE';
+// HQ Script — for tasks only
+const HQ_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw6fGdCZnZHBfpQaHs03_3xWkuxunC08aaCoE40iLY03Q6CVcb6f5_bWYUk_3YKGH20/exec';
+// Legacy alias (keep for saveNotes compatibility)
+const SCRIPT_URL = HQ_SCRIPT_URL;
+// Crypto Google Sheet ID (from URL between /d/ and /edit)
+const CRYPTO_SHEET_ID = 'PASTE_CRYPTO_SHEET_ID_HERE';
 
+const GRAND_TOTAL = 280024.70;
+
+// ══════════════════════════════════════════════════════════════════════════
+// PORTFOLIO DATA — from 2_18_C_Port_Master.xlsx (Feb 18, 2026)
+// ══════════════════════════════════════════════════════════════════════════
 const HOLDINGS = [
-  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'0x',sym:'ZRX',val:348.05,type:'Unclassified'},
+  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'0x Protocol',sym:'ZRX',val:348.05,type:'Unclassified'},
   {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Bitcoin',sym:'BTC',val:48377.44,type:'Unclassified'},
   {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Chainlink',sym:'LINK',val:3342.16,type:'Unclassified'},
   {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Compound',sym:'COMP',val:156.29,type:'Unclassified'},
@@ -393,8 +481,8 @@ const HOLDINGS = [
   {cat:'Exchange',plat:'Pionex',chain:'Exchange',asset:'POL',sym:'POL',val:403.48,type:'Unclassified'},
   {cat:'Exchange',plat:'Pionex',chain:'Exchange',asset:'Tether USD',sym:'USDT',val:403.01,type:'Unclassified'},
   {cat:'Exchange',plat:'Pionex',chain:'Exchange',asset:'Vulcan Forged',sym:'PYR',val:52.34,type:'Unclassified'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Avalanche C-Chain',asset:'Avalanche',sym:'AVAX',val:969.72,type:'Core'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Avalanche C-Chain',asset:'Coq Inu',sym:'COQ',val:62.88,type:'Meme / Dust'},
+  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Avalanche',asset:'Avalanche',sym:'AVAX',val:969.72,type:'Core'},
+  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Avalanche',asset:'Coq Inu',sym:'COQ',val:62.88,type:'Meme / Dust'},
   {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'BSC',asset:'Binance Coin',sym:'BNB',val:21141.36,type:'Core'},
   {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'BSC',asset:'Binance-Peg Zcash',sym:'ZEC',val:2381.07,type:'Core'},
   {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'BSC',asset:'Tether USD',sym:'USDT',val:2856.09,type:'Stablecoin'},
@@ -430,190 +518,219 @@ const HOLDINGS = [
   {cat:'Hot Wallet',plat:'HLP INTERACT',chain:'EVM',asset:'Binance Coin',sym:'BNB',val:17.00,type:'Core'},
   {cat:'Hot Wallet',plat:'HLP INTERACT',chain:'EVM',asset:'Tether USD',sym:'USDT',val:8.15,type:'Stablecoin'},
   {cat:'Hot Wallet',plat:'HLP INTERACT',chain:'EVM',asset:'Aerodrome',sym:'AERO',val:1.98,type:'Alt'},
-  {cat:'Hot Wallet',plat:'MyEtherWallet (OLD)',chain:'Ethereum',asset:'LPT',sym:'LPT',val:4.94,type:'Alt'},
-  {cat:'Hot Wallet',plat:'MyEtherWallet (OLD)',chain:'Ethereum',asset:'MLN',sym:'MLN',val:5.95,type:'Alt'},
-  {cat:'Hot Wallet',plat:'MyEtherWallet (OLD)',chain:'Ethereum',asset:'TRX',sym:'TRX',val:17.03,type:'Dust / Legacy'},
+  {cat:'Hot Wallet',plat:'MyEtherWallet',chain:'Ethereum',asset:'LPT',sym:'LPT',val:4.94,type:'Alt'},
+  {cat:'Hot Wallet',plat:'MyEtherWallet',chain:'Ethereum',asset:'MLN',sym:'MLN',val:5.95,type:'Alt'},
+  {cat:'Hot Wallet',plat:'MyEtherWallet',chain:'Ethereum',asset:'TRX',sym:'TRX',val:17.03,type:'Dust / Legacy'},
   {cat:'Hot Wallet',plat:'Slush (SUI)',chain:'SUI',asset:'SUI',sym:'SUI',val:20.46,type:'Wallet'},
   {cat:'Hot Wallet',plat:'BNB Hot (Rabby)',chain:'BSC',asset:'Binance Coin',sym:'BNB',val:4.70,type:'Dust'},
 ];
 
 const DUST_TYPES = ['Dust','Dust / Legacy','Meme / Dust','Legacy Alt','Illiquid','Wallet'];
-const TYPE_COLORS = {
-  'Core':'#2D4A6B','Legacy Core':'#1a6b6b','Alt':'#5b4a8a','Stablecoin':'#3a6b4a',
-  'Infra':'#C07A1A','Meme':'#C44B2B','Meme / Dust':'#C44B2B',
-  'Dust / Legacy':'#A89880','Legacy Alt':'#A89880','Dust':'#A89880',
-  'Unclassified':'#6B6050','Wallet':'#6B6050','Illiquid':'#A89880',
-};
-const TYPE_CLASS = {
+const TYPE_CLASS  = {
   'Core':'tb-core','Legacy Core':'tb-legacy','Alt':'tb-alt','Stablecoin':'tb-stable',
   'Infra':'tb-infra','Meme':'tb-meme','Meme / Dust':'tb-meme',
   'Dust / Legacy':'tb-dust','Legacy Alt':'tb-dust','Dust':'tb-dust',
   'Unclassified':'tb-unclass','Wallet':'tb-unclass','Illiquid':'tb-dust',
 };
 
-function fmtUSD(n,dec=0){return '$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});}
-function pct(val){return (val/GRAND_TOTAL*100).toFixed(1)+'%';}
-function badge(type){return `<span class="type-badge ${TYPE_CLASS[type]||'tb-unclass'}">${type}</span>`;}
+function fmtUSD(n,d=0){return '$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function pct(v){return (v/GRAND_TOTAL*100).toFixed(1)+'%';}
+function badge(t){return `<span class="type-badge ${TYPE_CLASS[t]||'tb-unclass'}">${t}</span>`;}
 
-// ── TOP HOLDINGS ──────────────────────────────────────────────────────────
+// ── TAB SWITCH ─────────────────────────────────────────────────────────────
+function switchTab(name, el) {
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+}
+
+// ── CONNECTION ─────────────────────────────────────────────────────────────
+function setConn(state, msg) {
+  const chip = document.getElementById('conn-chip');
+  chip.className = 'conn-chip '+(state==='ok'?'ok':state==='err'?'err':'');
+  document.getElementById('conn-text').textContent = msg;
+}
+
+// ── LOAD FROM HQ SCRIPT (tasks + market data + notes) ─────────────────────
+async function loadData() {
+  setConn('','Connecting...');
+  try {
+    const r = await fetch(CRYPTO_SCRIPT_URL+'?action=load',{redirect:'follow'});
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error);
+    applyData(j.data);
+    setConn('ok','Connected · Sheets');
+    if(CRYPTO_SHEET_ID!=='PASTE_CRYPTO_SHEET_ID_HERE'){
+      const sl=document.getElementById('sheet-link');
+      if(sl) sl.href='https://docs.google.com/spreadsheets/d/'+CRYPTO_SHEET_ID+'/edit';
+    }
+  } catch(e) {
+    setConn('err','Offline — portfolio data static');
+    applyData({});
+  }
+}
+
+function applyData(d) {
+  // Market conditions from Sheet
+  const phase = d.market_phase || 'Update in Sheet';
+  const ph = document.getElementById('mkt-phase');
+  ph.textContent = phase;
+  ph.className = 'regime-phase ' + (phase.toLowerCase().includes('bull')?'phase-bull':phase.toLowerCase().includes('bear')?'phase-bear':'phase-sideways');
+  if(d.btc_price) document.getElementById('mkt-btc').textContent = '$'+parseFloat(d.btc_price).toLocaleString('en-US',{maximumFractionDigits:0});
+  if(d.fear_greed) document.getElementById('mkt-fg').textContent = d.fear_greed+' / 100';
+  if(d.btc_dom) document.getElementById('mkt-dom').textContent = d.btc_dom+'%';
+  if(d.mkt_cap) document.getElementById('mkt-cap').textContent = '$'+d.mkt_cap+'T';
+  // Portfolio highlights
+  if(d.crypto_total) document.getElementById('port-total').textContent = fmtUSD(parseFloat(d.crypto_total));
+  if(d.btc_value) document.getElementById('port-btc').textContent = fmtUSD(parseFloat(d.btc_value));
+  if(d.eth_value) document.getElementById('port-eth').textContent = fmtUSD(parseFloat(d.eth_value));
+  if(d.sol_value) document.getElementById('port-sol').textContent = fmtUSD(parseFloat(d.sol_value));
+  // Notes
+  if(d.crypto_notes)  document.getElementById('crypto-notes').value  = d.crypto_notes;
+  if(d.journal_notes) document.getElementById('journal-notes').value = d.journal_notes;
+  // Tasks come from HQ script separately
+  loadTasks();
+}
+
+// ── TASKS ──────────────────────────────────────────────────────────────────
+function renderTasks(rows) {
+  const tasks = rows.filter(r=>r.area==='Crypto'&&!r.done);
+  const el = document.getElementById('task-list');
+  if(!tasks.length){el.innerHTML='<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No open crypto tasks. Add in HQ → RAM Dump.</div>';return;}
+  const pc={'Do Now':'badge-now','This Week':'badge-week','Someday':'badge-someday'};
+  el.innerHTML = tasks.map(t=>`<div class="task-item"><div class="task-check"></div><div class="task-text">${t.item}</div><span class="task-badge ${pc[t.priority]||'badge-someday'}">${t.priority||'—'}</span></div>`).join('');
+}
+
+// ── SAVE NOTES ─────────────────────────────────────────────────────────────
+async function saveNotes() {
+  const text = document.getElementById('crypto-notes').value;
+  try { await fetch(SCRIPT_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveNotes',data:{Crypto:[{date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),text}]}})}); } catch(e){}
+}
+async function saveJournalNotes() {
+  const text = document.getElementById('journal-notes').value;
+  try { await fetch(SCRIPT_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveNotes',data:{CryptoJournal:[{date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),text}]}})}); } catch(e){}
+}
+
+// ── POSITION CALCULATOR ────────────────────────────────────────────────────
+function calcPosition() {
+  const port=parseFloat(document.getElementById('calc-port').value)||0;
+  const riskP=parseFloat(document.getElementById('calc-risk').value)||2;
+  const entry=parseFloat(document.getElementById('calc-entry').value)||0;
+  const stop=parseFloat(document.getElementById('calc-stop').value)||0;
+  const out=document.getElementById('calc-out');
+  if(!port||!entry||!stop){out.textContent='Enter values above to calculate position size.';return;}
+  const riskAmt=port*(riskP/100);
+  const stopDist=Math.abs(entry-stop);
+  const stopPct=(stopDist/entry*100).toFixed(1);
+  if(!stopDist){out.textContent='Entry and stop cannot be the same.';return;}
+  const units=riskAmt/stopDist;
+  const posSize=units*entry;
+  const portPct=(posSize/port*100).toFixed(1);
+  out.innerHTML=`Max risk: <span class="r-val">${fmtUSD(riskAmt)}</span> (${riskP}% of portfolio)<br>Stop distance: <span class="r-val">${stopPct}%</span> (${fmtUSD(stopDist)})<br>Position size: <span class="r-val">${fmtUSD(posSize)}</span> (${portPct}% of portfolio)<br>Units to buy: <span class="r-val">${units.toFixed(4)}</span>`;
+}
+
+// ── TOP HOLDINGS ───────────────────────────────────────────────────────────
 function buildTopHoldings() {
-  const sorted = [...HOLDINGS].sort((a,b) => b.val - a.val).slice(0,12);
-  const tbody = document.getElementById('top-holdings-body');
-  tbody.innerHTML = sorted.map(h => `
+  const sorted = [...HOLDINGS].sort((a,b)=>b.val-a.val).slice(0,12);
+  document.getElementById('top-holdings-body').innerHTML = sorted.map(h=>`
     <tr class="${DUST_TYPES.includes(h.type)?'dust':''}">
-      <td class="sym">${h.sym}</td>
-      <td>${h.asset}</td>
-      <td>${badge(h.type)}</td>
-      <td class="plat">${h.plat}</td>
-      <td class="val">${fmtUSD(h.val,2)}</td>
-      <td class="pct">${pct(h.val)}</td>
+      <td class="sym">${h.sym}</td><td>${h.asset}</td><td>${badge(h.type)}</td>
+      <td class="plat">${h.plat}</td><td class="val">${fmtUSD(h.val,2)}</td><td class="pct">${pct(h.val)}</td>
     </tr>`).join('');
 }
 
-// ── BY TYPE VIEW ──────────────────────────────────────────────────────────
+// ── BY TYPE ────────────────────────────────────────────────────────────────
 function buildByType() {
-  const typeOrder = ['Core','Legacy Core','Alt','Infra','Stablecoin','Unclassified','Meme','Meme / Dust','Dust / Legacy','Legacy Alt','Dust','Wallet','Illiquid'];
-  const byType = {};
-  HOLDINGS.forEach(h => {
-    if (!byType[h.type]) byType[h.type] = [];
-    byType[h.type].push(h);
-  });
-
-  const el = document.getElementById('bytype-content');
-  el.innerHTML = typeOrder.filter(t => byType[t] && byType[t].length).map(type => {
-    const holdings = byType[type].sort((a,b)=>b.val-a.val);
-    const typeTotal = holdings.reduce((s,h)=>s+h.val,0);
-    const rows = holdings.map(h => `
-      <tr class="${DUST_TYPES.includes(h.type)?'dust':''}">
-        <td class="sym">${h.sym}</td>
-        <td>${h.asset}</td>
-        <td class="plat">${h.plat} · ${h.chain}</td>
-        <td class="val">${h.val>0?fmtUSD(h.val,2):'—'}</td>
-        <td class="pct">${h.val>0?pct(h.val):'—'}</td>
-      </tr>`).join('');
-    return `
-      <div class="sec-label">${type} &nbsp;·&nbsp; ${fmtUSD(typeTotal)} &nbsp;·&nbsp; ${pct(typeTotal)}</div>
-      <div class="card mb20">
-        <table class="htable"><thead><tr>
-          <th>Symbol</th><th>Asset</th><th>Location</th>
-          <th style="text-align:right">Value</th><th style="text-align:right">% Port.</th>
-        </tr></thead><tbody>${rows}</tbody></table>
-      </div>`;
+  const order=['Core','Legacy Core','Alt','Infra','Stablecoin','Unclassified','Meme','Meme / Dust','Dust / Legacy','Legacy Alt','Dust','Wallet','Illiquid'];
+  const byType={};
+  HOLDINGS.forEach(h=>{if(!byType[h.type])byType[h.type]=[];byType[h.type].push(h);});
+  document.getElementById('bytype-content').innerHTML = order.filter(t=>byType[t]&&byType[t].length).map(type=>{
+    const hs=byType[type].sort((a,b)=>b.val-a.val);
+    const tot=hs.reduce((s,h)=>s+h.val,0);
+    return `<div class="sec-label">${type} &nbsp;·&nbsp; ${fmtUSD(tot)} &nbsp;·&nbsp; ${pct(tot)}</div>
+    <div class="card mb20"><table class="htable"><thead><tr><th>Symbol</th><th>Asset</th><th>Location</th><th style="text-align:right">Value</th><th style="text-align:right">%</th></tr></thead>
+    <tbody>${hs.map(h=>`<tr class="${DUST_TYPES.includes(h.type)?'dust':''}"><td class="sym">${h.sym}</td><td>${h.asset}</td><td class="plat">${h.plat} · ${h.chain}</td><td class="val">${h.val>0?fmtUSD(h.val,2):'—'}</td><td class="pct">${h.val>0?pct(h.val):'—'}</td></tr>`).join('')}</tbody></table></div>`;
   }).join('');
 }
 
-// ── BY LOCATION VIEW ──────────────────────────────────────────────────────
+// ── BY LOCATION ────────────────────────────────────────────────────────────
 function buildByLocation() {
-  const platOrder = ['Ledger Nano X','Binance.US','Pionex','Blofin','Kraken','VFAT & OTHERS','HLP INTERACT','MyEtherWallet (OLD)','Slush (SUI)','BNB Hot (Rabby)','Ark Vault','Crypto.com'];
-  const byPlat = {};
-  HOLDINGS.forEach(h => {
-    if (!byPlat[h.plat]) byPlat[h.plat] = {cat:h.cat,holdings:[]};
-    byPlat[h.plat].holdings.push(h);
-  });
-
-  const el = document.getElementById('bylocation-content');
-  el.innerHTML = platOrder.filter(p => byPlat[p]).map(plat => {
-    const {cat, holdings} = byPlat[plat];
-    const sorted = holdings.sort((a,b)=>b.val-a.val);
-    const platTotal = sorted.reduce((s,h)=>s+h.val,0);
-    const rows = sorted.map(h => `
-      <tr class="${DUST_TYPES.includes(h.type)?'dust':''}">
-        <td class="sym">${h.sym}</td>
-        <td>${h.asset}</td>
-        <td>${badge(h.type)}</td>
-        <td class="plat">${h.chain}</td>
-        <td class="val">${h.val>0?fmtUSD(h.val,2):'—'}</td>
-      </tr>`).join('');
-    const catColor = cat==='Hardware Wallet'?'var(--slate)':cat==='Exchange'?'var(--amber)':'var(--ink3)';
-    return `
-      <div class="sec-label">
-        <span style="color:${catColor};font-weight:600;">${plat}</span>
-        &nbsp;·&nbsp; ${cat} &nbsp;·&nbsp; ${fmtUSD(platTotal)}
-      </div>
-      <div class="card mb20">
-        <table class="htable"><thead><tr>
-          <th>Symbol</th><th>Asset</th><th>Type</th><th>Chain</th><th style="text-align:right">Value</th>
-        </tr></thead><tbody>${rows}</tbody></table>
-      </div>`;
+  const order=['Ledger Nano X','Binance.US','Pionex','Blofin','Kraken','VFAT & OTHERS','HLP INTERACT','MyEtherWallet','Slush (SUI)','BNB Hot (Rabby)'];
+  const byPlat={};
+  HOLDINGS.forEach(h=>{if(!byPlat[h.plat])byPlat[h.plat]={cat:h.cat,hs:[]};byPlat[h.plat].hs.push(h);});
+  document.getElementById('bylocation-content').innerHTML = order.filter(p=>byPlat[p]).map(plat=>{
+    const {cat,hs}=byPlat[plat];
+    const sorted=hs.sort((a,b)=>b.val-a.val);
+    const tot=sorted.reduce((s,h)=>s+h.val,0);
+    const col=cat==='Hardware Wallet'?'var(--slate)':cat==='Exchange'?'var(--amber)':'var(--ink3)';
+    return `<div class="sec-label"><span style="color:${col};font-weight:600;">${plat}</span> &nbsp;·&nbsp; ${cat} &nbsp;·&nbsp; ${fmtUSD(tot)}</div>
+    <div class="card mb20"><table class="htable"><thead><tr><th>Symbol</th><th>Asset</th><th>Type</th><th>Chain</th><th style="text-align:right">Value</th></tr></thead>
+    <tbody>${sorted.map(h=>`<tr class="${DUST_TYPES.includes(h.type)?'dust':''}"><td class="sym">${h.sym}</td><td>${h.asset}</td><td>${badge(h.type)}</td><td class="plat">${h.chain}</td><td class="val">${h.val>0?fmtUSD(h.val,2):'—'}</td></tr>`).join('')}</tbody></table></div>`;
   }).join('');
 }
 
-// ── ALL HOLDINGS TABLE ────────────────────────────────────────────────────
-let currentFilter = 'all';
-let sortCol = 'val';
-let sortDir = -1;
+// ── ALL HOLDINGS ───────────────────────────────────────────────────────────
+let currentFilter='all', sortCol='val', sortDir=-1;
 
-function filterType(type, el) {
-  currentFilter = type;
-  document.querySelectorAll('.fpill').forEach(p => p.classList.remove('active'));
+function filterType(type,el) {
+  currentFilter=type;
+  document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');
   renderHoldings();
 }
 
-function filterHoldings() { renderHoldings(); }
-
 function sortTable(col) {
-  if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = -1; }
-  document.querySelectorAll('.htable th').forEach(th => { th.classList.remove('sort-asc','sort-desc'); });
+  if(sortCol===col) sortDir*=-1; else {sortCol=col;sortDir=-1;}
   renderHoldings();
 }
 
 function renderHoldings() {
-  const search = (document.getElementById('holdings-search')?.value || '').toLowerCase();
-  let data = [...HOLDINGS];
-
-  if (currentFilter !== 'all') {
-    if (currentFilter === 'meme') {
-      data = data.filter(h => ['Meme','Meme / Dust','Dust','Dust / Legacy','Legacy Alt','Illiquid'].includes(h.type));
-    } else {
-      data = data.filter(h => h.type === currentFilter);
-    }
+  const search=(document.getElementById('holdings-search')?.value||'').toLowerCase();
+  let data=[...HOLDINGS];
+  if(currentFilter!=='all'){
+    if(currentFilter==='meme') data=data.filter(h=>['Meme','Meme / Dust','Dust','Dust / Legacy','Legacy Alt','Illiquid'].includes(h.type));
+    else data=data.filter(h=>h.type===currentFilter);
   }
-  if (search) {
-    data = data.filter(h =>
-      h.sym.toLowerCase().includes(search) ||
-      h.asset.toLowerCase().includes(search) ||
-      h.plat.toLowerCase().includes(search) ||
-      h.type.toLowerCase().includes(search)
-    );
-  }
-
-  data.sort((a,b) => {
-    const av = typeof a[sortCol]==='string' ? a[sortCol].toLowerCase() : a[sortCol];
-    const bv = typeof b[sortCol]==='string' ? b[sortCol].toLowerCase() : b[sortCol];
-    return av < bv ? -sortDir : av > bv ? sortDir : 0;
+  if(search) data=data.filter(h=>h.sym.toLowerCase().includes(search)||h.asset.toLowerCase().includes(search)||h.plat.toLowerCase().includes(search)||h.type.toLowerCase().includes(search));
+  data.sort((a,b)=>{
+    const av=typeof a[sortCol]==='string'?a[sortCol].toLowerCase():a[sortCol];
+    const bv=typeof b[sortCol]==='string'?b[sortCol].toLowerCase():b[sortCol];
+    return av<bv?-sortDir:av>bv?sortDir:0;
   });
-
-  const total = data.reduce((s,h)=>s+h.val,0);
-  const tbody = document.getElementById('holdings-body');
-  tbody.innerHTML = data.map(h => `
+  const tot=data.reduce((s,h)=>s+h.val,0);
+  document.getElementById('holdings-body').innerHTML=data.map(h=>`
     <tr class="${DUST_TYPES.includes(h.type)?'dust':''}">
-      <td class="sym">${h.sym}</td>
-      <td>${h.asset}</td>
-      <td>${badge(h.type)}</td>
-      <td class="plat">${h.plat}</td>
-      <td class="plat">${h.chain}</td>
-      <td class="val">${h.val>0?fmtUSD(h.val,2):'—'}</td>
-      <td class="pct">${h.val>0?pct(h.val):'—'}</td>
+      <td class="sym">${h.sym}</td><td>${h.asset}</td><td>${badge(h.type)}</td>
+      <td class="plat">${h.plat}</td><td class="plat">${h.chain}</td>
+      <td class="val">${h.val>0?fmtUSD(h.val,2):'—'}</td><td class="pct">${h.val>0?pct(h.val):'—'}</td>
     </tr>`).join('');
-
-  const countEl = document.getElementById('holdings-count');
-  if (countEl) countEl.textContent = `${data.length} holdings · ${fmtUSD(total)} shown`;
+  const ce=document.getElementById('holdings-count');
+  if(ce) ce.textContent=`${data.length} holdings · ${fmtUSD(tot)} shown`;
 }
 
-// ── SWITCH TAB ────────────────────────────────────────────────────────────
-function switchTab(name, el) {
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('panel-' + name).classList.add('active');
+// ── LOAD TASKS FROM HQ ────────────────────────────────────────────────────
+async function loadTasks() {
+  try {
+    const r=await fetch(HQ_SCRIPT_URL+'?action=load',{redirect:'follow'});
+    const j=await r.json();
+    if(!j.ok||!j.data) return;
+    renderTasks(j.data.rows||[]);
+  } catch(e){}
 }
 
-// ── BOOT ──────────────────────────────────────────────────────────────────
+// ── WIRE SHEET LINK ────────────────────────────────────────────────────────
+if(CRYPTO_SHEET_ID!=='PASTE_CRYPTO_SHEET_ID_HERE'){
+  const sl=document.getElementById('sheet-link');
+  if(sl) sl.href='https://docs.google.com/spreadsheets/d/'+CRYPTO_SHEET_ID+'/edit';
+}
+
+// ── BOOT ───────────────────────────────────────────────────────────────────
 buildTopHoldings();
 buildByType();
 buildByLocation();
 renderHoldings();
+loadData();
 </script>
 </body>
 </html>
