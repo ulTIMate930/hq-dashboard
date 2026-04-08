@@ -133,6 +133,37 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
 .defi-meta{display:flex;gap:14px;font-family:var(--font-mono);font-size:11px;color:var(--ink4);flex-wrap:wrap;margin-bottom:5px;}
 .oor{color:var(--rust);font-weight:600;}
 
+/* ── EDIT MODE ── */
+.edit-toolbar{display:none;align-items:center;gap:8px;padding:10px 14px;background:var(--amber-bg);border:1px solid rgba(192,122,26,.25);border-radius:8px;margin-bottom:12px;flex-wrap:wrap;}
+.edit-toolbar.visible{display:flex;}
+.edit-toolbar span{font-size:12px;color:var(--amber);font-family:var(--font-mono);}
+.edit-btn{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:5px 12px;border-radius:5px;cursor:pointer;border:1px solid;transition:all .15s;}
+.edit-btn.primary{background:var(--amber);color:var(--ink);border-color:var(--amber);}
+.edit-btn.primary:hover{background:var(--amber-l);}
+.edit-btn.secondary{background:transparent;color:var(--amber);border-color:rgba(192,122,26,.4);}
+.edit-btn.secondary:hover{background:var(--amber-bg);}
+.edit-btn.danger{background:transparent;color:var(--rust);border-color:rgba(196,75,43,.4);}
+.edit-btn.danger:hover{background:var(--rust-bg);}
+.edit-btn.sage{background:var(--sage);color:#fff;border-color:var(--sage);}
+.edit-btn.sage:hover{background:var(--sage-l);}
+.htable.edit-mode tr:hover td{background:var(--amber-bg);cursor:pointer;}
+.htable.edit-mode tr:hover td::after{content:'✎';float:right;color:var(--amber);font-size:11px;opacity:.6;}
+.htable.edit-mode tr:hover td:last-child::after{display:none;}
+.edit-cell-input{font-family:var(--font-mono);font-size:12px;padding:3px 6px;border:1.5px solid var(--amber);border-radius:4px;background:var(--paper);color:var(--ink);width:100%;min-width:80px;}
+.edit-cell-select{font-family:var(--font-mono);font-size:12px;padding:3px 6px;border:1.5px solid var(--amber);border-radius:4px;background:var(--paper);color:var(--ink);width:100%;}
+/* Modal */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(30,26,20,.6);z-index:500;align-items:center;justify-content:center;}
+.modal-backdrop.open{display:flex;}
+.modal{background:var(--paper);border-radius:12px;padding:24px;width:480px;max-width:95vw;box-shadow:0 20px 60px rgba(30,26,20,.25);}
+.modal-title{font-family:var(--font-serif);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:16px;}
+.modal-field{margin-bottom:12px;}
+.modal-field label{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--ink4);display:block;margin-bottom:4px;}
+.modal-field input,.modal-field select{width:100%;background:var(--cream);border:1px solid var(--cream3);border-radius:6px;padding:8px 10px;font-family:var(--font-mono);font-size:13px;color:var(--ink);outline:none;}
+.modal-field input:focus,.modal-field select:focus{border-color:var(--amber);}
+.modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
+.unsaved-dot{width:7px;height:7px;border-radius:50%;background:var(--amber);display:inline-block;margin-right:4px;animation:pulse 1.5s infinite;}
+
 /* FW CARDS */
 .fw-card{background:var(--paper);border:1px solid var(--cream2);border-radius:10px;padding:18px;margin-bottom:10px;}
 .fw-num{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:5px;}
@@ -200,11 +231,7 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
 <div class="nav-strip">
   <div class="nav-tab active" onclick="switchTab('overview',this)">Overview</div>
   <div class="nav-tab" onclick="switchTab('portfolio',this)">Portfolio</div>
-  <div class="nav-tab" onclick="switchTab('bytype',this)">By Type</div>
-  <div class="nav-tab" onclick="switchTab('bylocation',this)">By Location</div>
-  <div class="nav-tab" onclick="switchTab('defi',this)">DeFi / LPs</div>
   <div class="nav-tab" onclick="switchTab('aave',this)">Aave V3</div>
-  <div class="nav-tab" onclick="switchTab('holdings',this)">All Holdings</div>
   <div class="nav-tab" onclick="switchTab('framework',this)">Framework</div>
   <div class="nav-tab" onclick="switchTab('tools',this)">Tools</div>
   <div class="nav-tab" onclick="switchTab('journal',this)">Journal</div>
@@ -234,15 +261,8 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
   </div>
 
   <div class="sec-label">Allocation by Asset Type</div>
-  <div class="card mb20">
-    <div class="alloc-row"><div class="alloc-label"><span class="type-badge tb-core">Core</span></div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:49.7%;background:var(--slate);"></div></div><div class="alloc-val">$139,059</div><div class="alloc-pct">49.7%</div></div>
-    <div class="alloc-row"><div class="alloc-label"><span class="type-badge tb-unclass">Unclassified</span></div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:37.2%;background:var(--ink3);"></div></div><div class="alloc-val">$104,124</div><div class="alloc-pct">37.2%</div></div>
-    <div class="alloc-row"><div class="alloc-label"><span class="type-badge tb-lp">DeFi / LP</span></div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:2.6%;background:#3050a0;"></div></div><div class="alloc-val">$7,276</div><div class="alloc-pct">2.6%</div></div>
-    <div class="alloc-row"><div class="alloc-label"><span class="type-badge tb-legacy">Legacy Core</span></div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:5.3%;background:var(--teal);"></div></div><div class="alloc-val">$14,893</div><div class="alloc-pct">5.3%</div></div>
-    <div class="alloc-row"><div class="alloc-label"><span class="type-badge tb-alt">Alt</span></div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:2.8%;background:var(--violet);"></div></div><div class="alloc-val">$7,829</div><div class="alloc-pct">2.8%</div></div>
-    <div class="alloc-row"><div class="alloc-label"><span class="type-badge tb-stable">Stablecoin</span></div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:1.4%;background:var(--sage);"></div></div><div class="alloc-val">$3,897</div><div class="alloc-pct">1.4%</div></div>
-    <div class="alloc-row"><div class="alloc-label"><span class="type-badge tb-infra">Infra</span></div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:0.8%;background:var(--amber);"></div></div><div class="alloc-val">$2,182</div><div class="alloc-pct">0.8%</div></div>
-    <div class="alloc-row"><div class="alloc-label"><span class="type-badge tb-dust">Dust/Meme</span></div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:0.2%;background:var(--ink4);"></div></div><div class="alloc-val">$741</div><div class="alloc-pct">0.3%</div></div>
+  <div class="card mb20" id="alloc-bars">
+    <div style="color:var(--ink4);font-family:var(--font-mono);font-size:12px;padding:8px 0;">Loading allocation data...</div>
   </div>
 
   <div class="sec-label">Action Items</div>
@@ -257,71 +277,105 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
   </div>
 </div>
 
-<!-- ══ PORTFOLIO (from Coinstats / live) ══ -->
+<!-- ══ PORTFOLIO (unified) ══ -->
 <div class="panel" id="panel-portfolio">
+
+  <!-- Summary metrics -->
   <div class="g3">
-    <div class="card"><div class="card-label">Spot Holdings</div><div class="card-fig" style="color:var(--slate)">$272,748</div><div class="card-note">Feb 18, 2026 snapshot</div></div>
-    <div class="card"><div class="card-label">DeFi / LPs</div><div class="card-fig" style="color:var(--violet)">$7,276</div><div class="card-note">LPs + Farms + Vaults</div></div>
-    <div class="card"><div class="card-label">Stablecoins</div><div class="card-fig" style="color:var(--sage)">$3,897</div><div class="card-note">USDT + USDC · dry powder</div></div>
+    <div class="card"><div class="card-label">Spot Holdings</div><div class="card-fig" id="port-spot-fig" style="color:var(--slate)">—</div><div class="card-note" id="port-spot-note">Loading...</div></div>
+    <div class="card"><div class="card-label">DeFi / LPs</div><div class="card-fig" id="port-defi-fig" style="color:var(--violet)">—</div><div class="card-note">LPs + Farms + Vaults</div></div>
+    <div class="card"><div class="card-label">Stablecoins</div><div class="card-fig" id="port-stable-fig" style="color:var(--sage)">—</div><div class="card-note">USDT + USDC · dry powder</div></div>
   </div>
   <div class="g3">
-    <div class="card"><div class="card-label">Hardware Wallet</div><div class="card-fig" style="color:var(--slate)">$166,952</div><div class="card-note">Ledger Nano X · self-custody</div></div>
-    <div class="card"><div class="card-label">Exchanges</div><div class="card-fig" style="color:var(--amber)">$104,124</div><div class="card-note">Binance.US · Pionex · Kraken · Blofin</div></div>
-    <div class="card"><div class="card-label">Hot Wallets</div><div class="card-fig" style="color:var(--ink3)">$1,672</div><div class="card-note">VFAT · HLP · MEW · Slush</div></div>
+    <div class="card"><div class="card-label">Hardware Wallet</div><div class="card-fig" id="port-hw-fig" style="color:var(--slate)">—</div><div class="card-note">Ledger Nano X · self-custody</div></div>
+    <div class="card"><div class="card-label">Exchanges</div><div class="card-fig" id="port-ex-fig" style="color:var(--amber)">—</div><div class="card-note" id="port-ex-note">Binance.US · Pionex · Kraken · Blofin</div></div>
+    <div class="card"><div class="card-label">Hot Wallets</div><div class="card-fig" id="port-hw2-fig" style="color:var(--ink3)">—</div><div class="card-note">VFAT · HLP · MEW · Slush</div></div>
   </div>
 
-  <div class="sec-label">Top Holdings</div>
-  <div class="card mb20">
-    <table class="htable"><thead><tr>
-      <th>Symbol</th><th>Asset</th><th>Type</th><th>Location</th><th style="text-align:right">Value</th><th style="text-align:right">% Port.</th>
-    </tr></thead><tbody id="top-holdings-body"></tbody></table>
+  <!-- View selector -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+    <div class="filter-row" style="margin-bottom:0;flex:1;flex-wrap:wrap;">
+      <button class="fpill active" onclick="portView('holdings',this)">All Holdings</button>
+      <button class="fpill" onclick="portView('bytype',this)">By Type</button>
+      <button class="fpill" onclick="portView('bylocation',this)">By Location</button>
+      <button class="fpill" onclick="portView('defi',this)">DeFi / LPs</button>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <button class="edit-btn secondary" onclick="portToggleEdit()" id="edit-toggle-btn">✎ Edit</button>
+      <button class="edit-btn sage" onclick="portOpenAddModal()">+ Add</button>
+    </div>
+    <div class="search-wrap" style="margin-bottom:0;min-width:220px;max-width:300px;">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="port-search" placeholder="Search symbol, asset, platform..." oninput="portSearchChange()">
+    </div>
   </div>
 
-  <div class="alert slate"><div class="alert-icon">📊</div><div><div class="alert-head">To update portfolio values</div>Update the crypto holdings sheet and re-upload, or connect Coinstats API. The 📊 Sheet button above links to your Google Sheet for manual updates.</div></div>
-</div>
+  <!-- Edit mode toolbar -->
+  <div class="edit-toolbar" id="edit-toolbar">
+    <span><span class="unsaved-dot"></span>Edit mode — click any row to edit</span>
+    <button class="edit-btn primary" onclick="portSaveEdits()">💾 Save to localStorage</button>
+    <button class="edit-btn secondary" onclick="portExportJS()">⬇ Export JS</button>
+    <button class="edit-btn danger" onclick="portResetEdits()">↺ Reset to original</button>
+  </div>
 
-<!-- ══ BY TYPE ══ -->
-<div class="panel" id="panel-bytype">
-  <div class="g4">
-    <div class="card"><div class="card-label">Core</div><div class="card-fig" style="color:var(--slate)">$139,059</div><div class="card-note">ETH · BTC · BNB · ZEC · SOL…</div></div>
-    <div class="card"><div class="card-label">Legacy Core</div><div class="card-fig" style="color:var(--teal)">$14,893</div><div class="card-note">ETC · LTC</div></div>
-    <div class="card"><div class="card-label">Alt</div><div class="card-fig" style="color:var(--violet)">$7,829</div><div class="card-note">BAT · RENDER · INFRA…</div></div>
-    <div class="card"><div class="card-label">Stablecoin</div><div class="card-fig" style="color:var(--sage)">$3,897</div><div class="card-note">USDT · USDC · dry powder</div></div>
+  <!-- TYPE FILTER pills (shown in holdings + bytype views) -->
+  <div id="port-type-filters" class="filter-row" style="margin-bottom:14px;">
+    <button class="fpill active" onclick="portFilter('all',this)">All</button>
+    <button class="fpill" onclick="portFilter('Core',this)">Core</button>
+    <button class="fpill" onclick="portFilter('Legacy Core',this)">Legacy Core</button>
+    <button class="fpill" onclick="portFilter('Alt',this)">Alt</button>
+    <button class="fpill" onclick="portFilter('Infra',this)">Infra</button>
+    <button class="fpill" onclick="portFilter('Stablecoin',this)">Stablecoin</button>
+    <button class="fpill" onclick="portFilter('Unclassified',this)">Unclassified</button>
+    <button class="fpill" onclick="portFilter('meme',this)">Meme / Dust</button>
   </div>
-  <div id="bytype-content"></div>
-</div>
 
-<!-- ══ BY LOCATION ══ -->
-<div class="panel" id="panel-bylocation">
-  <div class="g3">
-    <div class="card"><div class="card-label">Hardware Wallet</div><div class="card-fig" style="color:var(--slate)">$166,952</div><div class="card-note">Ledger Nano X</div></div>
-    <div class="card"><div class="card-label">Exchanges</div><div class="card-fig" style="color:var(--amber)">$104,124</div><div class="card-note">Binance.US · Pionex · Kraken · Blofin</div></div>
-    <div class="card"><div class="card-label">Hot Wallets</div><div class="card-fig" style="color:var(--ink3)">$1,672</div><div class="card-note">VFAT · HLP · MEW · Slush</div></div>
+  <!-- ── ALL HOLDINGS view ── -->
+  <div id="port-view-holdings">
+    <div class="card">
+      <table class="htable" id="port-holdings-table"><thead><tr>
+        <th onclick="portSort('sym')">Symbol</th>
+        <th onclick="portSort('asset')">Asset</th>
+        <th onclick="portSort('type')">Type</th>
+        <th onclick="portSort('plat')">Location</th>
+        <th onclick="portSort('chain')">Chain</th>
+        <th onclick="portSort('val')" style="text-align:right">Value</th>
+        <th onclick="portSort('pct')" style="text-align:right">% Port.</th>
+      </tr></thead><tbody id="port-holdings-body"></tbody></table>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--ink4);font-family:var(--font-mono);" id="port-holdings-count"></div>
   </div>
-  <div id="bylocation-content"></div>
-</div>
 
-<!-- ══ DEFI / LPs ══ -->
-<div class="panel" id="panel-defi">
-  <div class="g3">
-    <div class="card"><div class="card-label">Total DeFi Value</div><div class="card-fig" style="color:var(--violet)">$7,276</div><div class="card-note">LPs + Farms + Vaults</div></div>
-    <div class="card"><div class="card-label">ZEC LP Earnings</div><div class="card-fig" style="color:var(--sage)">$1,298</div><div class="card-note">Accumulated · 3 positions</div></div>
-    <div class="card"><div class="card-label">ZEC LP P/L</div><div class="card-fig" style="color:var(--rust)">−$3,796</div><div class="card-note">All 3 out of range</div></div>
+  <!-- ── BY TYPE view ── -->
+  <div id="port-view-bytype" style="display:none;">
+    <div class="g4" id="port-bytype-cards">
+      <div class="card"><div class="card-label">Loading...</div><div class="card-fig" style="color:var(--ink4)">—</div></div>
+    </div>
+    <div id="port-bytype-content"></div>
   </div>
-  <div class="sec-label">All DeFi Positions</div>
-  <div class="card">
-    <div class="defi-block"><div class="defi-top"><span class="defi-name">ZEC/BSC-USD LP #1</span><span class="defi-val">$3,124.90</span></div><div class="defi-meta"><span>PancakeSwap V3</span><span>BSC</span><span>Concentrated LP</span><span class="oor">⚠ OUT OF RANGE</span></div><div style="font-size:12px;color:var(--ink4);">Earnings: $651.06 · P/L: <span style="color:var(--rust)">−$2,136.51</span></div></div>
-    <div class="defi-block"><div class="defi-top"><span class="defi-name">ZEC/BSC-USD LP #3</span><span class="defi-val">$1,852.77</span></div><div class="defi-meta"><span>PancakeSwap V3</span><span>BSC</span><span>Concentrated LP</span><span class="oor">⚠ OUT OF RANGE</span></div><div style="font-size:12px;color:var(--ink4);">Earnings: $594.10 · P/L: <span style="color:var(--rust)">−$1,508.31</span></div></div>
-    <div class="defi-block"><div class="defi-top"><span class="defi-name">RENDER + SOL LP</span><span class="defi-val">$1,163.53</span></div><div class="defi-meta"><span>Orca</span><span>Solana</span><span>Concentrated LP</span></div><div style="font-size:12px;color:var(--ink4);">Rewards: 0.001873 SOL · 0.0845 RENDER</div></div>
-    <div class="defi-block"><div class="defi-top"><span class="defi-name">AERO Farm</span><span class="defi-val">$383.41</span></div><div class="defi-meta"><span>Extra Finance</span><span>Base</span><span>Farm</span></div><div style="font-size:12px;color:var(--ink4);">Rewards: 86.27 EXTRA (~$0.66)</div></div>
-    <div class="defi-block"><div class="defi-top"><span class="defi-name">OVN + USD+ LP</span><span class="defi-val">$264.81</span></div><div class="defi-meta"><span>Aerodrome</span><span>Base</span><span>LP</span></div><div style="font-size:12px;color:var(--ink4);">Rewards: 29.29 AERO (~$8.95)</div></div>
-    <div class="defi-block"><div class="defi-top"><span class="defi-name">ZEC/BSC-USD LP #2</span><span class="defi-val">$229.49</span></div><div class="defi-meta"><span>PancakeSwap V3</span><span>BSC</span><span>Concentrated LP</span><span class="oor">⚠ OUT OF RANGE</span></div><div style="font-size:12px;color:var(--ink4);">Earnings: $52.51 · P/L: <span style="color:var(--rust)">−$151.20</span></div></div>
-    <div class="defi-block"><div class="defi-top"><span class="defi-name">SUI Vaults</span><span class="defi-val">$139.14</span></div><div class="defi-meta"><span>SUI Vaults</span><span>SUI</span><span>Vault</span></div></div>
-    <div class="defi-block"><div class="defi-top"><span class="defi-name">Polymarket USDC</span><span class="defi-val">$59.92</span></div><div class="defi-meta"><span>Polymarket</span><span>EVM</span><span>Deposit</span></div></div>
-    <div class="defi-block"><div class="defi-top"><span class="defi-name">OVN Vault</span><span class="defi-val">$21.64</span></div><div class="defi-meta"><span>Extra Finance</span><span>Base</span><span>Vault</span></div></div>
-    <div class="defi-block"><div class="defi-top"><span class="defi-name">SUI Lending</span><span class="defi-val">$21.51</span></div><div class="defi-meta"><span>SUI</span><span>Lending</span></div></div>
-    <div class="defi-block" style="border:none"><div class="defi-top"><span class="defi-name">USDC + PURR · Curve stXTZ+WXTZ</span><span class="defi-val">$15.12</span></div><div class="defi-meta"><span>Hyperliquid · Curve</span><span>EVM</span></div></div>
+
+  <!-- ── BY LOCATION view ── -->
+  <div id="port-view-bylocation" style="display:none;">
+    <div class="g3" id="port-bylocation-cards">
+      <div class="card"><div class="card-label">Loading...</div><div class="card-fig" style="color:var(--ink4)">—</div></div>
+    </div>
+    <div id="port-bylocation-content"></div>
   </div>
+
+  <!-- ── DEFI / LPs view ── -->
+  <div id="port-view-defi" style="display:none;">
+    <div class="g3" id="port-defi-cards">
+      <div class="card"><div class="card-label">Total DeFi Value</div><div class="card-fig" id="defi-total-fig" style="color:var(--violet)">—</div><div class="card-note">LPs + Farms + Vaults</div></div>
+      <div class="card"><div class="card-label">Active Positions</div><div class="card-fig" id="defi-active-fig" style="color:var(--sage)">—</div><div class="card-note">Earning rewards</div></div>
+      <div class="card"><div class="card-label">Out of Range</div><div class="card-fig" id="defi-oor-fig" style="color:var(--rust)">—</div><div class="card-note">Needs attention</div></div>
+    </div>
+    <div class="sec-label">All DeFi Positions</div>
+    <div class="card" id="port-defi-list">
+      <div style="padding:20px;text-align:center;color:var(--ink4);font-family:var(--font-mono);font-size:12px;">Loading from sheet...</div>
+    </div>
+  </div>
+
+  <div class="alert slate" style="margin-top:16px;"><div class="alert-icon">📊</div><div><div class="alert-head">Live from Google Sheets</div>Holdings and DeFi positions sync automatically on load. Update amounts in the sheet and hit ⚡ Refresh Prices to update values.</div></div>
 </div>
 
 <!-- ══ AAVE V3 ARBITRUM ══ -->
@@ -386,35 +440,6 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
   </div>
 </div><!-- /panel-aave -->
 
-<!-- ══ ALL HOLDINGS ══ -->
-<div class="panel" id="panel-holdings">
-  <div class="filter-row">
-    <button class="fpill active" onclick="filterType('all',this)">All</button>
-    <button class="fpill" onclick="filterType('Core',this)">Core</button>
-    <button class="fpill" onclick="filterType('Legacy Core',this)">Legacy Core</button>
-    <button class="fpill" onclick="filterType('Alt',this)">Alt</button>
-    <button class="fpill" onclick="filterType('Infra',this)">Infra</button>
-    <button class="fpill" onclick="filterType('Stablecoin',this)">Stablecoin</button>
-    <button class="fpill" onclick="filterType('Unclassified',this)">Unclassified</button>
-    <button class="fpill" onclick="filterType('meme',this)">Meme / Dust</button>
-  </div>
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input type="text" id="holdings-search" placeholder="Search symbol, asset, or platform..." oninput="renderHoldings()">
-  </div>
-  <div class="card">
-    <table class="htable"><thead><tr>
-      <th onclick="sortTable('sym')">Symbol</th>
-      <th onclick="sortTable('asset')">Asset</th>
-      <th onclick="sortTable('type')">Type</th>
-      <th onclick="sortTable('plat')">Location</th>
-      <th onclick="sortTable('chain')">Chain</th>
-      <th onclick="sortTable('val')" style="text-align:right">Value</th>
-      <th onclick="sortTable('pct')" style="text-align:right">% Port.</th>
-    </tr></thead><tbody id="holdings-body"></tbody></table>
-  </div>
-  <div style="margin-top:8px;font-size:12px;color:var(--ink4);font-family:var(--font-mono);" id="holdings-count"></div>
-</div>
 
 <!-- ══ FRAMEWORK ══ -->
 <div class="panel" id="panel-framework">
@@ -469,6 +494,84 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
     <a class="link-card" href="https://blofin.com" target="_blank"><div class="lc-cat">Exchange</div><div class="lc-name">Blofin</div><div class="lc-url">blofin.com</div></a>
     <a class="link-card" href="https://www.coinbase.com" target="_blank"><div class="lc-cat">Off-Ramp</div><div class="lc-name">Coinbase</div><div class="lc-url">coinbase.com</div></a>
     <a class="link-card" href="https://rabby.io" target="_blank"><div class="lc-cat">EVM Wallet</div><div class="lc-name">Rabby</div><div class="lc-url">rabby.io</div></a>
+  </div>
+</div>
+
+<!-- ══ ADD / EDIT HOLDING MODAL ══ -->
+<div class="modal-backdrop" id="add-modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Add Holding</div>
+    <input type="hidden" id="modal-edit-idx" value="">
+    <div class="modal-row">
+      <div class="modal-field">
+        <label>Symbol</label>
+        <input type="text" id="m-sym" placeholder="ETH">
+      </div>
+      <div class="modal-field">
+        <label>Asset Name</label>
+        <input type="text" id="m-asset" placeholder="Ethereum">
+      </div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label>Value (USD)</label>
+        <input type="number" id="m-val" placeholder="0.00" step="0.01">
+      </div>
+      <div class="modal-field">
+        <label>Type</label>
+        <select id="m-type">
+          <option>Core</option>
+          <option>Legacy Core</option>
+          <option>Alt</option>
+          <option>Infra</option>
+          <option>Stablecoin</option>
+          <option>Unclassified</option>
+          <option>Meme</option>
+          <option>Meme / Dust</option>
+          <option>Dust / Legacy</option>
+          <option>Legacy Alt</option>
+          <option>Dust</option>
+          <option>Wallet</option>
+          <option>Illiquid</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label>Platform / Location</label>
+        <input type="text" id="m-plat" placeholder="Ledger Nano X" list="plat-options">
+        <datalist id="plat-options">
+          <option>Ledger Nano X</option><option>Binance.US</option><option>Pionex</option>
+          <option>Blofin</option><option>Kraken</option><option>VFAT & OTHERS</option>
+          <option>HLP INTERACT</option><option>MyEtherWallet</option><option>Slush (SUI)</option>
+          <option>BNB Hot (Rabby)</option><option>Dioblo EVM (Rabby)</option>
+        </datalist>
+      </div>
+      <div class="modal-field">
+        <label>Chain / Network</label>
+        <input type="text" id="m-chain" placeholder="Ethereum" list="chain-options">
+        <datalist id="chain-options">
+          <option>Ethereum</option><option>Arbitrum</option><option>Bitcoin</option>
+          <option>Solana</option><option>BSC</option><option>Avalanche</option>
+          <option>Zcash</option><option>Polygon</option><option>Base</option>
+          <option>Exchange</option><option>EVM</option><option>SUI</option>
+        </datalist>
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>Category</label>
+      <select id="m-cat">
+        <option>Hardware Wallet</option>
+        <option>Exchange</option>
+        <option>Hot Wallet</option>
+        <option>DeFi</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="edit-btn danger" id="modal-delete-btn" onclick="portDeleteHolding()" style="margin-right:auto;display:none;">🗑 Delete</button>
+      <button class="edit-btn secondary" onclick="portCloseModal()">Cancel</button>
+      <button class="edit-btn primary" onclick="portSaveModal()">Save Holding</button>
+    </div>
   </div>
 </div>
 
@@ -552,82 +655,15 @@ const SCRIPT_URL = HQ_SCRIPT_URL;
 // Crypto Google Sheet ID (from URL between /d/ and /edit)
 const CRYPTO_SHEET_ID = '1xddVPIQwcixtpcP6s9pOzUPa6DvZXnJzgGWy1q9DqRg';
 
-const GRAND_TOTAL = 280024.70;
+// ── LIVE HOLDINGS — populated from Google Sheets on load ──────────────────
+// The HOLDINGS array below is a FALLBACK only (offline mode).
+// On successful load, portWorkingData is replaced with live sheet data.
+let GRAND_TOTAL = 0; // updated dynamically from live data
 
-// ══════════════════════════════════════════════════════════════════════════
-// PORTFOLIO DATA — from 2_18_C_Port_Master.xlsx (Feb 18, 2026)
-// ══════════════════════════════════════════════════════════════════════════
 const HOLDINGS = [
-  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'0x Protocol',sym:'ZRX',val:348.05,type:'Unclassified'},
-  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Bitcoin',sym:'BTC',val:48377.44,type:'Unclassified'},
-  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Chainlink',sym:'LINK',val:3342.16,type:'Unclassified'},
-  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Compound',sym:'COMP',val:156.29,type:'Unclassified'},
-  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Cosmos',sym:'ATOM',val:727.70,type:'Unclassified'},
-  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Curve',sym:'CRV',val:1017.20,type:'Unclassified'},
-  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Immutable X',sym:'IMX',val:24.60,type:'Unclassified'},
-  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Kyber Network',sym:'KNC',val:896.02,type:'Unclassified'},
-  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Litecoin',sym:'LTC',val:1134.08,type:'Unclassified'},
-  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Polkadot',sym:'DOT',val:524.24,type:'Unclassified'},
-  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Stellar',sym:'XLM',val:1340.70,type:'Unclassified'},
-  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Tezos',sym:'XTZ',val:4657.00,type:'Unclassified'},
-  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Uniswap',sym:'UNI',val:314.54,type:'Unclassified'},
-  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Vaulta',sym:'A',val:106.16,type:'Unclassified'},
-  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'iExecRLC',sym:'RLC',val:904.02,type:'Unclassified'},
-  {cat:'Exchange',plat:'Blofin',chain:'Exchange',asset:'Zcash',sym:'ZEC',val:8965.91,type:'Unclassified'},
-  {cat:'Exchange',plat:'Kraken',chain:'Exchange',asset:'Bitcoin',sym:'BTC',val:2279.41,type:'Unclassified'},
-  {cat:'Exchange',plat:'Kraken',chain:'Exchange',asset:'Immutable X',sym:'IMX',val:109.52,type:'Unclassified'},
-  {cat:'Exchange',plat:'Kraken',chain:'Exchange',asset:'Monero',sym:'XMR',val:6825.19,type:'Unclassified'},
-  {cat:'Exchange',plat:'Kraken',chain:'Exchange',asset:'Phala',sym:'PHA',val:391.18,type:'Unclassified'},
-  {cat:'Exchange',plat:'Kraken',chain:'Exchange',asset:'Siacoin',sym:'SC',val:545.19,type:'Unclassified'},
-  {cat:'Exchange',plat:'Kraken',chain:'Exchange',asset:'dYdX',sym:'DYDX',val:124.26,type:'Unclassified'},
-  {cat:'Exchange',plat:'Pionex',chain:'Exchange',asset:'Bitcoin',sym:'BTC',val:18951.55,type:'Unclassified'},
-  {cat:'Exchange',plat:'Pionex',chain:'Exchange',asset:'Chainlink',sym:'LINK',val:1122.41,type:'Unclassified'},
-  {cat:'Exchange',plat:'Pionex',chain:'Exchange',asset:'Immutable X',sym:'IMX',val:80.55,type:'Unclassified'},
-  {cat:'Exchange',plat:'Pionex',chain:'Exchange',asset:'POL',sym:'POL',val:403.48,type:'Unclassified'},
-  {cat:'Exchange',plat:'Pionex',chain:'Exchange',asset:'Tether USD',sym:'USDT',val:403.01,type:'Unclassified'},
-  {cat:'Exchange',plat:'Pionex',chain:'Exchange',asset:'Vulcan Forged',sym:'PYR',val:52.34,type:'Unclassified'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Avalanche',asset:'Avalanche',sym:'AVAX',val:969.72,type:'Core'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Avalanche',asset:'Coq Inu',sym:'COQ',val:62.88,type:'Meme / Dust'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'BSC',asset:'Binance Coin',sym:'BNB',val:21141.36,type:'Core'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'BSC',asset:'Binance-Peg Zcash',sym:'ZEC',val:2381.07,type:'Core'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'BSC',asset:'Tether USD',sym:'USDT',val:2856.09,type:'Stablecoin'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'BSC',asset:'USD Coin',sym:'USDC',val:1032.68,type:'Stablecoin'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Ethereum Classic',asset:'Ethereum Classic',sym:'ETC',val:9024.09,type:'Legacy Core'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Ethereum',asset:'Basic Attention Token',sym:'BAT',val:4616.41,type:'Alt'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Ethereum',asset:'Ethereum',sym:'ETH',val:79322.19,type:'Core'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Ethereum',asset:'HoloToken',sym:'HOT',val:334.92,type:'Legacy Alt'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Ethereum',asset:'Patientory',sym:'PTOY',val:5.68,type:'Dust / Legacy'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Litecoin',asset:'Litecoin',sym:'LTC',val:5869.38,type:'Legacy Core'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Solana',asset:'GIGACHAD',sym:'GIGA',val:12.49,type:'Alt'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Solana',asset:'Infraxa',sym:'INFRA',val:873.98,type:'Alt'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Solana',asset:'Myro',sym:'MYRO',val:28.55,type:'Alt'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Solana',asset:'Orca',sym:'ORCA',val:261.40,type:'Infra'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Solana',asset:'Pyth Network',sym:'PYTH',val:169.73,type:'Infra'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Solana',asset:'Render',sym:'RENDER',val:1750.45,type:'Infra'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Solana',asset:'SolForge Fusion',sym:'SFG',val:41.07,type:'Alt'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Solana',asset:'Solana',sym:'SOL',val:6132.38,type:'Core'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Solana',asset:'dogwifhat',sym:'WIF',val:220.27,type:'Meme'},
-  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Zcash',asset:'Zcash',sym:'ZEC',val:28547.91,type:'Core'},
-  {cat:'Hot Wallet',plat:'VFAT & OTHERS',chain:'EVM',asset:'Wrapped Ether',sym:'WETH',val:413.82,type:'Core'},
-  {cat:'Hot Wallet',plat:'VFAT & OTHERS',chain:'EVM',asset:'RSC',sym:'RSC',val:247.70,type:'Alt'},
-  {cat:'Hot Wallet',plat:'VFAT & OTHERS',chain:'EVM',asset:'FLAY',sym:'FLAY',val:144.65,type:'Alt'},
-  {cat:'Hot Wallet',plat:'VFAT & OTHERS',chain:'EVM',asset:'CPOOL',sym:'CPOOL',val:134.75,type:'Alt'},
-  {cat:'Hot Wallet',plat:'VFAT & OTHERS',chain:'EVM',asset:'Prime',sym:'PRIME',val:119.50,type:'Alt'},
-  {cat:'Hot Wallet',plat:'VFAT & OTHERS',chain:'EVM',asset:'UNA',sym:'UNA',val:114.57,type:'Alt'},
-  {cat:'Hot Wallet',plat:'VFAT & OTHERS',chain:'EVM',asset:'UPAI',sym:'UPAI',val:113.39,type:'Alt'},
-  {cat:'Hot Wallet',plat:'VFAT & OTHERS',chain:'EVM',asset:'Brett',sym:'BRETT',val:98.16,type:'Meme'},
-  {cat:'Hot Wallet',plat:'VFAT & OTHERS',chain:'EVM',asset:'Ethereum',sym:'ETH',val:72.01,type:'Core'},
-  {cat:'Hot Wallet',plat:'VFAT & OTHERS',chain:'EVM',asset:'HANA',sym:'HANA',val:26.52,type:'Alt'},
-  {cat:'Hot Wallet',plat:'HLP INTERACT',chain:'EVM',asset:'WINR',sym:'WINR',val:45.21,type:'Alt'},
-  {cat:'Hot Wallet',plat:'HLP INTERACT',chain:'EVM',asset:'Ethereum',sym:'ETH',val:42.10,type:'Core'},
-  {cat:'Hot Wallet',plat:'HLP INTERACT',chain:'EVM',asset:'Binance Coin',sym:'BNB',val:17.00,type:'Core'},
-  {cat:'Hot Wallet',plat:'HLP INTERACT',chain:'EVM',asset:'Tether USD',sym:'USDT',val:8.15,type:'Stablecoin'},
-  {cat:'Hot Wallet',plat:'HLP INTERACT',chain:'EVM',asset:'Aerodrome',sym:'AERO',val:1.98,type:'Alt'},
-  {cat:'Hot Wallet',plat:'MyEtherWallet',chain:'Ethereum',asset:'LPT',sym:'LPT',val:4.94,type:'Alt'},
-  {cat:'Hot Wallet',plat:'MyEtherWallet',chain:'Ethereum',asset:'MLN',sym:'MLN',val:5.95,type:'Alt'},
-  {cat:'Hot Wallet',plat:'MyEtherWallet',chain:'Ethereum',asset:'TRX',sym:'TRX',val:17.03,type:'Dust / Legacy'},
-  {cat:'Hot Wallet',plat:'Slush (SUI)',chain:'SUI',asset:'SUI',sym:'SUI',val:20.46,type:'Wallet'},
-  {cat:'Hot Wallet',plat:'BNB Hot (Rabby)',chain:'BSC',asset:'Binance Coin',sym:'BNB',val:4.70,type:'Dust'},
+  // Slim offline fallback — sheet data takes over on load
+  {cat:'Hardware Wallet',plat:'Ledger Nano X',chain:'Ethereum',asset:'Ethereum',sym:'ETH',val:0,type:'Core'},
+  {cat:'Exchange',plat:'Binance.US',chain:'Exchange',asset:'Bitcoin',sym:'BTC',val:0,type:'Unclassified'},
 ];
 
 const DUST_TYPES = ['Dust','Dust / Legacy','Meme / Dust','Legacy Alt','Illiquid','Wallet'];
@@ -639,7 +675,7 @@ const TYPE_CLASS  = {
 };
 
 function fmtUSD(n,d=0){return '$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});}
-function pct(v){return (v/GRAND_TOTAL*100).toFixed(1)+'%';}
+function pct(v){const t=GRAND_TOTAL||portGetData().reduce((s,h)=>s+h.val,0)||1; return (v/t*100).toFixed(1)+'%';}
 function badge(t){return `<span class="type-badge ${TYPE_CLASS[t]||'tb-unclass'}">${t}</span>`;}
 
 // ── TAB SWITCH ─────────────────────────────────────────────────────────────
@@ -687,10 +723,169 @@ function applyData(d) {
   if(d.fear_greed && d.fear_greed!=='—') document.getElementById('mkt-fg').textContent = d.fear_greed;
   if(d.btc_dom && d.btc_dom>0) document.getElementById('mkt-dom').textContent = parseFloat(d.btc_dom).toFixed(1)+'%';
   if(d.mkt_cap && d.mkt_cap>0) document.getElementById('mkt-cap').textContent = '$'+parseFloat(d.mkt_cap).toFixed(2)+'T';
+
+  // ── LIVE HOLDINGS from sheet ──────────────────────────────────────────
+  if(d.holdings && d.holdings.length) {
+    // Load any locally-saved type overrides (from edit mode)
+    let typeOverrides = {};
+    try {
+      const saved = localStorage.getItem('crypto_holdings_edits');
+      if(saved) {
+        JSON.parse(saved).forEach(h => {
+          const key = h.sym+'|'+h.plat;
+          typeOverrides[key] = { type: h.type, cat: h.cat };
+        });
+      }
+    } catch(e){}
+
+    // Map sheet holdings → dashboard format, applying any local overrides
+    const liveHoldings = d.holdings.map(h => {
+      const key = h.sym+'|'+h.plat;
+      const override = typeOverrides[key] || {};
+      // Infer cat from plat
+      const cat = h.plat === 'Ledger Nano X' ? 'Hardware Wallet'
+        : ['Binance.US','Pionex','Kraken','Blofin'].includes(h.plat) ? 'Exchange' : 'Hot Wallet';
+      return {
+        cat: override.cat || cat,
+        plat: h.plat,
+        chain: h.chain,
+        asset: h.asset,
+        sym: h.sym,
+        val: parseFloat(h.value) || 0,
+        type: override.type || h.type,
+        amount: parseFloat(h.amount) || 0,
+        price: parseFloat(h.price) || 0,
+      };
+    }).filter(h => h.val > 0 || h.amount > 0);
+
+    // Set as working data — overrides any localStorage saved array
+    portWorkingData = liveHoldings;
+    GRAND_TOTAL = liveHoldings.reduce((s,h)=>s+h.val, 0);
+
+    // ── Compute and render summary cards ──────────────────────────────
+    const hwTotal  = liveHoldings.filter(h=>h.cat==='Hardware Wallet').reduce((s,h)=>s+h.val,0);
+    const exTotal  = liveHoldings.filter(h=>h.cat==='Exchange').reduce((s,h)=>s+h.val,0);
+    const hotTotal = liveHoldings.filter(h=>h.cat==='Hot Wallet').reduce((s,h)=>s+h.val,0);
+    const stableTotal = liveHoldings.filter(h=>h.type==='Stablecoin').reduce((s,h)=>s+h.val,0);
+    const spotTotal = GRAND_TOTAL;
+    const setText = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+    setText('port-spot-fig',  fmtUSD(spotTotal));
+    setText('port-spot-note', 'Live · '+liveHoldings.length+' positions');
+    setText('port-stable-fig', fmtUSD(stableTotal));
+    setText('port-hw-fig',  fmtUSD(hwTotal));
+    setText('port-ex-fig',  fmtUSD(exTotal));
+    setText('port-hw2-fig', fmtUSD(hotTotal));
+
+    // ── By Type summary cards (built dynamically) ──────────────────────
+    const typeMap = {};
+    liveHoldings.forEach(h=>{ typeMap[h.type]=(typeMap[h.type]||0)+h.val; });
+    const typeCards = [
+      {label:'Core',       key:'Core',        col:'var(--slate)', note:()=>liveHoldings.filter(h=>h.type==='Core').map(h=>h.sym).slice(0,4).join(' · ')},
+      {label:'Legacy Core',key:'Legacy Core', col:'var(--teal)',  note:()=>liveHoldings.filter(h=>h.type==='Legacy Core').map(h=>h.sym).join(' · ')},
+      {label:'Alt',        key:'Alt',         col:'var(--violet)',note:()=>liveHoldings.filter(h=>h.type==='Alt').map(h=>h.sym).slice(0,4).join(' · ')+'…'},
+      {label:'Stablecoin', key:'Stablecoin',  col:'var(--sage)',  note:()=>'USDT · USDC · dry powder'},
+    ];
+    const btCards = document.getElementById('port-bytype-cards');
+    if(btCards) btCards.innerHTML = typeCards.map(tc=>`
+      <div class="card">
+        <div class="card-label">${tc.label}</div>
+        <div class="card-fig" style="color:${tc.col}">${fmtUSD(typeMap[tc.key]||0)}</div>
+        <div class="card-note">${tc.note()}</div>
+      </div>`).join('');
+
+    // ── By Location summary cards ──────────────────────────────────────
+    const blCards = document.getElementById('port-bylocation-cards');
+    if(blCards) blCards.innerHTML = `
+      <div class="card"><div class="card-label">Hardware Wallet</div><div class="card-fig" style="color:var(--slate)">${fmtUSD(hwTotal)}</div><div class="card-note">Ledger Nano X</div></div>
+      <div class="card"><div class="card-label">Exchanges</div><div class="card-fig" style="color:var(--amber)">${fmtUSD(exTotal)}</div><div class="card-note">Binance.US · Pionex · Kraken · Blofin</div></div>
+      <div class="card"><div class="card-label">Hot Wallets</div><div class="card-fig" style="color:var(--ink3)">${fmtUSD(hotTotal)}</div><div class="card-note">VFAT · HLP · MEW · Slush</div></div>`;
+
+    // ── Allocation bars on Overview tab ──────────────────────────────────
+    const allocConfig = [
+      {label:'Core',        cls:'tb-core',    col:'var(--slate)',  types:['Core']},
+      {label:'Unclassified',cls:'tb-unclass', col:'var(--ink3)',   types:['Unclassified']},
+      {label:'Legacy Core', cls:'tb-legacy',  col:'var(--teal)',   types:['Legacy Core']},
+      {label:'Alt',         cls:'tb-alt',     col:'var(--violet)', types:['Alt']},
+      {label:'Stablecoin',  cls:'tb-stable',  col:'var(--sage)',   types:['Stablecoin']},
+      {label:'Infra',       cls:'tb-infra',   col:'var(--amber)',  types:['Infra']},
+      {label:'Dust/Meme',   cls:'tb-dust',    col:'var(--ink4)',   types:['Dust','Dust / Legacy','Meme','Meme / Dust','Legacy Alt']},
+    ];
+    const grandWithDefi = spotTotal + (parseFloat(d.defi_total)||0);
+    const allocEl = document.getElementById('alloc-bars');
+    if(allocEl && grandWithDefi > 0) {
+      let html = '';
+      allocConfig.forEach(ac => {
+        const val = liveHoldings.filter(h=>ac.types.includes(h.type)).reduce((s,h)=>s+h.val,0);
+        if(val <= 0) return;
+        const pctVal = (val/grandWithDefi*100).toFixed(1);
+        html += `<div class="alloc-row">
+          <div class="alloc-label"><span class="type-badge ${ac.cls}">${ac.label}</span></div>
+          <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:${pctVal}%;background:${ac.col};"></div></div>
+          <div class="alloc-val">${fmtUSD(val)}</div>
+          <div class="alloc-pct">${pctVal}%</div>
+        </div>`;
+      });
+      // DeFi row
+      if(d.defi_total > 0) {
+        const dp = (parseFloat(d.defi_total)/grandWithDefi*100).toFixed(1);
+        html += `<div class="alloc-row">
+          <div class="alloc-label"><span class="type-badge tb-lp">DeFi / LP</span></div>
+          <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:${dp}%;background:#3050a0;"></div></div>
+          <div class="alloc-val">${fmtUSD(parseFloat(d.defi_total))}</div>
+          <div class="alloc-pct">${dp}%</div>
+        </div>`;
+      }
+      allocEl.innerHTML = html;
+    }
+
+    // Re-render portfolio if it's visible
+    if(document.getElementById('panel-portfolio').classList.contains('active')) {
+      portRenderHoldings();
+    }
+  }
+
+  // ── LIVE DEFI from sheet ──────────────────────────────────────────────
+  if(d.defi && d.defi.length) {
+    const defiTotal  = d.defi.reduce((s,p)=>s+(parseFloat(p.value)||0),0);
+    const activeCount= d.defi.filter(p=>p.status&&p.status.toLowerCase()==='active').length;
+    const oorCount   = d.defi.filter(p=>p.status&&p.status.toLowerCase().includes('range')).length;
+    const setText = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+    setText('port-defi-fig',    fmtUSD(defiTotal));
+    setText('defi-total-fig',   fmtUSD(defiTotal));
+    setText('defi-active-fig',  activeCount+' positions');
+    setText('defi-oor-fig',     oorCount > 0 ? oorCount+' out of range' : 'None');
+    // Also update portfolio panel defi card
+    setText('port-defi-fig', fmtUSD(defiTotal));
+
+    const list = document.getElementById('port-defi-list');
+    if(list) {
+      list.innerHTML = d.defi.map((p,i)=>{
+        const isOOR = p.status && p.status.toLowerCase().includes('range');
+        const isLast = i === d.defi.length-1;
+        const pl = parseFloat(p.pl);
+        const rewards = parseFloat(p.rewards);
+        return `<div class="defi-block"${isLast?' style="border:none"':''}>
+          <div class="defi-top">
+            <span class="defi-name">${p.position}</span>
+            <span class="defi-val">${fmtUSD(parseFloat(p.value)||0,2)}</span>
+          </div>
+          <div class="defi-meta">
+            <span>${p.protocol}</span>
+            <span>${p.chain}</span>
+            <span>${p.type}</span>
+            ${isOOR?'<span class="oor">⚠ OUT OF RANGE</span>':''}
+          </div>
+          <div style="font-size:12px;color:var(--ink4);">
+            ${!isNaN(rewards)&&rewards>0?'Rewards: '+fmtUSD(rewards,2)+' · ':''}
+            ${!isNaN(pl)?'P/L: <span style="color:var('+(pl>=0?'--sage':'--rust')+')">'+(pl>=0?'+':'')+fmtUSD(Math.abs(pl),2)+'</span>':''}
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+
   // Portfolio highlights
-  // Show live portfolio total (spot + defi)
   if(d.crypto_total) document.getElementById('port-total').textContent = fmtUSD(parseFloat(d.crypto_total));
-  // Price stamp
   if(d.price_count){
     const ps = document.getElementById('price-stamp');
     if(ps) ps.textContent = d.price_count + ' prices live';
@@ -830,22 +1025,84 @@ function calcPosition() {
   out.innerHTML=`Max risk: <span class="r-val">${fmtUSD(riskAmt)}</span> (${riskP}% of portfolio)<br>Stop distance: <span class="r-val">${stopPct}%</span> (${fmtUSD(stopDist)})<br>Position size: <span class="r-val">${fmtUSD(posSize)}</span> (${portPct}% of portfolio)<br>Units to buy: <span class="r-val">${units.toFixed(4)}</span>`;
 }
 
-// ── TOP HOLDINGS ───────────────────────────────────────────────────────────
-function buildTopHoldings() {
-  const sorted = [...HOLDINGS].sort((a,b)=>b.val-a.val).slice(0,12);
-  document.getElementById('top-holdings-body').innerHTML = sorted.map(h=>`
-    <tr class="${DUST_TYPES.includes(h.type)?'dust':''}">
-      <td class="sym">${h.sym}</td><td>${h.asset}</td><td>${badge(h.type)}</td>
-      <td class="plat">${h.plat}</td><td class="val">${fmtUSD(h.val,2)}</td><td class="pct">${pct(h.val)}</td>
-    </tr>`).join('');
+// ── PORTFOLIO — unified view controller ────────────────────────────────────
+let portCurrentView = 'holdings';
+let portCurrentFilter = 'all';
+let portSortCol = 'val';
+let portSortDir = -1;
+
+function portView(view, el) {
+  portCurrentView = view;
+  document.querySelectorAll('.filter-row .fpill[onclick^="portView"]').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  const views = ['holdings','bytype','bylocation','defi'];
+  views.forEach(v => {
+    const el2 = document.getElementById('port-view-'+v);
+    if(el2) el2.style.display = v===view ? '' : 'none';
+  });
+  const typeFilters = document.getElementById('port-type-filters');
+  if(typeFilters) typeFilters.style.display = (view==='holdings'||view==='bytype') ? 'flex' : 'none';
+  if(view==='holdings') portRenderHoldings();
+  if(view==='bytype') portBuildByType();
+  if(view==='bylocation') portBuildByLocation();
 }
 
-// ── BY TYPE ────────────────────────────────────────────────────────────────
-function buildByType() {
+function portFilter(type, el) {
+  portCurrentFilter = type;
+  document.querySelectorAll('#port-type-filters .fpill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  portRenderHoldings();
+}
+
+function portSearchChange() { portRenderHoldings(); }
+
+function portSort(col) {
+  if(portSortCol===col) portSortDir*=-1; else {portSortCol=col; portSortDir=-1;}
+  portRenderHoldings();
+}
+
+function portRenderHoldings() {
+  const search = (document.getElementById('port-search')?.value||'').toLowerCase();
+  let data = portGetData().map((h,i)=>({...h,_idx:i}));
+  if(portCurrentFilter!=='all') {
+    if(portCurrentFilter==='meme') data=data.filter(h=>['Meme','Meme / Dust','Dust','Dust / Legacy','Legacy Alt','Illiquid'].includes(h.type));
+    else data=data.filter(h=>h.type===portCurrentFilter);
+  }
+  if(search) data=data.filter(h=>h.sym.toLowerCase().includes(search)||h.asset.toLowerCase().includes(search)||(h.plat||'').toLowerCase().includes(search)||(h.type||'').toLowerCase().includes(search));
+  data.sort((a,b)=>{
+    const av=typeof a[portSortCol]==='string'?a[portSortCol].toLowerCase():a[portSortCol];
+    const bv=typeof b[portSortCol]==='string'?b[portSortCol].toLowerCase():b[portSortCol];
+    return av<bv?-portSortDir:av>bv?portSortDir:0;
+  });
+  const tot=data.reduce((s,h)=>s+h.val,0);
+  const body=document.getElementById('port-holdings-body');
+  const table=document.getElementById('port-holdings-table');
+  if(table) table.className='htable'+(portEditMode?' edit-mode':'');
+  if(body) body.innerHTML=data.map(h=>`
+    <tr onclick="${portEditMode?`portOpenEditRow(${h._idx})`:''}">
+      <td class="sym">${h.sym}</td><td>${h.asset}</td><td>${badge(h.type)}</td>
+      <td class="plat">${h.plat}</td><td class="plat">${h.chain}</td>
+      <td class="val">${h.val>0?fmtUSD(h.val,2):'—'}</td>
+      <td class="pct">${h.val>0?pct(h.val):'—'}</td>
+    </tr>`).join('');
+  const ce=document.getElementById('port-holdings-count');
+  if(ce) ce.textContent=`${data.length} holdings · ${fmtUSD(tot)} shown${portEditMode?' · Edit mode ON':''}`+
+    (localStorage.getItem('crypto_holdings_edits')?' · 💾 Local edits active':'');
+}
+
+function portBuildByType() {
   const order=['Core','Legacy Core','Alt','Infra','Stablecoin','Unclassified','Meme','Meme / Dust','Dust / Legacy','Legacy Alt','Dust','Wallet','Illiquid'];
+  const search=(document.getElementById('port-search')?.value||'').toLowerCase();
+  let data=portGetData().map((h,i)=>({...h,_idx:i}));
+  if(search) data=data.filter(h=>h.sym.toLowerCase().includes(search)||h.asset.toLowerCase().includes(search)||(h.plat||'').toLowerCase().includes(search));
+  if(portCurrentFilter!=='all'){
+    if(portCurrentFilter==='meme') data=data.filter(h=>['Meme','Meme / Dust','Dust','Dust / Legacy','Legacy Alt','Illiquid'].includes(h.type));
+    else data=data.filter(h=>h.type===portCurrentFilter);
+  }
   const byType={};
-  HOLDINGS.forEach(h=>{if(!byType[h.type])byType[h.type]=[];byType[h.type].push(h);});
-  document.getElementById('bytype-content').innerHTML = order.filter(t=>byType[t]&&byType[t].length).map(type=>{
+  data.forEach(h=>{if(!byType[h.type])byType[h.type]=[];byType[h.type].push(h);});
+  const el=document.getElementById('port-bytype-content');
+  if(el) el.innerHTML=order.filter(t=>byType[t]&&byType[t].length).map(type=>{
     const hs=byType[type].sort((a,b)=>b.val-a.val);
     const tot=hs.reduce((s,h)=>s+h.val,0);
     return `<div class="sec-label">${type} &nbsp;·&nbsp; ${fmtUSD(tot)} &nbsp;·&nbsp; ${pct(tot)}</div>
@@ -854,12 +1111,15 @@ function buildByType() {
   }).join('');
 }
 
-// ── BY LOCATION ────────────────────────────────────────────────────────────
-function buildByLocation() {
-  const order=['Ledger Nano X','Binance.US','Pionex','Blofin','Kraken','VFAT & OTHERS','HLP INTERACT','MyEtherWallet','Slush (SUI)','BNB Hot (Rabby)'];
+function portBuildByLocation() {
+  const order=['Ledger Nano X','Binance.US','Pionex','Blofin','Kraken','VFAT & OTHERS','HLP INTERACT','MyEtherWallet','Slush (SUI)','BNB Hot (Rabby)','Dioblo EVM (Rabby)'];
+  const search=(document.getElementById('port-search')?.value||'').toLowerCase();
+  let data=portGetData();
+  if(search) data=data.filter(h=>h.sym.toLowerCase().includes(search)||h.asset.toLowerCase().includes(search)||(h.plat||'').toLowerCase().includes(search));
   const byPlat={};
-  HOLDINGS.forEach(h=>{if(!byPlat[h.plat])byPlat[h.plat]={cat:h.cat,hs:[]};byPlat[h.plat].hs.push(h);});
-  document.getElementById('bylocation-content').innerHTML = order.filter(p=>byPlat[p]).map(plat=>{
+  data.forEach(h=>{if(!byPlat[h.plat])byPlat[h.plat]={cat:h.cat,hs:[]};byPlat[h.plat].hs.push(h);});
+  const el=document.getElementById('port-bylocation-content');
+  if(el) el.innerHTML=order.filter(p=>byPlat[p]).map(plat=>{
     const {cat,hs}=byPlat[plat];
     const sorted=hs.sort((a,b)=>b.val-a.val);
     const tot=sorted.reduce((s,h)=>s+h.val,0);
@@ -868,45 +1128,6 @@ function buildByLocation() {
     <div class="card mb20"><table class="htable"><thead><tr><th>Symbol</th><th>Asset</th><th>Type</th><th>Chain</th><th style="text-align:right">Value</th></tr></thead>
     <tbody>${sorted.map(h=>`<tr class="${DUST_TYPES.includes(h.type)?'dust':''}"><td class="sym">${h.sym}</td><td>${h.asset}</td><td>${badge(h.type)}</td><td class="plat">${h.chain}</td><td class="val">${h.val>0?fmtUSD(h.val,2):'—'}</td></tr>`).join('')}</tbody></table></div>`;
   }).join('');
-}
-
-// ── ALL HOLDINGS ───────────────────────────────────────────────────────────
-let currentFilter='all', sortCol='val', sortDir=-1;
-
-function filterType(type,el) {
-  currentFilter=type;
-  document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-  renderHoldings();
-}
-
-function sortTable(col) {
-  if(sortCol===col) sortDir*=-1; else {sortCol=col;sortDir=-1;}
-  renderHoldings();
-}
-
-function renderHoldings() {
-  const search=(document.getElementById('holdings-search')?.value||'').toLowerCase();
-  let data=[...HOLDINGS];
-  if(currentFilter!=='all'){
-    if(currentFilter==='meme') data=data.filter(h=>['Meme','Meme / Dust','Dust','Dust / Legacy','Legacy Alt','Illiquid'].includes(h.type));
-    else data=data.filter(h=>h.type===currentFilter);
-  }
-  if(search) data=data.filter(h=>h.sym.toLowerCase().includes(search)||h.asset.toLowerCase().includes(search)||h.plat.toLowerCase().includes(search)||h.type.toLowerCase().includes(search));
-  data.sort((a,b)=>{
-    const av=typeof a[sortCol]==='string'?a[sortCol].toLowerCase():a[sortCol];
-    const bv=typeof b[sortCol]==='string'?b[sortCol].toLowerCase():b[sortCol];
-    return av<bv?-sortDir:av>bv?sortDir:0;
-  });
-  const tot=data.reduce((s,h)=>s+h.val,0);
-  document.getElementById('holdings-body').innerHTML=data.map(h=>`
-    <tr class="${DUST_TYPES.includes(h.type)?'dust':''}">
-      <td class="sym">${h.sym}</td><td>${h.asset}</td><td>${badge(h.type)}</td>
-      <td class="plat">${h.plat}</td><td class="plat">${h.chain}</td>
-      <td class="val">${h.val>0?fmtUSD(h.val,2):'—'}</td><td class="pct">${h.val>0?pct(h.val):'—'}</td>
-    </tr>`).join('');
-  const ce=document.getElementById('holdings-count');
-  if(ce) ce.textContent=`${data.length} holdings · ${fmtUSD(tot)} shown`;
 }
 
 // ── REFRESH PRICES ────────────────────────────────────────────────────────
@@ -919,7 +1140,6 @@ async function refreshPrices() {
     const j = await r.json();
     if(j.ok){
       if(ps) ps.textContent = j.updated + ' prices updated';
-      // Reload full data to reflect new values
       await loadData();
     } else {
       if(ps) ps.textContent = 'Refresh failed';
@@ -935,6 +1155,7 @@ async function refreshPrices() {
 async function loadTasks() {
   try {
     const r=await fetch(HQ_SCRIPT_URL+'?action=load',{redirect:'follow'});
+
     const j=await r.json();
     if(!j.ok||!j.data) return;
     renderTasks(j.data.rows||[]);
@@ -948,11 +1169,138 @@ if(CRYPTO_SHEET_ID!=='PASTE_CRYPTO_SHEET_ID_HERE'){
 }
 
 // ── BOOT ───────────────────────────────────────────────────────────────────
-buildTopHoldings();
-buildByType();
-buildByLocation();
-renderHoldings();
+portRenderHoldings();
 loadData();
+
+// ── HOLDINGS EDIT SYSTEM ─────────────────────────────────────────────────
+let portEditMode = false;
+let portWorkingData = null; // mutable copy, null = use HOLDINGS
+
+function portGetData() {
+  if(portWorkingData) return portWorkingData;
+  const saved = localStorage.getItem('crypto_holdings_edits');
+  if(saved) { try { portWorkingData = JSON.parse(saved); return portWorkingData; } catch(e){} }
+  portWorkingData = HOLDINGS.map(h=>({...h}));
+  return portWorkingData;
+}
+
+function portToggleEdit() {
+  portEditMode = !portEditMode;
+  const btn = document.getElementById('edit-toggle-btn');
+  const toolbar = document.getElementById('edit-toolbar');
+  const table = document.getElementById('port-holdings-table');
+  btn.textContent = portEditMode ? '✕ Exit Edit' : '✎ Edit';
+  btn.style.background = portEditMode ? 'var(--amber-bg)' : '';
+  btn.style.color = portEditMode ? 'var(--amber)' : '';
+  toolbar.classList.toggle('visible', portEditMode);
+  if(table) table.classList.toggle('edit-mode', portEditMode);
+  portRenderHoldings();
+}
+
+function portSaveEdits() {
+  // Save the current working data (type overrides included) to localStorage
+  // Values/amounts will be replaced on next sheet load, but type/cat overrides persist
+  localStorage.setItem('crypto_holdings_edits', JSON.stringify(portGetData()));
+  const btn = document.querySelector('#edit-toolbar .edit-btn.primary');
+  const orig = btn.textContent;
+  btn.textContent = '✓ Saved!';
+  btn.style.background = 'var(--sage)';
+  setTimeout(()=>{ btn.textContent = orig; btn.style.background = ''; }, 1800);
+}
+
+function portResetEdits() {
+  if(!confirm('Reset all edits back to the original data? This cannot be undone.')) return;
+  localStorage.removeItem('crypto_holdings_edits');
+  portWorkingData = HOLDINGS.map(h=>({...h}));
+  portRenderHoldings();
+}
+
+function portExportJS() {
+  const data = portGetData();
+  const lines = data.map(h=>`  {cat:'${h.cat}',plat:'${h.plat}',chain:'${h.chain}',asset:'${h.asset}',sym:'${h.sym}',val:${h.val},type:'${h.type}'}`);
+  const js = 'const HOLDINGS = [\n' + lines.join(',\n') + '\n];';
+  const blob = new Blob([js], {type:'text/javascript'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'holdings_updated.js';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function portOpenEditRow(idx) {
+  if(!portEditMode) return;
+  const data = portGetData();
+  const h = data[idx];
+  document.getElementById('modal-title').textContent = `Edit — ${h.sym}`;
+  document.getElementById('modal-edit-idx').value = idx;
+  document.getElementById('m-sym').value = h.sym;
+  document.getElementById('m-asset').value = h.asset;
+  document.getElementById('m-val').value = h.val;
+  document.getElementById('m-type').value = h.type;
+  document.getElementById('m-plat').value = h.plat;
+  document.getElementById('m-chain').value = h.chain;
+  document.getElementById('m-cat').value = h.cat;
+  document.getElementById('modal-delete-btn').style.display = 'block';
+  document.getElementById('add-modal').classList.add('open');
+}
+
+function portOpenAddModal() {
+  document.getElementById('modal-title').textContent = 'Add Holding';
+  document.getElementById('modal-edit-idx').value = '';
+  document.getElementById('m-sym').value = '';
+  document.getElementById('m-asset').value = '';
+  document.getElementById('m-val').value = '';
+  document.getElementById('m-type').value = 'Core';
+  document.getElementById('m-plat').value = '';
+  document.getElementById('m-chain').value = '';
+  document.getElementById('m-cat').value = 'Hardware Wallet';
+  document.getElementById('modal-delete-btn').style.display = 'none';
+  document.getElementById('add-modal').classList.add('open');
+}
+
+function portCloseModal() {
+  document.getElementById('add-modal').classList.remove('open');
+}
+
+function portSaveModal() {
+  const idx = document.getElementById('modal-edit-idx').value;
+  const sym = document.getElementById('m-sym').value.trim();
+  const asset = document.getElementById('m-asset').value.trim();
+  const val = parseFloat(document.getElementById('m-val').value) || 0;
+  const type = document.getElementById('m-type').value;
+  const plat = document.getElementById('m-plat').value.trim();
+  const chain = document.getElementById('m-chain').value.trim();
+  const cat = document.getElementById('m-cat').value;
+  if(!sym || !plat) { alert('Symbol and Platform are required.'); return; }
+  const data = portGetData();
+  const entry = {cat, plat, chain, asset: asset||sym, sym, val, type};
+  if(idx !== '') {
+    data[parseInt(idx)] = entry;
+  } else {
+    data.push(entry);
+  }
+  portWorkingData = data;
+  portCloseModal();
+  portSaveEdits();
+  portRenderHoldings();
+}
+
+function portDeleteHolding() {
+  const idx = parseInt(document.getElementById('modal-edit-idx').value);
+  const data = portGetData();
+  const h = data[idx];
+  if(!confirm(`Delete ${h.sym} (${h.plat}) — ${h.val.toLocaleString('en-US',{style:'currency',currency:'USD'})}?`)) return;
+  data.splice(idx, 1);
+  portWorkingData = data;
+  portCloseModal();
+  portSaveEdits();
+  portRenderHoldings();
+}
+
+// Close modal on backdrop click
+document.getElementById('add-modal').addEventListener('click', function(e) {
+  if(e.target === this) portCloseModal();
+});
 
 // ══ AAVE V3 ARBITRUM ════════════════════════════════════════════════════════
 const AAVE_WALLET = '0x2Ec1070b4583379517B78013919D663334e349BD';
