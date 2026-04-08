@@ -975,11 +975,31 @@ body {
 /* Hidden file input */
 #garmin-file { display: none; }
 
-/* ══ FONT SCALE ══ */
-body.fs-sm  { font-size: 15px; }
-body.fs-md  { font-size: 18px; }
-body.fs-lg  { font-size: 21px; }
-body.fs-xl  { font-size: 24px; }
+/* ══ FONT SCALE — sets html root size, everything uses rem or inherits ══ */
+html { font-size: 16px; }
+body.fs-sm  { font-size: 14px; }
+body.fs-sm ~ * , body.fs-sm * { font-size: inherit; }
+
+/* Scale via html element which rem units inherit from */
+html.fs-sm { font-size: 13px; }
+html.fs-md { font-size: 16px; }
+html.fs-lg { font-size: 19px; }
+html.fs-xl { font-size: 22px; }
+
+/* Override all explicit px sizes to scale with html root */
+html.fs-sm body, html.fs-lg body, html.fs-xl body { font-size: 1.125rem; }
+
+/* The real trick: zoom the entire app shell */
+html.fs-sm .shell { zoom: 0.85; }
+html.fs-md .shell { zoom: 1.0; }
+html.fs-lg .shell { zoom: 1.18; }
+html.fs-xl .shell { zoom: 1.35; }
+
+/* Also scale the topbar */
+html.fs-sm .topbar { zoom: 0.85; }
+html.fs-md .topbar { zoom: 1.0; }
+html.fs-lg .topbar { zoom: 1.18; }
+html.fs-xl .topbar { zoom: 1.35; }
 
 /* ══ SETTINGS PANEL ══ */
 .settings-overlay {
@@ -2796,8 +2816,9 @@ function saveApiKeyFromSettings() {
 
 // ══ FONT SIZE ══
 function setFontSize(size, btn) {
-  document.body.className = document.body.className.replace(/fs-\w+/g, '').trim();
-  document.body.classList.add('fs-' + size);
+  // Apply zoom scaling to html element so it cascades everywhere
+  document.documentElement.className = document.documentElement.className.replace(/fs-\w+/g, '').trim();
+  document.documentElement.classList.add('fs-' + size);
   localStorage.setItem('tnt_font_size', size);
   document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
@@ -2805,8 +2826,7 @@ function setFontSize(size, btn) {
 
 (function initFontSize() {
   const saved = localStorage.getItem('tnt_font_size') || 'md';
-  document.body.classList.add('fs-' + saved);
-  // Mark active button after DOM ready
+  document.documentElement.classList.add('fs-' + saved);
   setTimeout(() => {
     const btn = document.querySelector(`.font-btn.sz-${saved}`);
     if (btn) { document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
