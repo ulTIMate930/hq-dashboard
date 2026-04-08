@@ -1,0 +1,2432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Answer Back Garage — Training Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111418;
+    --surface2: #181d24;
+    --border: #1e2530;
+    --accent: #e8ff47;
+    --accent2: #47c8ff;
+    --accent3: #ff6b35;
+    --green: #3ddc84;
+    --yellow: #ffd93d;
+    --red: #ff4757;
+    --text: #e8edf2;
+    --text2: #7a8899;
+    --text3: #4a5568;
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── SHARED SIDEBAR LAYOUT ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: 100vh;
+  }
+  .sidebar {
+    background: #13131a;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    padding: 24px 0;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 200;
+    flex-shrink: 0;
+  }
+  .sidebar-logo {
+    padding: 0 18px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 16px;
+  }
+  .sidebar-logo .name {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #e8e8f0;
+    letter-spacing: -0.3px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .sidebar-logo .sub {
+    font-size: 0.65rem;
+    color: #60607a;
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 2px;
+  }
+  .nav-section {
+    padding: 0 10px;
+    margin-bottom: 6px;
+  }
+  .nav-label {
+    font-size: 0.6rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: #30303f;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 8px 8px 4px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: #60607a;
+    transition: all 0.15s;
+    text-decoration: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .nav-item:hover { background: #1a1a24; color: #e8e8f0; }
+  .nav-item.active { background: rgba(61,220,132,0.1); color: var(--green); }
+  .nav-item .icon { font-size: 0.85rem; width: 18px; text-align: center; }
+  .content-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+  }
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(232,255,71,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,255,71,0.015) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,12,16,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .logo {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--accent);
+  }
+  .logo span { color: var(--text2); font-size: 14px; font-family: var(--font-body); font-weight: 300; margin-left: 12px; letter-spacing: 0; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .race-countdown {
+    background: linear-gradient(135deg, var(--accent3), #ff8c42);
+    color: white; border-radius: 20px;
+    padding: 4px 14px; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .btn {
+    background: var(--accent); color: #000;
+    border: none; border-radius: var(--radius-sm);
+    padding: 8px 16px; font-family: var(--font-body); font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { background: #d4e83f; transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent; color: var(--text2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 7px 14px;
+    font-family: var(--font-body); font-size: 13px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-ghost:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  /* ── NAV TABS ── */
+  .nav-tabs {
+    display: flex; gap: 2px;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 24px; overflow-x: auto;
+    position: sticky; top: 60px; z-index: 99;
+  }
+  .nav-tab {
+    padding: 12px 20px; font-size: 13px; font-weight: 500;
+    color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent;
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── MAIN LAYOUT ── */
+  main { padding: 24px; max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── STAT CARDS ── */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px; margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 18px;
+    transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: var(--accent2); }
+  .stat-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; color: var(--text2); text-transform: uppercase; margin-bottom: 8px; }
+  .stat-value { font-family: var(--font-display); font-size: 36px; line-height: 1; color: var(--text); }
+  .stat-value.accent { color: var(--accent); }
+  .stat-value.green { color: var(--green); }
+  .stat-value.red { color: var(--red); }
+  .stat-value.yellow { color: var(--yellow); }
+  .stat-sub { font-size: 11px; color: var(--text2); margin-top: 4px; }
+  .stat-bar { height: 3px; background: var(--border); border-radius: 2px; margin-top: 10px; }
+  .stat-bar-fill { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.6s ease; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+  }
+  .card-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 1px; color: var(--text); }
+  .card-body { padding: 20px; }
+
+  /* ── GRID LAYOUTS ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .col-span-2 { grid-column: span 2; }
+  @media (max-width: 900px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .col-span-2 { grid-column: span 1; }
+  }
+
+  /* ── WORKOUT LOG TABLE ── */
+  .workout-table { width: 100%; border-collapse: collapse; }
+  .workout-table th {
+    text-align: left; padding: 10px 14px;
+    font-size: 10px; font-weight: 600; letter-spacing: 1.5px;
+    color: var(--text3); text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  .workout-table td {
+    padding: 12px 14px; border-bottom: 1px solid var(--border);
+    font-size: 13px; vertical-align: middle;
+  }
+  .workout-table tr:last-child td { border-bottom: none; }
+  .workout-table tr:hover td { background: var(--surface2); }
+  .type-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+  }
+  .badge-run { background: rgba(61,220,132,0.15); color: var(--green); }
+  .badge-vo2 { background: rgba(71,200,255,0.15); color: var(--accent2); }
+  .badge-bike { background: rgba(232,255,71,0.15); color: var(--accent); }
+  .badge-strength { background: rgba(255,107,53,0.15); color: var(--accent3); }
+  .badge-rehab { background: rgba(255,215,61,0.15); color: var(--yellow); }
+  .badge-off { background: rgba(122,136,153,0.15); color: var(--text2); }
+
+  /* ── STIFFNESS INDICATOR ── */
+  .stiffness-dot {
+    width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px;
+  }
+  .s0 { background: var(--green); }
+  .s1 { background: #7ae47a; }
+  .s2 { background: var(--yellow); }
+  .s3 { background: #ffa726; }
+  .s4 { background: var(--red); }
+  .s5 { background: #ff1744; }
+
+  /* ── SHOE TRACKER ── */
+  .shoe-item {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 16px; margin-bottom: 12px;
+  }
+  .shoe-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .shoe-name { font-weight: 600; font-size: 14px; }
+  .shoe-meta { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .shoe-miles { font-family: var(--font-display); font-size: 28px; color: var(--accent); }
+  .shoe-miles span { font-family: var(--font-body); font-size: 12px; color: var(--text2); }
+  .shoe-progress { height: 6px; background: var(--border); border-radius: 3px; margin-top: 8px; }
+  .shoe-progress-fill { height: 100%; border-radius: 3px; transition: width 0.6s; }
+  .progress-good { background: var(--green); }
+  .progress-warn { background: var(--yellow); }
+  .progress-danger { background: var(--red); }
+  .shoe-limit { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  /* ── CALENDAR ── */
+  .calendar-event {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 12px 16px; border-left: 3px solid var(--accent);
+    background: var(--surface2); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin-bottom: 10px;
+  }
+  .calendar-event.event-rest { border-left-color: var(--text3); }
+  .calendar-event.event-long { border-left-color: var(--accent3); }
+  .calendar-event.event-vo2 { border-left-color: var(--accent2); }
+  .event-date { text-align: center; min-width: 40px; }
+  .event-day { font-size: 10px; font-weight: 600; letter-spacing: 1px; color: var(--text2); text-transform: uppercase; }
+  .event-num { font-family: var(--font-display); font-size: 24px; line-height: 1; color: var(--text); }
+  .event-content .event-title { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+  .event-content .event-desc { font-size: 12px; color: var(--text2); }
+
+  /* ── MODAL / FORM ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px); z-index: 1000;
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; width: 100%; max-width: 540px;
+    max-height: 90vh; overflow-y: auto;
+  }
+  .modal-header {
+    padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-title { font-family: var(--font-display); font-size: 22px; letter-spacing: 1px; }
+  .modal-close { background: none; border: none; color: var(--text2); font-size: 22px; cursor: pointer; padding: 4px 8px; }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 20px 24px 24px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: span 2; }
+  label { font-size: 11px; font-weight: 600; letter-spacing: 1px; color: var(--text2); text-transform: uppercase; }
+  input, select, textarea {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text);
+    font-family: var(--font-body); font-size: 13px;
+    padding: 10px 12px; transition: border-color 0.15s;
+    width: 100%;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(232,255,71,0.1);
+  }
+  select option { background: var(--surface2); }
+  .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+  /* ── STIFFNESS PICKER ── */
+  .stiffness-picker { display: flex; gap: 8px; }
+  .stiffness-btn {
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 2px solid var(--border); background: var(--surface2);
+    color: var(--text2); font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .stiffness-btn.selected { border-color: currentColor; background: currentColor; color: var(--bg); }
+  .sb0 { color: var(--green); }
+  .sb1 { color: #7ae47a; }
+  .sb2 { color: var(--yellow); }
+  .sb3 { color: #ffa726; }
+  .sb4 { color: var(--red); }
+  .sb5 { color: #ff1744; }
+
+  /* ── ACHILLES TREND ── */
+  .trend-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+  }
+  .trend-date { font-size: 12px; color: var(--text2); width: 80px; flex-shrink: 0; }
+  .trend-bars { flex: 1; display: flex; gap: 3px; align-items: flex-end; height: 28px; }
+  .trend-bar { flex: 1; border-radius: 2px 2px 0 0; transition: height 0.4s; min-height: 2px; }
+  .trend-val { font-family: var(--font-mono); font-size: 12px; color: var(--text2); width: 20px; text-align: right; }
+
+  /* ── IMPORT AREA ── */
+  .import-zone {
+    border: 2px dashed var(--border); border-radius: var(--radius);
+    padding: 32px; text-align: center; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .import-zone:hover { border-color: var(--accent2); background: rgba(71,200,255,0.03); }
+  .import-icon { font-size: 36px; margin-bottom: 12px; }
+  .import-text { font-size: 13px; color: var(--text2); margin-bottom: 8px; }
+  .import-sub { font-size: 11px; color: var(--text3); }
+  textarea.import-input {
+    width: 100%; min-height: 120px; margin-top: 16px;
+    font-family: var(--font-mono); font-size: 12px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 12px; color: var(--text);
+    resize: vertical;
+  }
+  textarea.import-input:focus { outline: none; border-color: var(--accent2); }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+    background: var(--green); color: #000; font-weight: 600;
+    padding: 12px 20px; border-radius: var(--radius-sm); font-size: 13px;
+    transform: translateY(60px); opacity: 0; transition: all 0.3s;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state { text-align: center; padding: 48px 20px; color: var(--text2); }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-text { font-size: 14px; }
+
+  /* ── WEEK SUMMARY BARS ── */
+  .week-bar-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+  .week-label { font-size: 12px; color: var(--text2); width: 55px; flex-shrink: 0; font-family: var(--font-mono); }
+  .week-bar-track { flex: 1; height: 20px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .week-bar-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; padding-left: 8px; font-size: 11px; font-weight: 600; color: #000; transition: width 0.6s ease; }
+  .week-miles { font-family: var(--font-mono); font-size: 12px; color: var(--text); width: 50px; text-align: right; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+  /* ── CHART CONTAINER ── */
+  .chart-wrap { position: relative; height: 220px; }
+  .chart-wrap-tall { position: relative; height: 280px; }
+
+  /* ── SHARED SIDEBAR ── */
+  .layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+  .content-col { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+  .sidebar {
+    background: #13131a;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    padding: 24px 0;
+    display: flex; flex-direction: column;
+    position: sticky; top: 0; height: 100vh;
+    overflow-y: auto; z-index: 200; flex-shrink: 0;
+  }
+  .sidebar-logo { padding: 0 18px 20px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 16px; }
+  .sidebar-logo .name { font-size: 0.95rem; font-weight: 700; color: #e8e8f0; letter-spacing: -0.3px; }
+  .sidebar-logo .sub { font-size: 0.65rem; color: #60607a; font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+  .nav-section { padding: 0 10px; margin-bottom: 6px; }
+  .nav-label { font-size: 0.6rem; font-family: 'JetBrains Mono', monospace; color: #30303f; text-transform: uppercase; letter-spacing: 1.5px; padding: 8px 8px 4px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 8px; border-radius: 7px;
+    cursor: pointer; font-size: 0.82rem; color: #60607a;
+    transition: all 0.15s; text-decoration: none;
+  }
+  .nav-item:hover { background: #1a1a24; color: #e8e8f0; }
+  .nav-item.active { background: rgba(61,220,132,0.12); color: #3ddc84; }
+  .nav-item .icon { font-size: 0.85rem; width: 18px; text-align: center; }
+  @media (max-width: 768px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- SHARED SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="name">⚡ T.Scanlin HQ</div>
+      <div class="sub">Private workspace</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Main</div>
+      <a class="nav-item" href="TScanlin_HQ_v3.html"><span class="icon">🏠</span> Dashboard</a>
+      <a class="nav-item" href="#"><span class="icon">🎯</span> Goals — 2026</a>
+      <a class="nav-item" href="#"><span class="icon">📆</span> TTT Weekly</a>
+      <a class="nav-item" href="#"><span class="icon">♻️</span> Brain Dump</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Areas</div>
+      <a class="nav-item" href="ABDJS_Dashboard.html"><span class="icon">🎙️</span> ABDJS</a>
+      <a class="nav-item" href="Crypto_Dashboard.html"><span class="icon">📈</span> Crypto & Trading</a>
+      <a class="nav-item" href="TradFi_Dashboard.html"><span class="icon">💰</span> TradFi & Wealth</a>
+      <a class="nav-item" href="Rescue_Dashboard.html"><span class="icon">🐶</span> A&B Rescue</a>
+      <a class="nav-item active" href="training_dashboard.html"><span class="icon">🏃</span> Fitness & Training</a>
+      <a class="nav-item" href="Toms-Training-Dashboard.html"><span class="icon">💪</span> Tom's Training</a>
+      <a class="nav-item" href="Life_Dashboard.html"><span class="icon">🔧</span> Life & Projects</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Training</div>
+      <a class="nav-item" href="#" onclick="switchTab('overview');return false;"><span class="icon">📊</span> Overview</a>
+      <a class="nav-item" href="#" onclick="switchTab('workouts');return false;"><span class="icon">📝</span> Workout Log</a>
+      <a class="nav-item" href="#" onclick="switchTab('charts');return false;"><span class="icon">📈</span> Charts</a>
+      <a class="nav-item" href="#" onclick="switchTab('achilles');return false;"><span class="icon">🦵</span> Achilles</a>
+      <a class="nav-item" href="#" onclick="switchTab('shoes');return false;"><span class="icon">👟</span> Shoes</a>
+      <a class="nav-item" href="#" onclick="switchTab('calendar');return false;"><span class="icon">📅</span> Calendar</a>
+    </div>
+  </aside>
+
+  <!-- CONTENT COLUMN -->
+  <div class="content-col">
+
+<header>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div class="logo">ABG <span>Training Dashboard</span></div>
+  </div>
+  <div class="header-right">
+    <div class="race-countdown" id="raceCountdown">⚡ Loading...</div>
+    <button class="btn-ghost" onclick="openRestoreModal()" title="Restore saved session">↩ Restore</button>
+    <button class="btn-ghost" onclick="exportData()" title="Export all data as JSON">↓ Export</button>
+    <button class="btn-ghost" onclick="toggleTimSettings()" title="Settings" style="font-size:16px;padding:6px 10px;">⚙️</button>
+    <button class="btn-accent" onclick="openSheetsSync()" title="Connect Google Sheets live feed" style="background:var(--accent);color:#000;font-weight:700;border:none;padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">⚡ Live Sync</button>
+    <span id="last-synced-badge" style="display:none;font-size:11px;color:var(--text3);padding:4px 8px;"></span>
+    <button class="btn-ghost" onclick="openImport()">⬆ Import</button>
+    <button class="btn" onclick="openLogModal()">+ Log Workout</button>
+  </div>
+</header>
+
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="switchTab('overview')">Overview</div>
+  <div class="nav-tab" onclick="switchTab('workouts')">Workout Log</div>
+  <div class="nav-tab" onclick="switchTab('charts')">Charts</div>
+  <div class="nav-tab" onclick="switchTab('achilles')">Achilles</div>
+  <div class="nav-tab" onclick="switchTab('shoes')">Shoes</div>
+  <div class="nav-tab" onclick="switchTab('calendar')">Calendar</div>
+  <div class="nav-tab" onclick="switchTab('coach')" style="color:var(--accent2)">🤖 Coach</div>
+</div>
+
+<main>
+
+  <!-- ── OVERVIEW TAB ── -->
+  <div class="tab-panel active" id="tab-overview">
+    <div class="stats-row" id="overviewStats"></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">THIS WEEK</div>
+          <span style="font-size:12px;color:var(--text2)" id="weekRange"></span>
+        </div>
+        <div class="card-body" id="thisWeekWorkouts"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">WEEKLY MILEAGE</div></div>
+        <div class="card-body" id="weeklyMilesChart"></div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title">ACHILLES STATUS</div><span style="font-size:11px;color:var(--text2)">Last 7 days</span></div>
+        <div class="card-body" id="achillesOverview"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">SHOE MILEAGE</div></div>
+        <div class="card-body" id="shoeOverview"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── WORKOUTS TAB ── -->
+  <div class="tab-panel" id="tab-workouts">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">WORKOUT LOG</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <select id="filterType" onchange="renderWorkoutsTab()" style="padding:6px 10px;font-size:12px;width:auto;">
+            <option value="">All Types</option>
+            <option value="Run">Run</option>
+            <option value="Run (VO2)">VO2</option>
+            <option value="Bike">Bike</option>
+            <option value="Strength">Strength</option>
+            <option value="Rehab">Rehab</option>
+          </select>
+          <button class="btn" onclick="openLogModal()">+ Add</button>
+        </div>
+      </div>
+      <div class="card-body" style="padding:0;overflow-x:auto;">
+        <table class="workout-table">
+          <thead>
+            <tr>
+              <th>Date</th><th>Type</th><th>Distance</th><th>Duration</th><th>Pace</th><th>Shoe</th><th>AM Stiff</th><th>Notes</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="workoutTableBody"></tbody>
+        </table>
+        <div id="workoutTableEmpty" class="empty-state" style="display:none;">
+          <div class="empty-icon">🏃</div>
+          <div class="empty-text">No workouts yet. Log your first session!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CHARTS TAB ── -->
+  <div class="tab-panel" id="tab-charts">
+    <div class="grid-2" style="margin-bottom:16px;">
+      <div class="card">
+        <div class="card-header"><div class="card-title">MILEAGE OVER TIME</div><span style="font-size:11px;color:var(--text2)">Weekly totals</span></div>
+        <div class="card-body"><div class="chart-wrap-tall"><canvas id="mileageChart"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">TRAINING LOAD</div><span style="font-size:11px;color:var(--text2)">By type per week</span></div>
+        <div class="card-body"><div class="chart-wrap-tall"><canvas id="loadChart"></canvas></div></div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title">ACHILLES TREND</div></div>
+        <div class="card-body"><div class="chart-wrap"><canvas id="achillesChart"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">WORKOUT BREAKDOWN</div></div>
+        <div class="card-body"><div class="chart-wrap"><canvas id="breakdownChart"></canvas></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ACHILLES TAB ── -->
+  <div class="tab-panel" id="tab-achilles">
+    <div class="stats-row" id="achillesStats"></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title">STIFFNESS LOG</div><span style="font-size:11px;color:var(--text2)">AM score by day</span></div>
+        <div class="card-body"><div class="chart-wrap-tall"><canvas id="achillesDetailChart"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">DECISION GUIDE</div></div>
+        <div class="card-body" id="achillesGuide"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header"><div class="card-title">REHAB COMPLIANCE</div><span style="font-size:11px;color:var(--text2)">From spreadsheet tracker</span></div>
+      <div class="card-body" id="achillesRehab"></div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header"><div class="card-title">RECENT LOG</div></div>
+      <div class="card-body" id="achillesLog"></div>
+    </div>
+  </div>
+
+  <!-- ── SHOES TAB ── -->
+  <div class="tab-panel" id="tab-shoes">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div style="font-size:13px;color:var(--text2)">Track mileage per shoe. Replacement recommended at 300–500 miles.</div>
+      <button class="btn" onclick="openAddShoeModal()">+ Add Shoe</button>
+    </div>
+    <div id="shoeList"></div>
+  </div>
+
+  <!-- ── CALENDAR TAB ── -->
+  <div class="tab-panel" id="tab-calendar">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">APPLE CALENDAR SYNC</div>
+        </div>
+        <div class="card-body">
+          <div style="padding:12px 14px;background:rgba(232,255,71,0.07);border:1px solid rgba(232,255,71,0.2);border-radius:var(--radius-sm);margin-bottom:16px;">
+            <div style="font-size:11px;font-weight:600;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">📊 Google Sheets → Dashboard Workflow</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.8;">
+              1. Log sessions in your spreadsheet (Daily Log tab)<br>
+              2. Open the <strong style="color:var(--text);">CSV Export</strong> tab — data auto-formats<br>
+              3. Select all data rows → Copy<br>
+              4. Click <strong style="color:var(--text);">⬆ Import</strong> above → Paste → Import<br>
+              5. Dashboard deduplicates automatically — safe to re-import anytime
+            </div>
+          </div>
+          <p style="color:var(--text2);font-size:13px;margin-bottom:16px;">Paste your Apple Calendar iCal URL to sync upcoming workouts. In Calendar app: right-click a calendar → Get Info → Copy the iCal address.</p>
+          <div class="form-group">
+            <label>iCal URL</label>
+            <input type="text" id="icalUrl" placeholder="webcal://p45-caldav.icloud.com/..." />
+          </div>
+          <button class="btn" style="margin-top:12px;" onclick="syncCalendar()">Sync Calendar</button>
+          <div id="calendarStatus" style="margin-top:12px;font-size:12px;color:var(--text2);"></div>
+          <div style="margin-top:20px;padding:14px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <div style="font-size:11px;font-weight:600;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Or add planned workouts manually</div>
+            <p style="font-size:12px;color:var(--text2);">Use the Log Workout button and check "Planned" to add future sessions that appear in the calendar view.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">UPCOMING WORKOUTS</div></div>
+        <div class="card-body" id="upcomingWorkouts"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header"><div class="card-title">RACE PLAN — MAY 30TH</div></div>
+      <div class="card-body" id="racePlan"></div>
+    </div>
+  </div>
+
+  </div>
+
+  <!-- ── COACH TAB ── -->
+  <div class="tab-panel" id="tab-coach" style="height:calc(100vh - 130px);display:none;flex-direction:column;">
+
+    <div id="coach-setup-bar" style="padding:20px;display:flex;align-items:center;gap:14px;background:var(--surface);border-bottom:1px solid var(--border);">
+      <div style="font-size:20px;">🤖</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:15px;color:var(--text)">AI Training Coach</div>
+        <div style="font-size:12px;color:var(--text2)">Knows your Achilles status, shoe mileage, recent workouts, and May 30th race. Ask anything.</div>
+      </div>
+      <input type="password" id="coach-api-key" placeholder="sk-ant-api03-…" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-family:monospace;font-size:12px;width:280px;outline:none;">
+      <button onclick="activateCoach()" style="background:var(--accent2);color:#000;border:none;padding:9px 18px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;">Activate</button>
+    </div>
+
+    <div id="coach-msgs" style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;"></div>
+
+    <div id="coach-image-preview" style="display:none;padding:8px 20px 0;align-items:center;gap:10px;">
+      <div style="position:relative;display:inline-block;">
+        <img id="coach-img-thumb" style="height:52px;border-radius:8px;border:1px solid var(--border);">
+        <button onclick="clearCoachImage()" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:#ff4757;border:none;color:white;font-size:11px;cursor:pointer;line-height:1;">×</button>
+      </div>
+      <span style="font-size:12px;color:var(--text2)">Image ready to send</span>
+    </div>
+
+    <div id="coach-input-bar" style="padding:14px 20px 16px;background:var(--surface);border-top:1px solid var(--border);">
+      <div style="display:flex;gap:8px;align-items:flex-end;">
+        <label for="coach-img-input" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0 12px;height:40px;display:flex;align-items:center;cursor:pointer;font-size:16px;color:var(--text2);flex-shrink:0;transition:border-color 0.15s;" title="Attach a Garmin screenshot">📷</label>
+        <input type="file" id="coach-img-input" accept="image/*" onchange="handleCoachImage(this)" style="display:none">
+        <textarea id="coach-input" placeholder="Ask about your training, Achilles, race prep, pacing strategy, or drop a Garmin screenshot…" rows="1" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:14px;resize:none;min-height:40px;max-height:120px;outline:none;line-height:1.5;"></textarea>
+        <button onclick="sendCoachMsg()" id="coach-send-btn" style="width:40px;height:40px;background:var(--accent2);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#000"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px;">Enter to send · Shift+Enter for new line · 📷 attach or paste a Garmin screenshot</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── LOG WORKOUT MODAL ── -->
+<div class="modal-overlay" id="logModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">LOG WORKOUT</div>
+      <button class="modal-close" onclick="closeModal('logModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="f_date">
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select id="f_type">
+            <option>Run</option>
+            <option>Run (VO2)</option>
+            <option>Run (Strides)</option>
+            <option>Bike</option>
+            <option>Strength</option>
+            <option>Calisthenics</option>
+            <option>Rehab</option>
+            <option>Off</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Distance (miles)</label>
+          <input type="number" id="f_distance" step="0.1" placeholder="0.0">
+        </div>
+        <div class="form-group">
+          <label>Duration (min)</label>
+          <input type="number" id="f_duration" placeholder="60">
+        </div>
+        <div class="form-group">
+          <label>Pace (min/mi)</label>
+          <input type="text" id="f_pace" placeholder="9:30">
+        </div>
+        <div class="form-group">
+          <label>Shoe</label>
+          <select id="f_shoe"></select>
+        </div>
+        <div class="form-group full">
+          <label>AM Stiffness (0–5)</label>
+          <div class="stiffness-picker" id="stiffnessPicker">
+            <button class="stiffness-btn sb0" onclick="selectStiffness(0)">0</button>
+            <button class="stiffness-btn sb1" onclick="selectStiffness(1)">1</button>
+            <button class="stiffness-btn sb2" onclick="selectStiffness(2)">2</button>
+            <button class="stiffness-btn sb3" onclick="selectStiffness(3)">3</button>
+            <button class="stiffness-btn sb4" onclick="selectStiffness(4)">4</button>
+            <button class="stiffness-btn sb5" onclick="selectStiffness(5)">5</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Pain During (0–10)</label>
+          <input type="number" id="f_pain" min="0" max="10" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label>Sleep Quality (1–5)</label>
+          <input type="number" id="f_sleep" min="1" max="5" placeholder="4">
+        </div>
+        <div class="form-group full">
+          <label>Notes</label>
+          <textarea id="f_notes" rows="2" placeholder="How did it feel?"></textarea>
+        </div>
+        <div class="form-group full" style="flex-direction:row;align-items:center;gap:10px;">
+          <input type="checkbox" id="f_planned" style="width:auto;margin:0;">
+          <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);">Mark as planned (future workout)</label>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-ghost" onclick="closeModal('logModal')">Cancel</button>
+        <button class="btn" onclick="saveWorkout()">Save Workout</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADD SHOE MODAL ── -->
+<div class="modal-overlay" id="shoeModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">ADD SHOE</div>
+      <button class="modal-close" onclick="closeModal('shoeModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Shoe Name</label>
+          <input type="text" id="s_name" placeholder="e.g. Brooks Glycerin 22">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="s_category">
+            <option>Road</option>
+            <option>Trail</option>
+            <option>Casual</option>
+            <option>Gym</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Max Miles (retirement)</label>
+          <input type="number" id="s_max" placeholder="400">
+        </div>
+        <div class="form-group">
+          <label>Starting Miles</label>
+          <input type="number" id="s_start" placeholder="0" value="0">
+        </div>
+        <div class="form-group">
+          <label>Heel Drop (mm)</label>
+          <input type="number" id="s_drop" placeholder="10">
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="s_status" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px;border-radius:var(--radius-sm);width:100%;">
+            <option value="Active">Active</option>
+            <option value="Benched">Benched</option>
+            <option value="Retired">Retired</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-ghost" onclick="closeModal('shoeModal')">Cancel</button>
+        <button class="btn" onclick="saveShoe()">Add Shoe</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── IMPORT MODAL ── -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">IMPORT WORKOUTS</div>
+      <button class="modal-close" onclick="closeModal('importModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:12px;">Paste CSV data from your tracker spreadsheet or a Strava export. Expected format:</div>
+        <div style="padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;color:var(--text2);line-height:1.8;margin-bottom:10px;">
+  <strong style="color:var(--accent);display:block;margin-bottom:4px;">📊 From Ultra Training Tracker (recommended)</strong>
+  Open the tracker → Daily Log tab → select all data rows (skip row 1–4 headers) → Copy → Paste below.<br>
+  The importer auto-detects the tab-separated 19-column format and maps it correctly.<br><br>
+  <strong style="color:var(--text);display:block;margin-bottom:2px;">Or paste simple CSV:</strong>
+  <code style="color:var(--accent2);">date,type,distance,duration,pace,shoe,stiffness,notes</code>
+</div>
+          <div style="margin-top:10px;padding:12px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <div style="font-size:11px;font-weight:600;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">📊 From your Google Sheet / Excel</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.7;">
+              Use the <strong style="color:var(--text);">CSV Export</strong> tab in your spreadsheet — it auto-formats data to match this import.<br>
+              Copy columns A–H (data rows only, skip header) → paste below → click Import.
+            </div>
+          </div>
+      </div>
+      <div class="form-group">
+        <label>Paste CSV Data</label>
+        <textarea class="import-input" id="importData" placeholder="date,type,distance,duration,pace,shoe,stiffness,notes&#10;2026-02-26,Run,8.46,68.5,8.33,,1,Santa Fe VO2 session"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn-ghost" onclick="closeModal('importModal')">Cancel</button>
+        <button class="btn" onclick="importCSV()">Import</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Restore Modal -->
+<div class="modal-overlay" id="restoreModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">↩ Restore Data</div>
+      <button onclick="closeModal('restoreModal')" style="background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;">×</button>
+    </div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;">Paste the contents of your exported <code>training_data_*.json</code> file below to restore all workouts and settings.</p>
+    <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:6px;">Paste JSON</label>
+    <textarea id="restoreData" style="width:100%;height:160px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:10px;font-family:var(--font-mono);font-size:11px;resize:vertical;" placeholder='{"workouts":[...],"shoes":[...]}' ></textarea>
+    <div style="display:flex;gap:10px;margin-top:14px;justify-content:flex-end;">
+      <button class="btn" onclick="closeModal('restoreModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="restoreData()">Restore</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
+// ── SEED DATA from Ultra Training Tracker spreadsheet ──
+const SEED_WORKOUTS = [{"id": "2026-01-05_Bike", "date": "2026-01-05", "week": "1", "day": "Mon", "type": "Bike", "distance": null, "duration": 60.0, "pace": null, "shoe": null, "watts": 95.0, "bikeDuration": 60.0, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": 2052.0, "protein": 95.0, "planned": false}, {"id": "2026-01-06_Run", "date": "2026-01-06", "week": "1", "day": "Tue", "type": "Run", "distance": 3.0, "duration": null, "pace": "9.2", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": "Strength", "strengthDuration": 35.0, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": 2338.0, "protein": 140.0, "planned": false}, {"id": "2026-01-07_Run", "date": "2026-01-07", "week": "1", "day": "Wed", "type": "Run", "distance": 12.63, "duration": null, "pace": "8.93", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 3.0, "sleep": 4.0, "meds": "Y", "calories": 2222.0, "protein": 144.0, "planned": false}, {"id": "2026-01-08_Bike", "date": "2026-01-08", "week": "1", "day": "Thu", "type": "Bike", "distance": null, "duration": 42.0, "pace": null, "shoe": null, "watts": 127.0, "bikeDuration": 42.0, "strengthType": "Strength", "strengthDuration": 35.0, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": 1768.0, "protein": 119.0, "planned": false}, {"id": "2026-01-09_Off", "date": "2026-01-09", "week": "1", "day": "Fri", "type": "Off", "distance": null, "duration": null, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 4.0, "meds": "N", "calories": 882.0, "protein": 63.0, "planned": false}, {"id": "2026-01-10_Bike", "date": "2026-01-10", "week": "1", "day": "Sat", "type": "Bike", "distance": null, "duration": 90.0, "pace": null, "shoe": null, "watts": 130.0, "bikeDuration": 90.0, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-01-11_Run", "date": "2026-01-11", "week": "1", "day": "Sun", "type": "Run", "distance": 8.0, "duration": 71.5, "pace": "8.9", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": 2095.0, "protein": 94.0, "planned": false}, {"id": "2026-01-12_Bike", "date": "2026-01-12", "week": "2", "day": "Mon", "type": "Bike", "distance": null, "duration": 60.0, "pace": null, "shoe": null, "watts": 92.0, "bikeDuration": 60.0, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 5.0, "meds": "N", "calories": 2087.0, "protein": 118.0, "planned": false}, {"id": "2026-01-13_Strength", "date": "2026-01-13", "week": "2", "day": "Tue", "type": "Strength", "distance": null, "duration": null, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": "Upper", "strengthDuration": 35.0, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 4.0, "meds": "N", "calories": 3417.0, "protein": 94.0, "planned": false}, {"id": "2026-01-14_Run", "date": "2026-01-14", "week": "2", "day": "Wed", "type": "Run", "distance": 12.78, "duration": 118.2, "pace": "9.25", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-01-15_Bike", "date": "2026-01-15", "week": "2", "day": "Thu", "type": "Bike", "distance": null, "duration": 60.0, "pace": null, "shoe": null, "watts": 82.0, "bikeDuration": 60.0, "strengthType": "Calisthenics", "strengthDuration": 35.0, "stiffness": 2.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": 1654.0, "protein": 112.0, "planned": false}, {"id": "2026-01-16_Bike", "date": "2026-01-16", "week": "2", "day": "Fri", "type": "Bike", "distance": null, "duration": 78.0, "pace": null, "shoe": null, "watts": 111.0, "bikeDuration": 78.0, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 5.0, "meds": "N", "calories": 2886.0, "protein": 154.0, "planned": false}, {"id": "2026-01-17_Off", "date": "2026-01-17", "week": "2", "day": "Sat", "type": "Off", "distance": null, "duration": null, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": null, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 4.0, "meds": "N", "calories": 1995.0, "protein": 109.0, "planned": false}, {"id": "2026-01-18_Run", "date": "2026-01-18", "week": "2", "day": "Sun", "type": "Run", "distance": 13.01, "duration": 107.8, "pace": "8.28", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-01-19_Bike", "date": "2026-01-19", "week": "3", "day": "Mon", "type": "Bike", "distance": null, "duration": 60.0, "pace": null, "shoe": null, "watts": 92.0, "bikeDuration": 60.0, "strengthType": "Strength", "strengthDuration": 30.0, "stiffness": 2.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": 2405.0, "protein": 125.0, "planned": false}, {"id": "2026-01-26_Rehab", "date": "2026-01-26", "week": "4", "day": "Mon", "type": "Rehab", "distance": null, "duration": null, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 0.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 3.0, "meds": "Y", "calories": null, "protein": null, "planned": false}, {"id": "2026-01-27_Bike", "date": "2026-01-27", "week": "4", "day": "Tue", "type": "Bike", "distance": null, "duration": 40.0, "pace": null, "shoe": null, "watts": null, "bikeDuration": 40.0, "strengthType": null, "strengthDuration": null, "stiffness": 0.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 4.0, "meds": "Y", "calories": null, "protein": null, "planned": false}, {"id": "2026-01-28_Run", "date": "2026-01-28", "week": "4", "day": "Wed", "type": "Run", "distance": 9.12, "duration": 76.8, "pace": "8.42", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 0.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 4.0, "meds": "Y", "calories": null, "protein": null, "planned": false}, {"id": "2026-01-31_Bike", "date": "2026-01-31", "week": "4", "day": "Sat", "type": "Bike", "distance": null, "duration": 60.0, "pace": null, "shoe": null, "watts": 84.0, "bikeDuration": 60.0, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 5.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-02-01_Run", "date": "2026-02-01", "week": "4", "day": "Sun", "type": "Run", "distance": 9.52, "duration": 86.3, "pace": "9.07", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 0.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 5.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-02-02_Bike", "date": "2026-02-02", "week": "5", "day": "Mon", "type": "Bike", "distance": null, "duration": 60.0, "pace": null, "shoe": null, "watts": null, "bikeDuration": 60.0, "strengthType": "Strength", "strengthDuration": 39.0, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-02-04_Run", "date": "2026-02-04", "week": "5", "day": "Wed", "type": "Run", "distance": 12.73, "duration": 117.7, "pace": "9.25", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 0.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "Y", "calories": null, "protein": null, "planned": false}, {"id": "2026-02-06_Run", "date": "2026-02-06", "week": "5", "day": "Fri", "type": "Run", "distance": 8.32, "duration": 74.2, "pace": "8.92", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-02-07_Bike", "date": "2026-02-07", "week": "5", "day": "Sat", "type": "Bike", "distance": null, "duration": 90.0, "pace": null, "shoe": null, "watts": 130.0, "bikeDuration": 90.0, "strengthType": null, "strengthDuration": null, "stiffness": 0.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-02-08_Bike", "date": "2026-02-08", "week": "5", "day": "Sun", "type": "Bike", "distance": null, "duration": 60.0, "pace": null, "shoe": null, "watts": 100.0, "bikeDuration": 60.0, "strengthType": null, "strengthDuration": null, "stiffness": 0.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-02-09_Run", "date": "2026-02-09", "week": "6", "day": "Mon", "type": "Run", "distance": 8.29, "duration": 72.2, "pace": "8.72", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": "Strength", "strengthDuration": 30.0, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": 2592.0, "protein": 183.0, "planned": false}, {"id": "2026-02-10_Bike", "date": "2026-02-10", "week": "6", "day": "Tue", "type": "Bike", "distance": null, "duration": 60.0, "pace": null, "shoe": null, "watts": 92.0, "bikeDuration": 60.0, "strengthType": null, "strengthDuration": null, "stiffness": null, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": null, "meds": null, "calories": null, "protein": null, "planned": false}, {"id": "2026-02-11_Run", "date": "2026-02-11", "week": "6", "day": "Wed", "type": "Run", "distance": 12.73, "duration": 114.7, "pace": "9.02", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": null, "nextDay": "Baseline", "pain": 1.0, "load": 3.0, "sleep": null, "meds": null, "calories": null, "protein": null, "planned": false}, {"id": "2026-02-12_Bike", "date": "2026-02-12", "week": "6", "day": "Thu", "type": "Bike", "distance": null, "duration": 48.0, "pace": null, "shoe": null, "watts": 125.0, "bikeDuration": 48.0, "strengthType": "Calisthenics", "strengthDuration": 20.0, "stiffness": null, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": null, "meds": null, "calories": null, "protein": null, "planned": false}, {"id": "2026-02-13_Run", "date": "2026-02-13", "week": "6", "day": "Fri", "type": "Run", "distance": 12.72, "duration": 112.1, "pace": "8.82", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": null, "nextDay": "Baseline", "pain": 0.0, "load": 3.0, "sleep": null, "meds": null, "calories": null, "protein": null, "planned": false}, {"id": "2026-02-15_Bike", "date": "2026-02-15", "week": "6", "day": "Sun", "type": "Bike", "distance": null, "duration": 90.0, "pace": null, "shoe": null, "watts": 130.0, "bikeDuration": 90.0, "strengthType": null, "strengthDuration": null, "stiffness": null, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": null, "meds": null, "calories": null, "protein": null, "planned": false}, {"id": "2026-02-16_Run", "date": "2026-02-16", "week": "7", "day": "Mon", "type": "Run", "distance": 5.45, "duration": 50.0, "pace": "9.27", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": "Strength", "strengthDuration": 30.0, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": 2103.0, "protein": 107.0, "planned": false}, {"id": "2026-02-17_Bike", "date": "2026-02-17", "week": "7", "day": "Tue", "type": "Bike", "distance": null, "duration": 60.0, "pace": null, "shoe": null, "watts": 94.0, "bikeDuration": 60.0, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 3.0, "meds": "N", "calories": 1909.0, "protein": 90.0, "planned": false}, {"id": "2026-02-18_Run (VO2)", "date": "2026-02-18", "week": "7", "day": "Wed", "type": "Run (VO2)", "distance": 6.78, "duration": 55.0, "pace": "8.1", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 3.0, "meds": "N", "calories": 2214.0, "protein": 130.0, "planned": false}, {"id": "2026-02-19_Bike", "date": "2026-02-19", "week": "7", "day": "Thu", "type": "Bike", "distance": null, "duration": 30.0, "pace": null, "shoe": null, "watts": null, "bikeDuration": 30.0, "strengthType": "Strength", "strengthDuration": 30.0, "stiffness": 2.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": 1914.0, "protein": 152.0, "planned": false}, {"id": "2026-02-21_Run", "date": "2026-02-21", "week": "7", "day": "Fri", "type": "Run", "distance": 8.01, "duration": 64.0, "pace": "8.04", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": 2467.0, "protein": 94.0, "planned": false}, {"id": "2026-02-22_Run", "date": "2026-02-22", "week": "7", "day": "Sun", "type": "Run", "distance": 16.39, "duration": 134.0, "pace": "8.17", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 2.0, "nextDay": "Slightly Worse", "pain": 1.0, "load": 3.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-02-23_Bike", "date": "2026-02-23", "week": "8", "day": "Mon", "type": "Bike", "distance": null, "duration": null, "pace": null, "shoe": null, "watts": 94.0, "bikeDuration": 60.0, "strengthType": null, "strengthDuration": null, "stiffness": 2.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-02-24_Bike", "date": "2026-02-24", "week": "8", "day": "Tue", "type": "Bike", "distance": null, "duration": null, "pace": null, "shoe": null, "watts": 92.0, "bikeDuration": 60.0, "strengthType": null, "strengthDuration": null, "stiffness": 2.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-02-24_Run", "date": "2026-02-24", "week": "8", "day": "Tue", "type": "Run", "distance": 3.0, "duration": null, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 2.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-02-25_Run", "date": "2026-02-25", "week": "8", "day": "Wed", "type": "Run", "distance": 3.0, "duration": null, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 4.0, "meds": "N", "calories": 2070.0, "protein": 87.0, "planned": false}, {"id": "2026-02-26_Run (VO2)", "date": "2026-02-26", "week": "8", "day": "Thu", "type": "Run (VO2)", "distance": 8.46, "duration": 68.5, "pace": "8.33", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": 2466.0, "protein": 139.0, "planned": false}, {"id": "2026-02-26_Strength", "date": "2026-02-26", "week": "8", "day": "Thu", "type": "Strength", "distance": null, "duration": null, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": "Upper", "strengthDuration": 30.0, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": 2466.0, "protein": 139.0, "planned": false}, {"id": "2026-02-27_Bike", "date": "2026-02-27", "week": "8", "day": "Fri", "type": "Bike", "distance": null, "duration": null, "pace": null, "shoe": null, "watts": 90.0, "bikeDuration": 60.0, "strengthType": null, "strengthDuration": null, "stiffness": 2.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": 2398.0, "protein": 113.0, "planned": false}, {"id": "2026-02-28_Calisthenics", "date": "2026-02-28", "week": "8", "day": "Sat", "type": "Calisthenics", "distance": null, "duration": 30.0, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": "Yoga/PT", "strengthDuration": 30.0, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 5.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-03-01_Run", "date": "2026-03-01", "week": "8", "day": "Sun", "type": "Run", "distance": 13.46, "duration": 125.0, "pace": "9.3", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 3.0, "sleep": 5.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-03-02_Bike", "date": "2026-03-02", "week": "9", "day": "Mon", "type": "Bike", "distance": null, "duration": 60.0, "pace": null, "shoe": null, "watts": 94.0, "bikeDuration": 60.0, "strengthType": null, "strengthDuration": null, "stiffness": 2.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": 2074.0, "protein": 110.0, "planned": false}, {"id": "2026-03-03_Run", "date": "2026-03-03", "week": "9", "day": "Tue", "type": "Run", "distance": 7.94, "duration": 70.5, "pace": "8.9", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": null, "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": 2098.0, "protein": 103.0, "planned": false}, {"id": "2026-03-04_Run", "date": "2026-03-04", "week": "9", "day": "Wed", "type": "Run", "distance": 13.69, "duration": 134.4, "pace": "9.82", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 2.0, "nextDay": "Baseline", "pain": 0.0, "load": 3.0, "sleep": 4.0, "meds": "N", "calories": 3034.0, "protein": 130.0, "planned": false}, {"id": "2026-03-05_Bike", "date": "2026-03-05", "week": "9", "day": "Thu", "type": "Bike", "distance": null, "duration": 60.0, "pace": null, "shoe": null, "watts": 94.0, "bikeDuration": 60.0, "strengthType": null, "strengthDuration": null, "stiffness": 3.0, "nextDay": "Slightly Worse", "pain": 0.0, "load": 3.0, "sleep": 3.0, "meds": "Y", "calories": 2054.0, "protein": 98.0, "planned": false}, {"id": "2026-03-06_Off", "date": "2026-03-06", "week": "9", "day": "Fri", "type": "Off", "distance": null, "duration": null, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 4.0, "meds": "N", "calories": 2297.0, "protein": 110.0, "planned": false}, {"id": "2026-03-07_Bike", "date": "2026-03-07", "week": "9", "day": "Sat", "type": "Bike", "distance": null, "duration": 48.0, "pace": null, "shoe": null, "watts": 125.0, "bikeDuration": 48.0, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": 2281.0, "protein": 90.0, "planned": false}, {"id": "2026-03-07_Bike", "date": "2026-03-07", "week": "9", "day": "Sat", "type": "Bike", "distance": null, "duration": 30.0, "pace": null, "shoe": null, "watts": 97.0, "bikeDuration": 30.0, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-03-08_Run (VO2)", "date": "2026-03-08", "week": "9", "day": "Sun", "type": "Run (VO2)", "distance": 12.12, "duration": 105.4, "pace": "8.42", "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-03-09_Bike", "date": "2026-03-09", "week": "10", "day": "Mon", "type": "Bike", "distance": null, "duration": 60.0, "pace": null, "shoe": null, "watts": 92.0, "bikeDuration": 60.0, "strengthType": null, "strengthDuration": null, "stiffness": 3.0, "nextDay": "Slightly Worse", "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": 1869.0, "protein": 86.0, "planned": false}, {"id": "2026-03-10_Run", "date": "2026-03-10", "week": "10", "day": "Tue", "type": "Run", "distance": 4.69, "duration": 36.3, "pace": "7.75", "shoe": "Brooks Glycerin 22", "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 3.0, "meds": "N", "calories": 1631.0, "protein": 106.0, "planned": false}, {"id": "2026-03-11_Run", "date": "2026-03-11", "week": "10", "day": "Wed", "type": "Run", "distance": 6.99, "duration": 61.9, "pace": "8.85", "shoe": "Brooks Glycerin 22", "watts": null, "bikeDuration": null, "strengthType": "PT + Strength (PF)", "strengthDuration": 35.0, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": 2940.0, "protein": 169.0, "planned": false}, {"id": "2026-03-12_Run (VO2)", "date": "2026-03-12", "week": "10", "day": "Thu", "type": "Run (VO2)", "distance": 7.82, "duration": 58.8, "pace": "7.52", "shoe": "Brooks Glycerin 22", "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": 2373.0, "protein": 117.0, "planned": false}, {"id": "2026-03-13_Strength", "date": "2026-03-13", "week": "10", "day": "Fri", "type": "Strength", "distance": null, "duration": 35.0, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": "Upper + Core + PT (rowing warmup)", "strengthDuration": 35.0, "stiffness": 2.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 5.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-03-14_Run", "date": "2026-03-14", "week": "10", "day": "Sat", "type": "Run", "distance": 17.08, "duration": 140.1, "pace": "8.2", "shoe": "Brooks Glycerin 22", "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": 2529.0, "protein": 146.0, "planned": false}, {"id": "2026-03-15_Off", "date": "2026-03-15", "week": "10", "day": "Sun", "type": "Off", "distance": null, "duration": null, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 2.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 4.0, "meds": "N", "calories": 2034.0, "protein": 121.0, "planned": false}, {"id": "2026-03-16_Run (VO2)", "date": "2026-03-16", "week": "11", "day": "Mon", "type": "Run (VO2)", "distance": 5.5, "duration": 43.3, "pace": "7.87", "shoe": "Brooks Glycerin 22", "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": 2298.0, "protein": 92.0, "planned": false}, {"id": "2026-03-17_Off", "date": "2026-03-17", "week": "11", "day": "Tue", "type": "Off", "distance": null, "duration": null, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": "Rehab/PT", "strengthDuration": 20.0, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 5.0, "meds": "N", "calories": 2060.0, "protein": 91.0, "planned": false}, {"id": "2026-03-18_Run", "date": "2026-03-18", "week": "11", "day": "Wed", "type": "Run", "distance": 8.0, "duration": 63.3, "pace": "7.9", "shoe": "Brooks Glycerin 22", "watts": null, "bikeDuration": null, "strengthType": "Full Gym (Leg Recomp + Upper + KAZ)", "strengthDuration": 90.0, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": 2207.0, "protein": 133.0, "planned": false}, {"id": "2026-03-19_Off", "date": "2026-03-19", "week": "11", "day": "Thu", "type": "Off", "distance": null, "duration": null, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "Y", "calories": 2098.0, "protein": 131.0, "planned": false}, {"id": "2026-03-20_Bike", "date": "2026-03-20", "week": "11", "day": "Fri", "type": "Bike", "distance": null, "duration": 48.0, "pace": null, "shoe": null, "watts": 125.0, "bikeDuration": 48.0, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 3.0, "meds": "Y", "calories": 2201.0, "protein": 79.0, "planned": false}, {"id": "2026-03-20_Run", "date": "2026-03-20", "week": "11", "day": "Fri", "type": "Run", "distance": 6.01, "duration": 47.6, "pace": "7.92", "shoe": "Brooks Glycerin 22", "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 3.0, "meds": "Y", "calories": null, "protein": null, "planned": false}, {"id": "2026-03-21_Bike", "date": "2026-03-21", "week": "11", "day": "Sat", "type": "Bike", "distance": null, "duration": 90.0, "pace": null, "shoe": null, "watts": 134.0, "bikeDuration": 90.0, "strengthType": "Isometrics + Tibialis Raise", "strengthDuration": 15.0, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 5.0, "meds": "N", "calories": 2208.0, "protein": 111.0, "planned": false}, {"id": "2026-03-22_Run", "date": "2026-03-22", "week": "11", "day": "Sun", "type": "Run", "distance": 19.22, "duration": 162.6, "pace": "8.47", "shoe": "Brooks Glycerin 22", "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 1.0, "load": 3.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-03-23_Bike", "date": "2026-03-23", "week": "12", "day": "Mon", "type": "Bike", "distance": null, "duration": 60.0, "pace": null, "shoe": null, "watts": 96.0, "bikeDuration": 60.0, "strengthType": "Full Gym (Upper+Core+KAZ+Leg Tone)", "strengthDuration": 90.0, "stiffness": 2.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": 2024.0, "protein": 102.0, "planned": false}, {"id": "2026-03-24_Bike", "date": "2026-03-24", "week": "12", "day": "Tue", "type": "Bike", "distance": null, "duration": 48.0, "pace": null, "shoe": null, "watts": 125.0, "bikeDuration": 48.0, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 4.0, "meds": "N", "calories": 2115.0, "protein": 86.0, "planned": false}, {"id": "2026-03-24_Run", "date": "2026-03-24", "week": "12", "day": "Tue", "type": "Run", "distance": 2.6, "duration": 90.0, "pace": null, "shoe": "Brooks Glycerin 22", "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-03-25_Run", "date": "2026-03-25", "week": "12", "day": "Wed", "type": "Run", "distance": 5.01, "duration": 47.1, "pace": "9.4", "shoe": "Brooks Glycerin 22", "watts": null, "bikeDuration": null, "strengthType": "Lower Body + Rehab", "strengthDuration": 45.0, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-03-26_Bike", "date": "2026-03-26", "week": "12", "day": "Thu", "type": "Bike", "distance": null, "duration": 48.0, "pace": null, "shoe": null, "watts": 125.0, "bikeDuration": 48.0, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": 1709.0, "protein": 63.0, "planned": false}, {"id": "2026-03-26_Run", "date": "2026-03-26", "week": "12", "day": "Thu", "type": "Run", "distance": 7.98, "duration": 64.6, "pace": "8.1", "shoe": "Brooks Glycerin 22", "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-03-27_Bike", "date": "2026-03-27", "week": "12", "day": "Fri", "type": "Bike", "distance": null, "duration": 15.0, "pace": null, "shoe": null, "watts": null, "bikeDuration": 15.0, "strengthType": "Rehab/PT (minimal \u2014 GI)", "strengthDuration": 15.0, "stiffness": 2.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 3.0, "meds": "Y", "calories": null, "protein": null, "planned": false}, {"id": "2026-03-28_Run", "date": "2026-03-28", "week": "12", "day": "Sat", "type": "Run", "distance": 4.95, "duration": 50.1, "pace": "10.13", "shoe": "Brooks Glycerin 22", "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 2.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-03-29_Off", "date": "2026-03-29", "week": "12", "day": "Sun", "type": "Off", "distance": null, "duration": null, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": null, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-03-30_Off", "date": "2026-03-30", "week": "13", "day": "Sun", "type": "Off", "distance": null, "duration": null, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": "Isometrics (PM)", "strengthDuration": 10.0, "stiffness": 1.0, "nextDay": "Baseline", "pain": 0.0, "load": 1.0, "sleep": 4.0, "meds": "N", "calories": 1859.0, "protein": 110.0, "planned": false}, {"id": "2026-03-31_Run", "date": "2026-03-31", "week": "13", "day": "Mon", "type": "Run", "distance": 3.18, "duration": 32.3, "pace": "10.15", "shoe": "Brooks Glycerin 22 (Black)", "watts": null, "bikeDuration": null, "strengthType": "Full Gym (Upper+Leg Tone+KAZ)", "strengthDuration": 75.0, "stiffness": 1.0, "nextDay": null, "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": 2266.0, "protein": 150.0, "planned": false}, {"id": "2026-04-01_Run (VO2)", "date": "2026-04-01", "week": "13", "day": "Tue", "type": "Run (VO2)", "distance": 8.24, "duration": null, "pace": null, "shoe": "Brooks Glycerin 22 (Black)", "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 1.0, "nextDay": "Baseline", "pain": 1.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-04-02_Strength", "date": "2026-04-02", "week": "13", "day": "Wed", "type": "Strength", "distance": null, "duration": 75.0, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": "Full Gym \u2014 Planet Fitness (Upper+Core+KAZ)", "strengthDuration": 75.0, "stiffness": 2.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 3.0, "meds": "N", "calories": 2400.0, "protein": 140.0, "planned": false}, {"id": "2026-04-03_Strength", "date": "2026-04-03", "week": "13", "day": "Thu", "type": "Strength", "distance": null, "duration": 75.0, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": "Full Gym \u2014 Planet Fitness (Upper+Core+KAZ)", "strengthDuration": 75.0, "stiffness": 2.0, "nextDay": null, "pain": 0.0, "load": 2.0, "sleep": null, "meds": "N", "calories": 2466.0, "protein": 118.0, "planned": false}, {"id": "2026-04-04_Run", "date": "2026-04-04", "week": "13", "day": "Fri", "type": "Run", "distance": 8.46, "duration": null, "pace": null, "shoe": "Brooks Glycerin 22 (Black)", "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": 2.0, "nextDay": "Baseline", "pain": 0.0, "load": 2.0, "sleep": 4.0, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-04-05_Off", "date": "2026-04-05", "week": "13", "day": "Sat", "type": "Off", "distance": null, "duration": null, "pace": null, "shoe": null, "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": null, "nextDay": null, "pain": 0.0, "load": 1.0, "sleep": null, "meds": "N", "calories": null, "protein": null, "planned": false}, {"id": "2026-04-06_Run", "date": "2026-04-06", "week": "13", "day": "Sun", "type": "Run", "distance": 17.41, "duration": 137.9, "pace": "7.92", "shoe": "Brooks Glycerin 22 (Black)", "watts": null, "bikeDuration": null, "strengthType": null, "strengthDuration": null, "stiffness": null, "nextDay": "Baseline", "pain": 1.0, "load": 3.0, "sleep": null, "meds": "N", "calories": null, "protein": null, "planned": false}];
+const SEED_SHOES = [{"id": 3, "name": "Brooks Glycerin 22", "category": "Road", "drop": 10, "max": 450, "start": 0, "status": "Active", "notes": "Primary road shoe"}, {"id": 4, "name": "Brooks Cascadia 18", "category": "Trail", "drop": 8, "max": 400, "start": 0, "status": "Active", "notes": "Best trail option"}, {"id": 5, "name": "Brooks Caldera 7", "category": "Trail", "drop": 6, "max": 400, "start": 0, "status": "Active", "notes": "Easy trail only during rehab"}, {"id": 6, "name": "Hoka Challenger 7", "category": "Road/Trail", "drop": 5, "max": 400, "start": 0, "status": "Benched", "notes": "Too low drop \u2014 insertional rehab"}];
+const SEED_ACHILLES = [{"week": "8", "date": "2026-02-23", "day": "Mon", "stiffness": 2.0, "pain": 0.0, "load": 2.0, "nextDay": "Baseline", "isometrics": "\u2713", "hsrCalfRaises": "\u2717", "eccentricDrops": "\u2717", "hipGlute": "\u2717", "soleus": "\u2713", "notes": "Tight but baseline. Iced after. 94w bike."}, {"week": "8", "date": "2026-02-24", "day": "Tue", "stiffness": 2.0, "pain": 0.0, "load": 2.0, "nextDay": "Baseline", "isometrics": "\u2713", "hsrCalfRaises": "\u2717", "eccentricDrops": "\u2717", "hipGlute": "\u2717", "soleus": "\u2717", "notes": "Dog run 3mi. Baseline response."}, {"week": "8", "date": "2026-02-25", "day": "Wed", "stiffness": 1.0, "pain": 0.0, "load": 1.0, "nextDay": "Baseline", "isometrics": "\u2713", "hsrCalfRaises": "\u2717", "eccentricDrops": "\u2717", "hipGlute": "\u2717", "soleus": "\u2713", "notes": "3mi dogs only. Helped Scott move fridge. Cal 2070 / Pro 87g."}, {"week": "8", "date": "2026-02-26", "day": "Thu", "stiffness": 1.0, "pain": 0.0, "load": 2.0, "nextDay": "Baseline", "isometrics": "\u2713", "hsrCalfRaises": "\u2713", "eccentricDrops": "\u2717", "hipGlute": "\u2713", "soleus": "\u2717", "notes": "VO2 run 8.46mi. 5 intervals 5:48\u20136:13. No PM rehab."}, {"week": "8", "date": "2026-02-27", "day": "Fri", "stiffness": 2.0, "pain": 0.0, "load": 2.0, "nextDay": "Baseline", "isometrics": "\u2713", "hsrCalfRaises": "\u2713", "eccentricDrops": "\u2717", "hipGlute": "\u2717", "soleus": "\u2713", "notes": "Recovery bike 90w. Full rehab. Cal 2398 / Pro 113g."}, {"week": "8", "date": "2026-02-28", "day": "Sat", "stiffness": 1.0, "pain": 0.0, "load": 1.0, "nextDay": "Baseline", "isometrics": "\u2717", "hsrCalfRaises": "\u2717", "eccentricDrops": "\u2717", "hipGlute": "\u2717", "soleus": "\u2717", "notes": "21 Day Fix Yoga only. No rehab \u2014 missed."}, {"week": "8", "date": "2026-03-01", "day": "Sun", "stiffness": 1.0, "pain": 0.0, "load": 3.0, "nextDay": "Baseline", "isometrics": "\u2713", "hsrCalfRaises": "\u2717", "eccentricDrops": "\u2717", "hipGlute": "\u2713", "soleus": "\u2713", "notes": "Long run 13.46mi / 1332ft. Philip Miller w/ Scott & Bradon."}];
+const SEED_RACE_PLAN = [{"week": "1", "dates": "Jan 5\u201311", "phase": "Base Build", "runTarget": 24.0, "longRun": 13.0, "vertCap": 1500.0, "bike": 180.0, "keySession": "Long aerobic run", "achillesFocus": "Isometrics daily", "notes": "\u2705 COMPLETE"}, {"week": "2", "dates": "Jan 12\u201318", "phase": "Base Build", "runTarget": 26.0, "longRun": 13.0, "vertCap": 1972.0, "bike": 200.0, "keySession": "Dual moderate longs", "achillesFocus": "Isometrics + eccentric", "notes": "\u2705 COMPLETE"}, {"week": "3", "dates": "Jan 19\u201325", "phase": "ILLNESS", "runTarget": 0.0, "longRun": 0.0, "vertCap": 0.0, "bike": 60.0, "keySession": "REST", "achillesFocus": "Isometrics only", "notes": "\u2705 LOST \u2014 illness"}, {"week": "4", "dates": "Jan 26\u2013Feb 1", "phase": "Return Ramp", "runTarget": 19.0, "longRun": 10.0, "vertCap": 879.0, "bike": 160.0, "keySession": "Gentle return run", "achillesFocus": "Isometrics + HSR intro", "notes": "\u2705 COMPLETE"}, {"week": "5", "dates": "Feb 2\u20138", "phase": "Ramp", "runTarget": 21.0, "longRun": 13.0, "vertCap": 1939.0, "bike": 220.0, "keySession": "Long + bike load", "achillesFocus": "HSR 3\u00d715 + isometrics", "notes": "\u2705 COMPLETE"}, {"week": "6", "dates": "Feb 9\u201315", "phase": "Build", "runTarget": 34.0, "longRun": 13.0, "vertCap": 3809.0, "bike": 200.0, "keySession": "Dual long runs", "achillesFocus": "Full protocol", "notes": "\u2705 COMPLETE"}, {"week": "7", "dates": "Feb 16\u201322", "phase": "Build + Speed", "runTarget": 37.0, "longRun": 16.0, "vertCap": 1500.0, "bike": 90.0, "keySession": "16mi long + VO\u2082", "achillesFocus": "Full protocol", "notes": "\u2705 COMPLETE"}, {"week": "8", "dates": "Feb 23\u2013Mar 1", "phase": "ABSORB", "runTarget": 31.0, "longRun": 14.0, "vertCap": 1200.0, "bike": 165.0, "keySession": "Consolidation", "achillesFocus": "Full protocol", "notes": "\u2190 CURRENT WEEK"}, {"week": "9", "dates": "Mar 2\u20138", "phase": "Build", "runTarget": 35.0, "longRun": 16.0, "vertCap": 1500.0, "bike": 180.0, "keySession": "VO\u2082 + long run", "achillesFocus": "Eccentric progression", "notes": "nan"}, {"week": "10", "dates": "Mar 9\u201315", "phase": "Build", "runTarget": 38.0, "longRun": 18.0, "vertCap": 2000.0, "bike": 160.0, "keySession": "18mi long effort", "achillesFocus": "HSR heavy", "notes": "nan"}, {"week": "11", "dates": "Mar 16\u201322", "phase": "Peak Build", "runTarget": 40.0, "longRun": 20.0, "vertCap": 2000.0, "bike": 150.0, "keySession": "Back-to-back: 14+10", "achillesFocus": "Peak tendon load", "notes": "nan"}, {"week": "12", "dates": "Mar 23\u201329", "phase": "PEAK / Cutback", "runTarget": 38.0, "longRun": 22.0, "vertCap": 2000.0, "bike": 150.0, "keySession": "22mi longest run", "achillesFocus": "Maintenance only", "notes": "nan"}, {"week": "13", "dates": "Mar 30\u2013Apr 5", "phase": "TAPER", "runTarget": 28.0, "longRun": 16.0, "vertCap": 1000.0, "bike": 120.0, "keySession": "Final quality", "achillesFocus": "Reduce load", "notes": "nan"}, {"week": "14", "dates": "Apr 6\u201312", "phase": "TAPER", "runTarget": 18.0, "longRun": 10.0, "vertCap": 500.0, "bike": 90.0, "keySession": "Easy + strides", "achillesFocus": "Minimal", "notes": "nan"}];
+
+let state = {
+  workouts: [...SEED_WORKOUTS],
+  sheetsUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT1dzNJQBp7xWusAJBRj6mnBGz5Nabde59lc-KyE3cccWF52hW4ad3-CfNDsbMDikk5R5ykNFs8srz0/pub?gid=1949594177&single=true&output=csv",
+  shoes: [...SEED_SHOES],
+  achilles: [...SEED_ACHILLES],
+  racePlan: [...SEED_RACE_PLAN],
+  selectedStiffness: null,
+  icalUrl: "",
+  calendarEvents: [],
+  charts: {}
+};
+
+const RACE_DATE = new Date("2026-05-30T06:00:00");
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STORAGE — localStorage auto-save + JSON export/restore
+// ─────────────────────────────────────────────────────────────────────────────
+const PROXY_URL = "https://purple-bar-209d.ultimate86.workers.dev/";
+const LS_KEY = "tim_training_v1";
+
+function saveState() {
+  localStorage.setItem(LS_KEY, JSON.stringify({
+    workouts: state.workouts,
+    shoes: state.shoes,
+    icalUrl: state.icalUrl,
+    calendarEvents: state.calendarEvents,
+  }));
+}
+
+function loadState() {
+  const raw = localStorage.getItem(LS_KEY);
+  if (!raw) return;
+  try {
+    const saved = JSON.parse(raw);
+    if (saved.workouts && saved.workouts.length > 0) {
+      // Use saved workouts as base, seed data fills gaps for any missing entries
+      const savedIds = new Set(saved.workouts.map(w => w.id));
+      const seedOnly = SEED_WORKOUTS.filter(w => !savedIds.has(w.id));
+      state.workouts = [...saved.workouts, ...seedOnly];
+      state.workouts.sort((a,b) => (a.date||"").localeCompare(b.date||""));
+    }
+    if (saved.shoes)    state.shoes    = saved.shoes;
+    if (saved.icalUrl)  state.icalUrl  = saved.icalUrl;
+    if (saved.calendarEvents) state.calendarEvents = saved.calendarEvents;
+    if (saved.sheetsUrl) state.sheetsUrl = saved.sheetsUrl;
+    if (saved.lastSynced) state.lastSynced = saved.lastSynced;
+  } catch(e) { console.warn("Could not load saved state", e); }
+}
+
+function exportData() {
+  const json = JSON.stringify({ workouts: state.workouts, shoes: state.shoes,
+    icalUrl: state.icalUrl, calendarEvents: state.calendarEvents,
+    _exported: new Date().toISOString() }, null, 2);
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+  a.download = "training_data_" + new Date().toISOString().slice(0,10) + ".json";
+  a.click();
+  toast("Data exported — save this file to restore next session");
+}
+
+function openRestoreModal() {
+  document.getElementById("restoreData").value = "";
+  document.getElementById("restoreModal").classList.add("open");
+}
+
+function restoreData() {
+  const raw = document.getElementById("restoreData").value.trim();
+  if (!raw) { toast("Paste your JSON first", "error"); return; }
+  try {
+    const saved = JSON.parse(raw);
+    if (saved.workouts) state.workouts = saved.workouts;
+    if (saved.shoes)    state.shoes    = saved.shoes;
+    if (saved.icalUrl)  state.icalUrl  = saved.icalUrl;
+    if (saved.calendarEvents) state.calendarEvents = saved.calendarEvents;
+    saveState();
+    closeModal("restoreModal");
+    toast("Restored " + state.workouts.length + " workouts & saved to browser");
+    renderTab("overview");
+  } catch(e) { toast("Invalid JSON — check the file", "error"); }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+function fmtDate(d) {
+  if (!d) return "";
+  const dt = new Date(d + "T12:00:00");
+  return dt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+function fmtDateFull(d) {
+  if (!d) return "";
+  const dt = new Date(d + "T12:00:00");
+  return dt.toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" });
+}
+function getWeekKey(dateStr) {
+  const d = new Date(dateStr + "T12:00:00");
+  const day = d.getDay();
+  const monday = new Date(d);
+  monday.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+  return monday.toISOString().split("T")[0];
+}
+function getWeekLabel(weekKey) {
+  const d = new Date(weekKey + "T12:00:00");
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+function isThisWeek(dateStr) {
+  const todayLocal = new Date();
+  // Use local date string to avoid UTC rollover issues
+  const localDateStr = todayLocal.getFullYear() + "-" +
+    String(todayLocal.getMonth()+1).padStart(2,"0") + "-" +
+    String(todayLocal.getDate()).padStart(2,"0");
+  return getWeekKey(dateStr) === getWeekKey(localDateStr);
+}
+function shoeColor(pct) {
+  if (pct < 0.6) return "progress-good";
+  if (pct < 0.85) return "progress-warn";
+  return "progress-danger";
+}
+function badgeClass(type) {
+  if (!type) return "badge-off";
+  const t = type.toLowerCase();
+  if (t.includes("vo2") || t.includes("speed")) return "badge-vo2";
+  if (t.includes("stride")) return "badge-vo2";
+  if (t.includes("run")) return "badge-run";
+  if (t.includes("bike")) return "badge-bike";
+  if (t.includes("strength") || t.includes("calist") || t.includes("yoga") || t.includes("pt")) return "badge-strength";
+  if (t.includes("rehab")) return "badge-rehab";
+  return "badge-off";
+}
+function stiffColor(v) {
+  const colors = ["#3ddc84","#7ae47a","#ffd93d","#ffa726","#ff4757","#ff1744"];
+  return colors[Math.min(v, 5)] || "#7a8899";
+}
+function shoeMiles(shoeId) {
+  const name = shoeNameById(shoeId);
+  return state.workouts
+    .filter(w => {
+      if (!w.shoe) return false;
+      const wShoe = String(w.shoe).trim();
+      // Match exact or prefix (seed data may have color suffix e.g. "Brooks Glycerin 22 (Black)")
+      return wShoe === name || wShoe.startsWith(name) || name.startsWith(wShoe);
+    })
+    .reduce((s, w) => s + (parseFloat(w.distance) || 0), 0);
+}
+function shoeNameById(id) {
+  const s = state.shoes.find(s => s.id === id);
+  return s ? s.name : "";
+}
+function totalMilesInRange(weeks) {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - weeks * 7);
+  return state.workouts
+    .filter(w => !w.planned && new Date(w.date + "T12:00:00") >= cutoff)
+    .reduce((s, w) => s + (parseFloat(w.distance) || 0), 0);
+}
+function getWeeklyData() {
+  const map = {};
+  state.workouts.filter(w => !w.planned).forEach(w => {
+    const wk = getWeekKey(w.date);
+    if (!map[wk]) map[wk] = { miles: 0, runs: 0, bikes: 0, strength: 0 };
+    const d = parseFloat(w.distance) || 0;
+    map[wk].miles += d;
+    const t = (w.type || "").toLowerCase();
+    if (t.includes("run")) map[wk].runs += d;
+    else if (t.includes("bike")) map[wk].bikes += (parseFloat(w.duration) || 0) / 60;
+    else if (t.includes("strength") || t.includes("calist")) map[wk].strength += 1;
+  });
+  return map;
+}
+function toast(msg, type="success") {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.style.background = type === "error" ? "var(--red)" : "var(--green)";
+  el.style.color = type === "error" ? "white" : "#000";
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 2800);
+}
+function destroyChart(key) {
+  if (state.charts[key]) { state.charts[key].destroy(); delete state.charts[key]; }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RACE COUNTDOWN
+// ─────────────────────────────────────────────────────────────────────────────
+function updateCountdown() {
+  const now = new Date();
+  const diff = RACE_DATE - now;
+  if (diff <= 0) { document.getElementById("raceCountdown").textContent = "🏆 Race Day!"; return; }
+  const days = Math.floor(diff / 86400000);
+  document.getElementById("raceCountdown").textContent = `⚡ ${days} days to race`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAB SWITCHING
+// ─────────────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll(".tab-panel").forEach(p => {
+    p.classList.remove("active");
+    // Coach tab needs flex, others use block
+    if (p.id === "tab-coach") p.style.display = "none";
+  });
+  document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
+  const panel = document.getElementById("tab-" + tab);
+  if (tab === "coach") {
+    panel.style.display = "flex";
+  } else {
+    panel.classList.add("active");
+  }
+  event.currentTarget.classList.add("active");
+  renderTab(tab);
+}
+function renderTab(tab) {
+  if (tab === "overview") renderOverview();
+  else if (tab === "workouts") renderWorkoutsTab();
+  else if (tab === "charts") renderCharts();
+  else if (tab === "achilles") renderAchilles();
+  else if (tab === "shoes") renderShoes();
+  else if (tab === "calendar") renderCalendar();
+  // coach tab renders dynamically via chat, no renderCoach needed
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// OVERVIEW
+// ─────────────────────────────────────────────────────────────────────────────
+function renderOverview() {
+  const thisWeek = state.workouts.filter(w => !w.planned && isThisWeek(w.date));
+  const weekMiles = thisWeek.reduce((s,w) => s + (parseFloat(w.distance)||0), 0);
+  const weekRuns = thisWeek.filter(w => w.type && w.type.toLowerCase().includes("run")).length;
+  const recentStiff = state.workouts.filter(w => !w.planned && w.stiffness != null).slice(-7);
+  const avgStiff = recentStiff.length ? (recentStiff.reduce((s,w) => s + w.stiffness, 0) / recentStiff.length).toFixed(1) : "—";
+  const days = Math.floor((RACE_DATE - new Date()) / 86400000);
+
+  const stiffClass = avgStiff === "—" ? "" : parseFloat(avgStiff) <= 1 ? "green" : parseFloat(avgStiff) <= 2 ? "yellow" : "red";
+
+  document.getElementById("overviewStats").innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Week Miles</div>
+      <div class="stat-value accent">${weekMiles.toFixed(1)}</div>
+      <div class="stat-sub">${weekRuns} runs this week</div>
+      <div class="stat-bar"><div class="stat-bar-fill" style="width:${Math.min(weekMiles/40*100,100)}%"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">30-Day Miles</div>
+      <div class="stat-value">${totalMilesInRange(4).toFixed(0)}</div>
+      <div class="stat-sub">last 4 weeks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Avg AM Stiffness</div>
+      <div class="stat-value ${stiffClass}">${avgStiff}</div>
+      <div class="stat-sub">last 7 logged</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Days to Race</div>
+      <div class="stat-value accent">${days}</div>
+      <div class="stat-sub">May 30th 50-miler</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Workouts</div>
+      <div class="stat-value">${state.workouts.filter(w=>!w.planned).length}</div>
+      <div class="stat-sub">all time logged</div>
+    </div>
+  `;
+
+  // Week range label — use local date to avoid UTC midnight rollover
+  const today = new Date();
+  const todayForWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const mon = new Date(todayForWeek);
+  mon.setDate(todayForWeek.getDate() - (todayForWeek.getDay() === 0 ? 6 : todayForWeek.getDay() - 1));
+  const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+  document.getElementById("weekRange").textContent =
+    mon.toLocaleDateString("en-US",{month:"short",day:"numeric"}) + " – " +
+    sun.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+
+  // This week workouts
+  const wEl = document.getElementById("thisWeekWorkouts");
+  if (!thisWeek.length) {
+    wEl.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-text">No workouts logged this week yet.</div></div>';
+  } else {
+    const sorted = [...thisWeek].sort((a,b) => a.date.localeCompare(b.date));
+    wEl.innerHTML = sorted.map(w => `
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <span style="font-size:12px;color:var(--text2);width:70px;flex-shrink:0;">${fmtDate(w.date)}</span>
+        <span class="type-badge ${badgeClass(w.type)}">${w.type}</span>
+        <span style="font-family:var(--font-mono);font-size:13px;color:var(--text);margin-left:auto;">${w.distance ? w.distance + " mi" : w.duration ? w.duration + " min" : ""}</span>
+        ${w.stiffness != null ? `<span><span class="stiffness-dot s${w.stiffness}"></span></span>` : ""}
+      </div>
+    `).join("");
+  }
+
+  // Weekly miles bars (last 8 weeks)
+  const weeklyMap = getWeeklyData();
+  const keys = Object.keys(weeklyMap).sort().slice(-8);
+  const maxMi = Math.max(...keys.map(k => weeklyMap[k].miles), 1);
+  const wChartEl = document.getElementById("weeklyMilesChart");
+  if (!keys.length) {
+    wChartEl.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-text">Log some workouts to see weekly data.</div></div>';
+  } else {
+    wChartEl.innerHTML = keys.map(k => {
+      const pct = (weeklyMap[k].miles / maxMi * 100).toFixed(0);
+      const color = k === getWeekKey(new Date().toISOString().split("T")[0]) ? "var(--accent)" : "var(--accent2)";
+      return `<div class="week-bar-row">
+        <span class="week-label">${getWeekLabel(k)}</span>
+        <div class="week-bar-track">
+          <div class="week-bar-fill" style="width:${pct}%;background:${color};">${weeklyMap[k].miles >= 3 ? weeklyMap[k].miles.toFixed(1) : ""}</div>
+        </div>
+        <span class="week-miles">${weeklyMap[k].miles.toFixed(1)}</span>
+      </div>`;
+    }).join("");
+  }
+
+  // Achilles overview
+  const achEl = document.getElementById("achillesOverview");
+  const last7 = state.workouts.filter(w => !w.planned && w.stiffness != null).slice(-7);
+  if (!last7.length) {
+    achEl.innerHTML = '<div class="empty-state"><div class="empty-icon">🦶</div><div class="empty-text">No stiffness data yet.</div></div>';
+  } else {
+    achEl.innerHTML = last7.slice(-7).reverse().map(w => `
+      <div class="trend-row">
+        <span class="trend-date">${fmtDate(w.date)}</span>
+        <div style="flex:1;height:20px;background:var(--border);border-radius:2px;overflow:hidden;">
+          <div style="height:100%;width:${w.stiffness/5*100}%;background:${stiffColor(w.stiffness)};border-radius:2px;transition:width 0.4s;"></div>
+        </div>
+        <span style="font-family:var(--font-mono);font-size:13px;width:20px;text-align:right;color:${stiffColor(w.stiffness)};">${w.stiffness}</span>
+      </div>
+    `).join("");
+  }
+
+  // Shoe overview
+  const shoeEl = document.getElementById("shoeOverview");
+  const topShoes = state.shoes.slice(0, 3);
+  shoeEl.innerHTML = topShoes.map(shoe => {
+    const miles = (shoe.start || 0) + shoeMiles(shoe.id);
+    const max = shoe.max || 400;
+    const pct = Math.min(miles / max, 1);
+    return `<div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-size:13px;font-weight:600;">${shoe.name}</span>
+        <span style="font-family:var(--font-mono);font-size:12px;color:var(--text2);">${miles.toFixed(0)} / ${max} mi</span>
+      </div>
+      <div class="shoe-progress"><div class="shoe-progress-fill ${shoeColor(pct)}" style="width:${pct*100}%"></div></div>
+    </div>`;
+  }).join("");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WORKOUTS TAB
+// ─────────────────────────────────────────────────────────────────────────────
+function renderWorkoutsTab() {
+  const filter = document.getElementById("filterType")?.value || "";
+  let wks = [...state.workouts].filter(w => !w.planned).sort((a,b) => b.date.localeCompare(a.date));
+  if (filter) wks = wks.filter(w => {
+    if (!filter) return true;
+    if (filter === "Run") return w.type === "Run";
+    if (filter === "Run (VO2)") return w.type === "Run (VO2)" || w.type === "Run (VO₂)";
+    if (filter === "Run (Strides)") return w.type === "Run (Strides)";
+    return w.type === filter;
+  });
+  const tbody = document.getElementById("workoutTableBody");
+  const empty = document.getElementById("workoutTableEmpty");
+  if (!wks.length) {
+    tbody.innerHTML = "";
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+  tbody.innerHTML = wks.map(w => `
+    <tr>
+      <td style="white-space:nowrap;color:var(--text2);">${fmtDateFull(w.date)}</td>
+      <td><span class="type-badge ${badgeClass(w.type)}">${w.type}</span></td>
+      <td style="font-family:var(--font-mono);">${w.distance ? w.distance + " mi" : "—"}</td>
+      <td style="font-family:var(--font-mono);">${w.duration ? w.duration + " min" : "—"}</td>
+      <td style="font-family:var(--font-mono);color:var(--text2);">${w.pace || "—"}</td>
+      <td style="font-family:var(--font-mono);color:var(--text2);font-size:12px;color:var(--text2);">${w.shoe || (w.watts ? w.watts+"w" : "—")}</td>
+      <td>${w.stiffness != null ? `<span class="stiffness-dot s${w.stiffness}"></span><span style="font-family:var(--font-mono);font-size:12px;">${w.stiffness}</span>` : "—"}</td>
+      <td style="font-size:12px;color:var(--text2);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${w.notes || ""}</td>
+      <td><button onclick="deleteWorkout('${w.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;" title="Delete">×</button></td>
+    </tr>
+  `).join("");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CHARTS
+// ─────────────────────────────────────────────────────────────────────────────
+function renderCharts() {
+  setTimeout(() => {
+    renderMileageChart();
+    renderLoadChart();
+    renderAchillesChartSmall();
+    renderBreakdownChart();
+  }, 50);
+}
+
+Chart.defaults.color = "#7a8899";
+Chart.defaults.borderColor = "#1e2530";
+Chart.defaults.font.family = "DM Sans";
+
+function renderMileageChart() {
+  destroyChart("mileage");
+  const ctx = document.getElementById("mileageChart").getContext("2d");
+  const weeklyMap = getWeeklyData();
+  const keys = Object.keys(weeklyMap).sort().slice(-12);
+  if (!keys.length) return;
+  state.charts["mileage"] = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: keys.map(getWeekLabel),
+      datasets: [{
+        label: "Miles",
+        data: keys.map(k => weeklyMap[k].miles.toFixed(1)),
+        backgroundColor: keys.map(k => k === getWeekKey(new Date().toISOString().split("T")[0]) ? "#e8ff47" : "rgba(71,200,255,0.6)"),
+        borderColor: "transparent",
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.raw + " miles" } } },
+      scales: {
+        x: { grid: { color: "#1e2530" }, ticks: { font: { size: 11 } } },
+        y: { grid: { color: "#1e2530" }, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+}
+
+function renderLoadChart() {
+  destroyChart("load");
+  const ctx = document.getElementById("loadChart").getContext("2d");
+  const weeklyMap = getWeeklyData();
+  const keys = Object.keys(weeklyMap).sort().slice(-8);
+  if (!keys.length) return;
+  state.charts["load"] = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: keys.map(getWeekLabel),
+      datasets: [
+        { label: "Run Miles", data: keys.map(k => weeklyMap[k].runs.toFixed(1)), backgroundColor: "rgba(61,220,132,0.7)", borderRadius: 3 },
+        { label: "Bike Hrs", data: keys.map(k => weeklyMap[k].bikes.toFixed(1)), backgroundColor: "rgba(232,255,71,0.7)", borderRadius: 3 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: "top", labels: { boxWidth: 12, font: { size: 11 } } } },
+      scales: {
+        x: { stacked: true, grid: { color: "#1e2530" } },
+        y: { stacked: true, grid: { color: "#1e2530" } }
+      }
+    }
+  });
+}
+
+function renderAchillesChartSmall() {
+  destroyChart("achillesSmall");
+  const ctx = document.getElementById("achillesChart").getContext("2d");
+  const data = state.workouts.filter(w => !w.planned && w.stiffness != null)
+    .sort((a,b) => a.date.localeCompare(b.date)).slice(-14);
+  if (!data.length) return;
+  state.charts["achillesSmall"] = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: data.map(w => fmtDate(w.date)),
+      datasets: [{
+        label: "AM Stiffness",
+        data: data.map(w => w.stiffness),
+        borderColor: "#ffd93d",
+        backgroundColor: "rgba(255,217,61,0.1)",
+        borderWidth: 2, pointRadius: 4,
+        pointBackgroundColor: data.map(w => stiffColor(w.stiffness)),
+        fill: true, tension: 0.3,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: "#1e2530" }, ticks: { font: { size: 10 } } },
+        y: { min: 0, max: 5, grid: { color: "#1e2530" }, ticks: { stepSize: 1 } }
+      }
+    }
+  });
+}
+
+function renderBreakdownChart() {
+  destroyChart("breakdown");
+  const ctx = document.getElementById("breakdownChart").getContext("2d");
+  const types = {};
+  state.workouts.filter(w => !w.planned).forEach(w => {
+    const t = w.type || "Other";
+    types[t] = (types[t] || 0) + 1;
+  });
+  const labels = Object.keys(types);
+  if (!labels.length) return;
+  const colors = ["#3ddc84","#47c8ff","#e8ff47","#ff6b35","#ffd93d","#a78bfa","#7a8899"];
+  state.charts["breakdown"] = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels,
+      datasets: [{ data: labels.map(l => types[l]), backgroundColor: colors, borderWidth: 0 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: "right", labels: { font: { size: 11 }, boxWidth: 12 } } },
+      cutout: "60%"
+    }
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ACHILLES TAB
+// ─────────────────────────────────────────────────────────────────────────────
+function renderAchilles() {
+  const logged = state.workouts.filter(w => !w.planned && w.stiffness != null);
+  const last7 = logged.slice(-7);
+  const avg = last7.length ? (last7.reduce((s,w) => s + w.stiffness, 0) / last7.length).toFixed(1) : "—";
+  const worst = last7.length ? Math.max(...last7.map(w => w.stiffness)) : "—";
+  const today = logged.length ? logged[logged.length - 1] : null;
+  const todayStiff = today ? today.stiffness : null;
+  const stiffClass = todayStiff == null ? "" : todayStiff <= 1 ? "green" : todayStiff <= 2 ? "yellow" : "red";
+
+  document.getElementById("achillesStats").innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Today's Stiffness</div>
+      <div class="stat-value ${stiffClass}">${todayStiff != null ? todayStiff : "—"}</div>
+      <div class="stat-sub">${today ? fmtDate(today.date) : "Not logged"}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">7-Day Avg</div>
+      <div class="stat-value">${avg}</div>
+      <div class="stat-sub">last 7 entries</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Worst This Week</div>
+      <div class="stat-value ${worst >= 4 ? "red" : worst >= 3 ? "yellow" : "green"}">${worst}</div>
+      <div class="stat-sub">peak stiffness</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Green Days</div>
+      <div class="stat-value green">${last7.filter(w => w.stiffness <= 1).length}</div>
+      <div class="stat-sub">stiffness 0–1 / 7</div>
+    </div>
+  `;
+
+  // Decision guide
+  const guideEl = document.getElementById("achillesGuide");
+  const current = todayStiff;
+  const decisions = [
+    { range: "0–1", emoji: "🟢", train: "All training OK", rehab: "Full protocol", note: "Green light", bg: "#1a2e1a", border: "var(--green)" },
+    { range: "2", emoji: "🟡", train: "Easy run or bike only", rehab: "ISO + HSR only. No eccentrics.", note: "Caution", bg: "#2e2a1a", border: "var(--yellow)" },
+    { range: "3", emoji: "🟠", train: "Bike only", rehab: "Isometrics only", note: "Yellow flag", bg: "#2e1e1a", border: "#ffa726" },
+    { range: "4–5", emoji: "🔴", train: "Rest or swim", rehab: "Gentle isometrics only", note: "Stop. See physio if 4+ for 3 days.", bg: "#2e1a1a", border: "var(--red)" },
+  ];
+  guideEl.innerHTML = decisions.map((d, i) => {
+    const isActive = current != null && (
+      (i === 0 && current <= 1) || (i === 1 && current === 2) ||
+      (i === 2 && current === 3) || (i === 3 && current >= 4)
+    );
+    return `<div style="padding:12px 14px;border-radius:var(--radius-sm);border:1px solid ${isActive ? d.border : "var(--border)"};background:${isActive ? d.bg : "transparent"};margin-bottom:8px;${isActive ? "box-shadow:0 0 0 1px "+d.border+"44;" : ""}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <span style="font-weight:600;font-size:13px;">${d.emoji} Stiffness ${d.range}</span>
+        <span style="font-size:11px;font-weight:600;color:${isActive ? d.border : "var(--text3)"};">${isActive ? "← TODAY" : ""}</span>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:2px;">Train: ${d.train}</div>
+      <div style="font-size:12px;color:var(--text2);">Rehab: ${d.rehab}</div>
+    </div>`;
+  }).join("");
+
+  // Chart
+  setTimeout(() => {
+    destroyChart("achillesDetail");
+    const ctx = document.getElementById("achillesDetailChart").getContext("2d");
+    const data = state.workouts.filter(w => !w.planned && w.stiffness != null)
+      .sort((a,b) => a.date.localeCompare(b.date)).slice(-21);
+    if (!data.length) return;
+    state.charts["achillesDetail"] = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: data.map(w => fmtDate(w.date)),
+        datasets: [{
+          label: "AM Stiffness",
+          data: data.map(w => w.stiffness),
+          borderColor: "#ffd93d",
+          backgroundColor: ctx => {
+            const g = ctx.chart.ctx.createLinearGradient(0,0,0,200);
+            g.addColorStop(0, "rgba(255,217,61,0.3)");
+            g.addColorStop(1, "rgba(255,217,61,0)");
+            return g;
+          },
+          borderWidth: 2, pointRadius: 5,
+          pointBackgroundColor: data.map(w => stiffColor(w.stiffness)),
+          fill: true, tension: 0.3,
+        }, {
+          label: "Pain During",
+          data: data.map(w => w.pain || 0),
+          borderColor: "rgba(255,71,87,0.6)",
+          borderDash: [4,4], borderWidth: 1.5,
+          pointRadius: 3, fill: false, tension: 0.3,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: "top", labels: { font: { size: 11 }, boxWidth: 12 } } },
+        scales: {
+          x: { grid: { color: "#1e2530" }, ticks: { font: { size: 10 } } },
+          y: { min: 0, max: 10, grid: { color: "#1e2530" }, ticks: { stepSize: 1, font: { size: 11 } } }
+        }
+      }
+    });
+  }, 50);
+
+  // Rehab compliance from spreadsheet Achilles tracker
+  const rehabEl = document.getElementById("achillesRehab");
+  const achData = state.achilles || SEED_ACHILLES;
+  if (!achData || !achData.length) {
+    rehabEl.innerHTML = '<div class="empty-state"><div class="empty-icon">🦶</div><div class="empty-text">No rehab data from spreadsheet yet.</div></div>';
+  } else {
+    const checkIcon = (v) => v === "✓" ? `<span style="color:var(--green);font-size:14px;">✓</span>` : v === "✗" ? `<span style="color:var(--red);font-size:14px;">✗</span>` : `<span style="color:var(--text3);">—</span>`;
+    rehabEl.innerHTML = `<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="border-bottom:1px solid var(--border);">
+        <th style="text-align:left;padding:8px 10px;color:var(--text2);font-weight:600;white-space:nowrap;">Date</th>
+        <th style="padding:8px 6px;color:var(--text2);font-weight:600;">Stiff</th>
+        <th style="padding:8px 6px;color:var(--text2);font-weight:600;">Pain</th>
+        <th style="padding:8px 6px;color:var(--text2);font-weight:600;">Next Day</th>
+        <th style="padding:8px 6px;color:var(--text2);font-weight:600;">ISO</th>
+        <th style="padding:8px 6px;color:var(--text2);font-weight:600;">HSR</th>
+        <th style="padding:8px 6px;color:var(--text2);font-weight:600;">Eccentric</th>
+        <th style="padding:8px 6px;color:var(--text2);font-weight:600;">Hip/Glute</th>
+        <th style="padding:8px 6px;color:var(--text2);font-weight:600;">Soleus</th>
+        <th style="text-align:left;padding:8px 10px;color:var(--text2);font-weight:600;">Notes</th>
+      </tr></thead>
+      <tbody>${[...achData].reverse().map(a => `
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 10px;white-space:nowrap;color:var(--text2);">${a.date ? fmtDate(a.date) : ""} <span style="color:var(--text3);font-size:10px;">${a.day||""}</span></td>
+          <td style="padding:8px 6px;text-align:center;"><span style="color:${a.stiffness<=1?"var(--green)":a.stiffness<=2?"var(--yellow)":"var(--red)"};font-weight:700;">${a.stiffness??""}</span></td>
+          <td style="padding:8px 6px;text-align:center;"><span style="color:${(a.pain||0)===0?"var(--green)":(a.pain||0)<=3?"var(--yellow)":"var(--red)"};font-weight:700;">${a.pain??""}</span></td>
+          <td style="padding:8px 6px;text-align:center;font-size:11px;color:${(a.nextDay||"").includes("Worse")?"var(--red)":"var(--green)"};">${a.nextDay||""}</td>
+          <td style="padding:8px 6px;text-align:center;">${checkIcon(a.isometrics)}</td>
+          <td style="padding:8px 6px;text-align:center;">${checkIcon(a.hsrCalfRaises)}</td>
+          <td style="padding:8px 6px;text-align:center;">${checkIcon(a.eccentricDrops)}</td>
+          <td style="padding:8px 6px;text-align:center;">${checkIcon(a.hipGlute)}</td>
+          <td style="padding:8px 6px;text-align:center;">${checkIcon(a.soleus)}</td>
+          <td style="padding:8px 10px;color:var(--text2);font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${a.notes||""}</td>
+        </tr>`).join("")}
+      </tbody></table></div>`;
+  }
+
+  // Recent log
+  const logEl = document.getElementById("achillesLog");
+  const recent = [...state.workouts].filter(w => !w.planned && w.stiffness != null)
+    .sort((a,b) => b.date.localeCompare(a.date)).slice(0, 10);
+  logEl.innerHTML = recent.map(w => `
+    <div class="trend-row">
+      <span class="trend-date">${fmtDate(w.date)}</span>
+      <span style="width:100px;flex-shrink:0;"><span class="type-badge ${badgeClass(w.type)}">${w.type}</span></span>
+      <div style="flex:1;height:16px;background:var(--border);border-radius:2px;overflow:hidden;">
+        <div style="height:100%;width:${w.stiffness/5*100}%;background:${stiffColor(w.stiffness)};border-radius:2px;"></div>
+      </div>
+      <span class="trend-val" style="color:${stiffColor(w.stiffness)};">${w.stiffness}</span>
+      <span style="font-size:11px;color:var(--text3);width:120px;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${w.notes||""}</span>
+    </div>
+  `).join("") || '<div class="empty-state"><div class="empty-icon">🦶</div><div class="empty-text">No stiffness data logged yet.</div></div>';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SHOES TAB
+// ─────────────────────────────────────────────────────────────────────────────
+function renderShoes() {
+  const el = document.getElementById("shoeList");
+  if (!state.shoes.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">👟</div><div class="empty-text">No shoes added yet.</div></div>';
+    return;
+  }
+  el.innerHTML = state.shoes.map(shoe => {
+    const miles = (shoe.start || 0) + shoeMiles(shoe.id);
+    const max = shoe.max || 400;
+    const pct = Math.min(miles / max, 1);
+    const pctDisplay = (pct * 100).toFixed(0);
+    const remaining = Math.max(0, max - miles);
+    const statusColor = pct < 0.6 ? "var(--green)" : pct < 0.85 ? "var(--yellow)" : "var(--red)";
+    const statusText = pct < 0.6 ? "Good" : pct < 0.85 ? "Getting worn" : "Replace soon";
+    return `
+      <div class="shoe-item">
+        <div class="shoe-header">
+          <div>
+            <div class="shoe-name">${shoe.name}</div>
+            <div class="shoe-meta">${shoe.category} · ${shoe.drop || "?"}mm drop · Max ${max} mi
+          ${shoe.status === "Benched" ? '<span style="margin-left:6px;background:rgba(255,71,87,0.15);color:#ff4757;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:0.5px;">BENCHED</span>' : ""}
+          ${shoe.status === "Retired" ? '<span style="margin-left:6px;background:rgba(120,120,120,0.15);color:#888;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:0.5px;">RETIRED</span>' : ""}
+        </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="shoe-miles">${miles.toFixed(0)}<span> mi</span></div>
+            <div style="font-size:11px;color:${statusColor};font-weight:600;">${statusText}</div>
+          </div>
+        </div>
+        <div class="shoe-progress">
+          <div class="shoe-progress-fill ${shoeColor(pct)}" style="width:${pctDisplay}%"></div>
+        </div>
+        <div class="shoe-limit">
+          <span>${miles.toFixed(0)} miles used (${pctDisplay}%)</span>
+          <span>${remaining.toFixed(0)} mi remaining</span>
+        </div>
+        <div style="margin-top:10px;display:flex;justify-content:flex-end;">
+          <button onclick="deleteShoe(${shoe.id})" style="background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;">Remove</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CALENDAR TAB
+// ─────────────────────────────────────────────────────────────────────────────
+function renderCalendar() {
+  // Upcoming planned workouts
+  const today = new Date().toISOString().split("T")[0];
+  const upcoming = state.workouts
+    .filter(w => w.planned && w.date >= today)
+    .sort((a,b) => a.date.localeCompare(b.date))
+    .slice(0, 8);
+
+  // Also show calendar events
+  const allEvents = [
+    ...upcoming.map(w => ({ date: w.date, title: w.type, desc: w.notes || "", type: w.type })),
+    ...state.calendarEvents.filter(e => e.date >= today)
+  ].sort((a,b) => a.date.localeCompare(b.date)).slice(0, 10);
+
+  const upEl = document.getElementById("upcomingWorkouts");
+  if (!allEvents.length) {
+    upEl.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-text">No upcoming workouts. Add planned sessions or sync your calendar.</div></div>';
+  } else {
+    upEl.innerHTML = allEvents.map(e => {
+      const dt = new Date(e.date + "T12:00:00");
+      const dayName = dt.toLocaleDateString("en-US",{weekday:"short"}).toUpperCase();
+      const dayNum = dt.getDate();
+      const isLong = (e.title||"").toLowerCase().includes("long");
+      const isVo2 = (e.title||"").toLowerCase().includes("vo2") || (e.title||"").toLowerCase().includes("speed");
+      const evClass = isLong ? "event-long" : isVo2 ? "event-vo2" : "";
+      return `<div class="calendar-event ${evClass}">
+        <div class="event-date"><div class="event-day">${dayName}</div><div class="event-num">${dayNum}</div></div>
+        <div class="event-content">
+          <div class="event-title">${e.title}</div>
+          ${e.desc ? `<div class="event-desc">${e.desc}</div>` : ""}
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  // Race plan — from spreadsheet data
+  const racePlanEl = document.getElementById("racePlan");
+  const today2 = new Date().toISOString().split("T")[0];
+  const phaseColors = { "Base Build": "var(--accent2)", "ILLNESS": "var(--red)", "Load": "var(--yellow)", "Build": "var(--yellow)", "Peak": "var(--accent3)", "Taper": "var(--green)", "Race Week": "var(--accent)" };
+  const plan = state.racePlan || SEED_RACE_PLAN;
+  racePlanEl.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;">
+      ${plan.map(p => {
+        const color = Object.keys(phaseColors).find(k => (p.phase||"").includes(k)) ? phaseColors[Object.keys(phaseColors).find(k => (p.phase||"").includes(k))] : "var(--text2)";
+        const isDone = (p.notes||"").includes("COMPLETE") || (p.notes||"").includes("✅");
+        const isLost = (p.notes||"").includes("LOST") || (p.notes||"").includes("illness");
+        return `<div style="padding:12px;background:var(--surface2);border-radius:var(--radius-sm);border-left:3px solid ${isDone ? "var(--green)" : isLost ? "var(--red)" : color};opacity:${isDone||isLost ? 0.7 : 1}">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+            <span style="font-size:10px;color:var(--text2);font-weight:600;letter-spacing:1px;">WK ${p.week} · ${p.dates||""}</span>
+            ${isDone ? '<span style="font-size:10px;color:var(--green)">✅</span>' : isLost ? '<span style="font-size:10px;color:var(--red)">❌</span>' : ""}
+          </div>
+          <div style="font-family:var(--font-display);font-size:17px;color:${color};margin-bottom:3px;">${p.phase||""}</div>
+          ${p.runTarget ? `<div style="font-size:12px;font-weight:600;">${p.runTarget} mi target</div>` : ""}
+          ${p.keySession && p.keySession !== "nan" ? `<div style="font-size:11px;color:var(--text2);margin-top:3px;">${p.keySession}</div>` : ""}
+          ${p.achillesFocus && p.achillesFocus !== "nan" ? `<div style="font-size:11px;color:var(--accent2);margin-top:2px;">🦶 ${p.achillesFocus}</div>` : ""}
+        </div>`;
+      }).join("")}
+    </div>
+  `;
+
+  // Set ical url if saved
+  if (state.icalUrl) document.getElementById("icalUrl").value = state.icalUrl;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CALENDAR SYNC
+// ─────────────────────────────────────────────────────────────────────────────
+function syncCalendar() {
+  const url = document.getElementById("icalUrl").value.trim();
+  const statusEl = document.getElementById("calendarStatus");
+  if (!url) { statusEl.textContent = "Please enter a calendar URL."; return; }
+  state.icalUrl = url;
+  saveState();
+  statusEl.innerHTML = `<span style="color:var(--green);">✓ Calendar URL saved. Note: Due to browser security (CORS), Apple Calendar webcal links cannot be fetched directly. Export your calendar as .ics and paste the event data below, or use a CORS proxy service.</span>`;
+  toast("Calendar URL saved");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOG WORKOUT MODAL
+// ─────────────────────────────────────────────────────────────────────────────
+function openLogModal() {
+  const today = new Date().toISOString().split("T")[0];
+  document.getElementById("f_date").value = today;
+  document.getElementById("f_distance").value = "";
+  document.getElementById("f_duration").value = "";
+  document.getElementById("f_pace").value = "";
+  document.getElementById("f_notes").value = "";
+  document.getElementById("f_pain").value = "";
+  document.getElementById("f_sleep").value = "";
+  document.getElementById("f_planned").checked = false;
+  state.selectedStiffness = null;
+  document.querySelectorAll(".stiffness-btn").forEach(b => b.classList.remove("selected"));
+
+  // Populate shoe dropdown
+  const shoeSelect = document.getElementById("f_shoe");
+  shoeSelect.innerHTML = '<option value="">— No shoe —</option>' +
+    state.shoes.map(s => `<option>${s.name}</option>`).join("");
+
+  document.getElementById("logModal").classList.add("open");
+}
+
+function selectStiffness(v) {
+  state.selectedStiffness = v;
+  document.querySelectorAll(".stiffness-btn").forEach((b, i) => {
+    b.classList.toggle("selected", i === v);
+  });
+}
+
+function saveWorkout() {
+  const date = document.getElementById("f_date").value;
+  const type = document.getElementById("f_type").value;
+  if (!date || !type) { toast("Date and type required", "error"); return; }
+  const workout = {
+    id: Date.now().toString(),
+    date, type,
+    distance: document.getElementById("f_distance").value || null,
+    duration: document.getElementById("f_duration").value || null,
+    pace: document.getElementById("f_pace").value || null,
+    shoe: document.getElementById("f_shoe").value || null,
+    stiffness: state.selectedStiffness,
+    pain: document.getElementById("f_pain").value ? parseInt(document.getElementById("f_pain").value) : null,
+    sleep: document.getElementById("f_sleep").value ? parseInt(document.getElementById("f_sleep").value) : null,
+    notes: document.getElementById("f_notes").value || null,
+    planned: document.getElementById("f_planned").checked,
+  };
+  state.workouts.push(workout);
+  saveState();
+  closeModal("logModal");
+  toast("Workout saved! 💪");
+  renderTab("overview");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SHOES MODAL
+// ─────────────────────────────────────────────────────────────────────────────
+function openAddShoeModal() {
+  document.getElementById("s_name").value = "";
+  document.getElementById("s_max").value = "400";
+  document.getElementById("s_start").value = "0";
+  document.getElementById("s_drop").value = "";
+  document.getElementById("shoeModal").classList.add("open");
+}
+
+function saveShoe() {
+  const name = document.getElementById("s_name").value.trim();
+  if (!name) { toast("Shoe name required", "error"); return; }
+  state.shoes.push({
+    id: Date.now(),
+    name,
+    category: document.getElementById("s_category").value,
+    max: parseInt(document.getElementById("s_max").value) || 400,
+    start: parseInt(document.getElementById("s_start").value) || 0,
+    drop: parseInt(document.getElementById("s_drop").value) || null,
+    status: (document.getElementById("s_status") || {value:"Active"}).value || "Active",
+  });
+  saveState();
+  closeModal("shoeModal");
+  renderShoes();
+  toast("Shoe added!");
+}
+
+function deleteShoe(id) {
+  if (!confirm("Remove this shoe?")) return;
+  state.shoes = state.shoes.filter(s => s.id !== id);
+  saveState();
+  renderShoes();
+  toast("Shoe removed");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE WORKOUT
+// ─────────────────────────────────────────────────────────────────────────────
+function deleteWorkout(id) {
+  if (!confirm("Delete this workout?")) return;
+  state.workouts = state.workouts.filter(w => w.id !== id);
+  saveState();
+  renderWorkoutsTab();
+  toast("Workout deleted");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// IMPORT
+// ─────────────────────────────────────────────────────────────────────────────
+function openImport() {
+  document.getElementById("importData").value = "";
+  document.getElementById("importModal").classList.add("open");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CSV PARSING — handles exact Ultra Training Tracker Daily Log format
+// Row 0: Title, Row 1: Subtitle, Row 2: Category groups, Row 3: Column headers
+// Row 4+: Data (col 0 = week number, col 1 = date YYYY-MM-DD)
+// ─────────────────────────────────────────────────────────────────────────────
+function parseTrackerCSV(csvText) {
+  const lines = csvText.trim().split("\n");
+
+  // Find the first data row: col 0 is a number (week), col 1 looks like a date
+  let dataStart = -1;
+  for (let i = 0; i < Math.min(lines.length, 8); i++) {
+    const cols = splitCSVLine(lines[i]);
+    const maybeWeek = cols[0].replace(/"/g,"").trim();
+    const maybeDate = cols[1].replace(/"/g,"").trim();
+    if (!isNaN(maybeWeek) && maybeWeek !== "" && /\d{4}-\d{2}-\d{2}/.test(maybeDate)) {
+      dataStart = i;
+      break;
+    }
+  }
+
+  if (dataStart === -1) {
+    throw new Error("Could not find data rows — check sheet is published correctly");
+  }
+
+  const parsed = [];
+  for (let i = dataStart; i < lines.length; i++) {
+    const cols = splitCSVLine(lines[i]).map(c => c.replace(/^"|"$/g,"").trim());
+    if (cols.length < 4) continue;
+
+    // Column mapping (matches spreadsheet exactly):
+    // 0:Week  1:Date  2:Day  3:SessionType  4:Distance  5:Duration  6:Pace
+    // 7:Shoe  8:AvgWatts  9:BikeDuration  10:StrengthType  11:StrengthDuration
+    // 12:AMStiffness  13:NextDayResponse  14:PainDuring  15:EndDayLoad
+    // 16:Sleep  17:Meds  18:Calories  19:Protein
+    const date = cols[1] || "";
+    const type = cols[3] || "";
+
+    // Skip non-data rows
+    if (!date || !type) continue;
+    if (!/\d{4}-\d{2}-\d{2}/.test(date)) continue;
+    if (/^(week|date|session|type)/i.test(cols[0])) continue;
+
+    const clean = (v, allowDash) => {
+      if (!v || v === "" || v === "nan" || v === "#N/A") return null;
+      if (!allowDash && v === "—") return null;
+      return v;
+    };
+    const num = (v) => { const n = parseFloat(v); return isNaN(n) ? null : n; };
+
+    parsed.push({
+      id: date + "_" + type + "_" + (cols[4]||""),
+      date,
+      week: cols[0] || "",
+      day: cols[2] || "",
+      type,
+      distance:         num(clean(cols[4])),
+      duration:         num(clean(cols[5])) || num(clean(cols[9])),
+      pace:             clean(cols[6]),
+      shoe:             cols[7] && cols[7] !== "—" && cols[7] !== "" && cols[7] !== "nan" ? cols[7] : null,
+      watts:            num(clean(cols[8])),
+      bikeDuration:     num(clean(cols[9])),
+      strengthType:     clean(cols[10]),
+      strengthDuration: num(clean(cols[11])),
+      stiffness:        num(clean(cols[12])),
+      nextDay:          clean(cols[13]),
+      pain:             num(clean(cols[14])),
+      load:             num(clean(cols[15])),
+      sleep:            num(clean(cols[16])),
+      meds:             clean(cols[17]),
+      calories:         num(clean(cols[18])),
+      protein:          num(clean(cols[19])),
+      notes:            null,
+      planned:          false,
+    });
+  }
+  return parsed;
+}
+
+function splitCSVLine(line) {
+  // Handles quoted fields with commas inside
+  const result = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { inQuotes = !inQuotes; }
+    else if (ch === "," && !inQuotes) { result.push(current); current = ""; }
+    else { current += ch; }
+  }
+  result.push(current);
+  return result;
+}
+
+function mergeWorkouts(incoming) {
+  // Build map of existing by id
+  const existingById = new Map(state.workouts.map(w => [w.id, w]));
+  let added = 0, updated = 0;
+
+  incoming.forEach(w => {
+    if (existingById.has(w.id)) {
+      // Update existing with fresh sheet data (sheet is source of truth)
+      Object.assign(existingById.get(w.id), w);
+      updated++;
+    } else {
+      state.workouts.push(w);
+      added++;
+    }
+  });
+
+  // Re-sort by date
+  state.workouts.sort((a,b) => (a.date||"").localeCompare(b.date||""));
+  return { added, updated };
+}
+
+function importCSV(rawOverride) {
+  // Legacy manual import — still works for paste-in data
+  const raw = (rawOverride || (document.getElementById("importData") ? document.getElementById("importData").value : "") || "").trim();
+  if (!raw) { toast("No data to import", "error"); return 0; }
+  try {
+    const parsed = parseTrackerCSV(raw);
+    const { added, updated } = mergeWorkouts(parsed);
+    saveState();
+    if (!rawOverride) {
+      closeModal("importModal");
+      toast(`Imported ${added} new + ${updated} updated sessions`);
+      renderTab("overview");
+    }
+    return added + updated;
+  } catch(e) {
+    if (!rawOverride) toast("Import error: " + e.message, "error");
+    console.error("importCSV error:", e);
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MODAL UTILS
+// ─────────────────────────────────────────────────────────────────────────────
+function closeModal(id) {
+  document.getElementById(id).classList.remove("open");
+}
+document.querySelectorAll(".modal-overlay").forEach(m => {
+  m.addEventListener("click", e => { if (e.target === m) m.classList.remove("open"); });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
+loadState();
+updateCountdown();
+setInterval(updateCountdown, 60000);
+renderOverview();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GOOGLE SHEETS LIVE SYNC
+// ─────────────────────────────────────────────────────────────────────────────
+function openSheetsSync() {
+  const savedUrl = state.sheetsUrl || "";
+  document.getElementById("sheets-modal").style.display = "flex";
+  document.getElementById("sheets-url-input").value = savedUrl;
+}
+function closeSheetsSync() {
+  document.getElementById("sheets-modal").style.display = "none";
+}
+// Route through CORS proxy so browser fetch() works on Google Sheets CSV
+function proxyUrl(url) {
+  const clean = url.replace("webcal://", "https://");
+  return "https://api.allorigins.win/raw?url=" + encodeURIComponent(clean);
+}
+
+async function fetchSheetCSV(url) {
+  // Try direct first (works if served from same origin or CORS enabled)
+  // then fall back to proxy
+  let text = null;
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    if (res.ok) text = await res.text();
+  } catch(e) { /* fall through to proxy */ }
+
+  if (!text || text.trim().startsWith("<!")) {
+    // Direct failed or returned HTML — use CORS proxy
+    const res = await fetch(proxyUrl(url), { cache: "no-store" });
+    if (!res.ok) throw new Error("Proxy returned HTTP " + res.status);
+    text = await res.text();
+  }
+
+  if (!text || text.trim().startsWith("<!")) {
+    throw new Error("Received HTML instead of CSV — check the sheet is published as CSV");
+  }
+  return text;
+}
+
+async function connectSheets() {
+  const url = document.getElementById("sheets-url-input").value.trim();
+  if (!url) { toast("Paste your Google Sheets CSV URL first", "error"); return; }
+
+  const statusEl = document.getElementById("sheets-status");
+  statusEl.textContent = "Connecting…";
+  statusEl.style.color = "var(--accent)";
+
+  try {
+    const text = await fetchSheetCSV(url);
+    const parsed = parseTrackerCSV(text);
+    if (!parsed.length) throw new Error("No data rows found — check the sheet has logged sessions");
+
+    const { added, updated } = mergeWorkouts(parsed);
+    state.sheetsUrl = url;
+    state.lastSynced = new Date().toISOString();
+    saveState();
+    closeSheetsSync();
+    toast(`✓ Synced ${added} new + ${updated} updated sessions from Google Sheets`);
+    statusEl.textContent = "";
+    renderTab("overview");
+    updateLastSyncedBadge();
+  } catch (err) {
+    console.error("Sheets sync error:", err);
+    statusEl.textContent = "Error: " + err.message;
+    statusEl.style.color = "#ff4757";
+    toast("Sync failed — see error below the URL field", "error");
+  }
+}
+
+async function autoSync() {
+  if (!state.sheetsUrl) return;
+  try {
+    const text = await fetchSheetCSV(state.sheetsUrl);
+    const parsed = parseTrackerCSV(text);
+    if (!parsed.length) return;
+    mergeWorkouts(parsed);
+    state.lastSynced = new Date().toISOString();
+    saveState();
+    updateLastSyncedBadge();
+    renderTab("overview");
+  } catch(e) {
+    console.warn("Auto-sync failed:", e.message);
+  }
+}
+
+function updateLastSyncedBadge() {
+  const el = document.getElementById("last-synced-badge");
+  if (!el || !state.lastSynced) return;
+  const d = new Date(state.lastSynced);
+  el.textContent = "Last synced: " + d.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+  el.style.display = "inline";
+}
+
+// Auto-sync on load if URL saved
+window.addEventListener("load", () => {
+  // Load persisted data first
+  loadState();
+  // Pre-fill modal input with saved URL
+  const inp = document.getElementById("sheets-url-input");
+  if (inp && state.sheetsUrl) inp.value = state.sheetsUrl;
+  // Auto-sync on load
+  setTimeout(async () => {
+    await autoSync();
+    updateLastSyncedBadge();
+    renderTab("overview");
+  }, 600);
+});
+</script>
+
+<!-- ── SETTINGS PANEL ── -->
+<div id="tim-settings-overlay" onclick="closeTimSettings(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:flex-start;justify-content:flex-end;padding:60px 12px 0 0;">
+  <div onclick="event.stopPropagation()" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;width:300px;display:flex;flex-direction:column;gap:18px;box-shadow:0 8px 40px rgba(0,0,0,0.4);">
+    <div style="font-family:var(--font-display);font-size:20px;letter-spacing:1px;color:var(--text);">⚙️ SETTINGS</div>
+
+    <div>
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);margin-bottom:10px;">Text Size</div>
+      <div style="display:flex;gap:6px;">
+        <button onclick="setTimFontSize('sm',this)" class="tim-font-btn" style="flex:1;padding:8px 4px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--text2);cursor:pointer;font-size:11px;font-family:var(--font-body);font-weight:600;">Small</button>
+        <button onclick="setTimFontSize('md',this)" class="tim-font-btn" style="flex:1;padding:8px 4px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--text2);cursor:pointer;font-size:13px;font-family:var(--font-body);font-weight:600;">Med</button>
+        <button onclick="setTimFontSize('lg',this)" class="tim-font-btn" style="flex:1;padding:8px 4px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--text2);cursor:pointer;font-size:15px;font-family:var(--font-body);font-weight:600;">Large</button>
+        <button onclick="setTimFontSize('xl',this)" class="tim-font-btn" style="flex:1;padding:8px 4px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--text2);cursor:pointer;font-size:17px;font-family:var(--font-body);font-weight:600;">XL</button>
+      </div>
+    </div>
+
+    <div style="height:1px;background:var(--border);"></div>
+
+    <div>
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);margin-bottom:10px;">Tom's Training</div>
+      <a href="Toms-Training-Dashboard.html" style="display:block;text-align:center;background:var(--surface2);border:1px solid var(--border);color:var(--text);text-decoration:none;padding:10px;border-radius:8px;font-size:13px;font-weight:600;">💪 Open Tom's Dashboard →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── SETTINGS ──
+function toggleTimSettings() {
+  const el = document.getElementById("tim-settings-overlay");
+  el.style.display = el.style.display === "none" ? "flex" : "none";
+  // Mark current size active
+  const saved = localStorage.getItem("tim_font_size") || "md";
+  document.querySelectorAll(".tim-font-btn").forEach(b => {
+    b.style.borderColor = "";
+    b.style.color = "";
+  });
+  const sizes = ["sm","md","lg","xl"];
+  const activeBtn = document.querySelectorAll(".tim-font-btn")[sizes.indexOf(saved)];
+  if (activeBtn) { activeBtn.style.borderColor = "var(--accent2)"; activeBtn.style.color = "var(--accent2)"; }
+}
+
+function closeTimSettings(e) {
+  if (e.target === document.getElementById("tim-settings-overlay")) {
+    document.getElementById("tim-settings-overlay").style.display = "none";
+  }
+}
+
+function setTimFontSize(size, btn) {
+  const zoomMap = { sm: 0.85, md: 1.0, lg: 1.15, xl: 1.3 };
+  document.querySelector(".layout").style.zoom = zoomMap[size];
+  document.querySelector(".nav-tabs").style.zoom = zoomMap[size];
+  localStorage.setItem("tim_font_size", size);
+  document.querySelectorAll(".tim-font-btn").forEach(b => { b.style.borderColor = ""; b.style.color = ""; });
+  btn.style.borderColor = "var(--accent2)";
+  btn.style.color = "var(--accent2)";
+}
+
+// Apply saved font size on load
+(function() {
+  const saved = localStorage.getItem("tim_font_size") || "md";
+  const zoomMap = { sm: 0.85, md: 1.0, lg: 1.15, xl: 1.3 };
+  const applyZoom = () => {
+    const layout = document.querySelector(".layout");
+    const tabs = document.querySelector(".nav-tabs");
+    if (layout) layout.style.zoom = zoomMap[saved];
+    if (tabs) tabs.style.zoom = zoomMap[saved];
+  };
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyZoom);
+  } else { applyZoom(); }
+})();
+
+// ── AI COACH ──
+let coachApiKey = "";
+let coachHistory = [];
+let coachPendingImage = null;
+
+const COACH_SYS = () => {
+  const recentWorkouts = [...state.workouts]
+    .filter(w => !w.planned)
+    .sort((a,b) => b.date.localeCompare(a.date))
+    .slice(0, 14)
+    .map(w => `${w.date} | ${w.type}${w.distance ? " | "+w.distance+"mi" : ""}${w.duration ? " | "+w.duration+"min" : ""}${w.pace ? " | "+w.pace+"/mi" : ""}${w.watts ? " | "+w.watts+"w" : ""} | Stiff:${w.stiffness??"-"} Pain:${w.pain??"-"} Sleep:${w.sleep??"-"}${w.notes ? " | "+w.notes : ""}`)
+    .join("\n");
+
+  const shoes = state.shoes.map(s => {
+    const miles = (s.start || 0) + shoeMiles(s.id);
+    return `${s.name} (${s.category}): ${miles.toFixed(0)}/${s.max}mi — ${s.status}`;
+  }).join("\n");
+
+  const achRecent = [...(state.achilles || SEED_ACHILLES)]
+    .slice(-7)
+    .map(a => `${a.date} Stiff:${a.stiffness} Pain:${a.pain} ISO:${a.isometrics} HSR:${a.hsrCalfRaises} Eccentric:${a.eccentricDrops}${a.notes?" Notes:"+a.notes:""}`)
+    .join("\n");
+
+  // Weekly mileage summary last 4 weeks
+  const now = new Date();
+  const weekSummary = [0,1,2,3].map(wksAgo => {
+    const end = new Date(now); end.setDate(end.getDate() - wksAgo*7);
+    const start = new Date(end); start.setDate(start.getDate() - 7);
+    const endStr = end.toISOString().split("T")[0];
+    const startStr = start.toISOString().split("T")[0];
+    const wMiles = state.workouts.filter(w => !w.planned && w.type?.includes("Run") && w.date >= startStr && w.date < endStr).reduce((s,w) => s + (parseFloat(w.distance)||0), 0);
+    const label = wksAgo === 0 ? "This week" : `${wksAgo}wk ago`;
+    return `${label}: ${wMiles.toFixed(1)} run miles`;
+  }).join(" | ");
+
+  return `You are Tim's personal AI training coach. Tim is an experienced ultra-runner preparing for the May 30th 50-Mile Ultra. He is managing insertional Achilles tendinopathy throughout this training block.
+
+RECENT 14 WORKOUTS:
+${recentWorkouts || "None logged yet."}
+
+WEEKLY MILEAGE TREND:
+${weekSummary}
+
+SHOE MILEAGE:
+${shoes}
+
+ACHILLES REHAB LOG (last 7 entries — stiffness 0-5, pain 0-10, ISO/HSR compliance):
+${achRecent || "No dedicated Achilles entries yet."}
+
+RACE: May 30th 50-Mile Ultra — 14-week plan. Currently in the final weeks of buildup.
+
+YOUR ROLE: Be Tim's direct, data-aware coach. Reference his actual numbers — stiffness trends, mileage, watts, shoe wear. Flag patterns (stiffness spikes, pain creep, missed rehab). Give specific Achilles-aware training advice. When he shares a Garmin screenshot, analyze HR zones, pace, and power against his training context. No generic advice — be specific to his data.`;
+};
+
+function activateCoach() {
+  const key = document.getElementById("coach-api-key").value.trim();
+  if (!key.startsWith("sk-ant-")) { toast("Enter a valid API key starting with sk-ant-", "error"); return; }
+  coachApiKey = key;
+  localStorage.setItem("tim_coach_key", key);
+  document.getElementById("coach-setup-bar").style.background = "rgba(71,200,255,0.05)";
+  document.getElementById("coach-api-key").style.borderColor = "var(--accent2)";
+  addCoachMsg("ai", `Ready to coach, Tim! I've loaded your last ${Math.min(state.workouts.filter(w=>!w.planned).length,10)} workouts and shoe mileage. What are we working on?`);
+}
+
+function buildCoachContext() {
+  return COACH_SYS();
+}
+
+async function sendCoachMsg() {
+  const inp = document.getElementById("coach-input");
+  const text = inp.value.trim();
+  if (!text && !coachPendingImage) return;
+  if (!coachApiKey) { toast("Activate the coach first — paste your API key above", "error"); return; }
+  if (document.getElementById("coach-send-btn").disabled) return;
+
+  inp.value = ""; inp.style.height = "auto";
+
+  let userContent;
+  if (coachPendingImage) {
+    userContent = [
+      { type: "image", source: { type: "base64", media_type: coachPendingImage.mediaType, data: coachPendingImage.base64 } },
+      { type: "text", text: text || "Please analyze this Garmin activity in the context of my training." }
+    ];
+    addCoachMsgWithImg(text || "Here's my Garmin screenshot:", document.getElementById("coach-img-thumb").src);
+    clearCoachImage();
+  } else {
+    userContent = text;
+    addCoachMsg("user", text);
+  }
+
+  coachHistory.push({ role: "user", content: userContent });
+  document.getElementById("coach-send-btn").disabled = true;
+  const typing = addCoachTyping();
+
+  try {
+    const res = await fetch(PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-api-key": coachApiKey, "anthropic-version": "2023-06-01" },
+      body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 2000, system: buildCoachContext(), messages: coachHistory })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || "API error");
+    const reply = data.content?.[0]?.text || "Sorry, try again.";
+    coachHistory.push({ role: "assistant", content: reply });
+    typing.remove();
+    addCoachMsg("ai", reply);
+  } catch(e) {
+    typing.remove();
+    addCoachMsg("ai", `⚠️ Error: ${e.message}`);
+  }
+  document.getElementById("coach-send-btn").disabled = false;
+}
+
+function addCoachMsg(role, text) {
+  const el = document.getElementById("coach-msgs");
+  const div = document.createElement("div");
+  div.style.cssText = `display:flex;gap:10px;${role === "user" ? "flex-direction:row-reverse;" : ""}`;
+  const av = document.createElement("div");
+  av.style.cssText = `width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:var(--font-display);letter-spacing:1px;${role === "ai" ? "background:var(--accent2);color:#000;" : "background:var(--surface2);color:var(--text2);"}`;
+  av.textContent = role === "ai" ? "AI" : "TIM";
+  const bub = document.createElement("div");
+  bub.style.cssText = `max-width:calc(100% - 48px);padding:12px 16px;border-radius:12px;font-size:14px;line-height:1.7;${role === "ai" ? "background:var(--surface);border:1px solid var(--border);border-bottom-left-radius:3px;" : "background:var(--surface2);border-bottom-right-radius:3px;color:var(--text2);"}`;
+  bub.innerHTML = role === "ai" ? fmtCoachText(text) : escCoach(text);
+  div.appendChild(av); div.appendChild(bub);
+  el.appendChild(div); el.scrollTop = el.scrollHeight;
+}
+
+function addCoachMsgWithImg(text, src) {
+  const el = document.getElementById("coach-msgs");
+  const div = document.createElement("div");
+  div.style.cssText = "display:flex;gap:10px;flex-direction:row-reverse;";
+  const av = document.createElement("div");
+  av.style.cssText = "width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:var(--font-display);background:var(--surface2);color:var(--text2);";
+  av.textContent = "TIM";
+  const bub = document.createElement("div");
+  bub.style.cssText = "max-width:calc(100% - 48px);padding:12px 16px;border-radius:12px;background:var(--surface2);border-bottom-right-radius:3px;";
+  bub.innerHTML = `<img src="${src}" style="max-width:200px;max-height:150px;border-radius:8px;display:block;margin-bottom:${text ? "8px" : "0"}"><span style="font-size:14px;color:var(--text2);">${escCoach(text)}</span>`;
+  div.appendChild(av); div.appendChild(bub);
+  el.appendChild(div); el.scrollTop = el.scrollHeight;
+}
+
+function addCoachTyping() {
+  const el = document.getElementById("coach-msgs");
+  const div = document.createElement("div");
+  div.style.cssText = "display:flex;gap:10px;";
+  div.innerHTML = `<div style="width:32px;height:32px;border-radius:50%;background:var(--accent2);color:#000;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">AI</div><div style="padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;"><span id="coach-typing-dots" style="display:flex;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:var(--text2);animation:tdot 1.2s infinite;"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--text2);animation:tdot 1.2s 0.2s infinite;"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--text2);animation:tdot 1.2s 0.4s infinite;"></span></span></div>`;
+  if (!document.getElementById("coach-typing-style")) {
+    const s = document.createElement("style");
+    s.id = "coach-typing-style";
+    s.textContent = "@keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}";
+    document.head.appendChild(s);
+  }
+  el.appendChild(div); el.scrollTop = el.scrollHeight;
+  return div;
+}
+
+function fmtCoachText(t) {
+  t = escCoach(t);
+  t = t.replace(/\*\*(.*?)\*\*/g, "<strong style='color:var(--accent2)'>$1</strong>");
+  t = t.replace(/\*(.*?)\*/g, "<em style='color:var(--text2)'>$1</em>");
+  t = t.replace(/^[•\-] (.+)$/gm, "<li>$1</li>");
+  t = t.replace(/(<li>.*?<\/li>\n?)+/gs, m => `<ul style='padding-left:18px;margin:6px 0'>${m}</ul>`);
+  return t.split("\n\n").map(p => p.trim().startsWith("<ul") ? p : `<p>${p.replace(/\n/g,"<br>")}</p>`).join("");
+}
+
+function escCoach(t) { return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+// Coach image handling
+function handleCoachImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  loadCoachImageFile(file);
+  input.value = "";
+}
+
+function loadCoachImageFile(file) {
+  const allowed = ["image/jpeg","image/png","image/gif","image/webp"];
+  if (!allowed.includes(file.type)) { toast("Please use a JPEG or PNG image", "error"); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    coachPendingImage = { base64: e.target.result.split(",")[1], mediaType: file.type };
+    document.getElementById("coach-img-thumb").src = e.target.result;
+    document.getElementById("coach-image-preview").style.display = "flex";
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearCoachImage() {
+  coachPendingImage = null;
+  document.getElementById("coach-image-preview").style.display = "none";
+  document.getElementById("coach-img-thumb").src = "";
+}
+
+// Paste image from clipboard in coach tab
+document.addEventListener("paste", function(e) {
+  const activeTab = document.querySelector(".tab-panel.active");
+  if (!activeTab || activeTab.id !== "tab-coach") return;
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type.startsWith("image/")) {
+      e.preventDefault();
+      loadCoachImageFile(item.getAsFile());
+      break;
+    }
+  }
+});
+
+// Drag and drop on coach input bar
+const coachInputBar = document.getElementById("coach-input-bar");
+if (coachInputBar) {
+  coachInputBar.addEventListener("dragover", e => { e.preventDefault(); coachInputBar.style.borderTop = "2px solid var(--accent2)"; });
+  coachInputBar.addEventListener("dragleave", () => { coachInputBar.style.borderTop = ""; });
+  coachInputBar.addEventListener("drop", e => {
+    e.preventDefault(); coachInputBar.style.borderTop = "";
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) loadCoachImageFile(file);
+  });
+}
+
+// Coach input keyboard handler
+document.getElementById("coach-input").addEventListener("keydown", function(e) {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendCoachMsg(); }
+});
+document.getElementById("coach-input").addEventListener("input", function() {
+  this.style.height = "auto";
+  this.style.height = Math.min(this.scrollHeight, 120) + "px";
+});
+
+// Auto-restore saved coach key
+(function() {
+  const saved = localStorage.getItem("tim_coach_key");
+  if (saved && saved.startsWith("sk-ant-")) {
+    coachApiKey = saved;
+    document.getElementById("coach-api-key").value = "••••••••••••";
+    document.getElementById("coach-api-key").style.borderColor = "var(--accent2)";
+  }
+})();
+</script>
+
+  </div><!-- end content-col -->
+</div><!-- end layout -->
+
+
+<!-- Google Sheets Sync Modal -->
+<div id="sheets-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;width:min(540px,90vw);max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h2 style="color:var(--text);font-size:18px;font-weight:700;margin:0;">⚡ Google Sheets Live Sync</h2>
+      <button onclick="closeSheetsSync()" style="background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;">✕</button>
+    </div>
+
+    <div style="background:var(--surface2);border-radius:10px;padding:16px;margin-bottom:16px;font-size:13px;color:var(--text2);line-height:1.8;">
+      <strong style="color:var(--accent);display:block;margin-bottom:6px;">How it works</strong>
+      Your Ultra Training Tracker sheet auto-syncs every time you open the dashboard. Just log sessions in the <strong style="color:var(--text)">Daily Log</strong> tab as normal — the dashboard pulls new entries automatically.
+    </div>
+
+    <div style="background:var(--surface2);border-radius:10px;padding:16px;margin-bottom:16px;font-size:13px;color:var(--text2);line-height:1.8;">
+      <strong style="color:var(--text);display:block;margin-bottom:4px;">One-time setup (if URL changes):</strong>
+      1. Open your sheet in Google Sheets<br>
+      2. <strong style="color:var(--text)">File → Share → Publish to web</strong><br>
+      3. Select the <strong style="color:var(--text)">"Daily Log"</strong> tab → format <strong style="color:var(--text)">"CSV"</strong><br>
+      4. Click <strong style="color:var(--text)">Publish</strong> → copy the URL → paste below
+    </div>
+
+    <div style="margin-bottom:8px;">
+      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:6px;font-weight:600;letter-spacing:0.5px;">GOOGLE SHEETS CSV URL (Daily Log tab)</label>
+      <input id="sheets-url-input" type="text"
+        placeholder="https://docs.google.com/spreadsheets/d/YOUR_ID/pub?gid=0&single=true&output=csv"
+        value="https://docs.google.com/spreadsheets/d/e/2PACX-1vT1dzNJQBp7xWusAJBRj6mnBGz5Nabde59lc-KyE3cccWF52hW4ad3-CfNDsbMDikk5R5ykNFs8srz0/pub?gid=1949594177&single=true&output=csv"
+        style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:12px;box-sizing:border-box;font-family:monospace;">
+    </div>
+
+    <div id="sheets-status" style="font-size:12px;color:var(--accent);margin-bottom:12px;min-height:18px;"></div>
+
+    <div style="display:flex;gap:10px;">
+      <button onclick="connectSheets()" style="flex:1;background:var(--accent);color:#000;border:none;padding:12px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;">⚡ Sync Now</button>
+      <button onclick="closeSheetsSync()" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);padding:12px 20px;border-radius:8px;font-size:14px;cursor:pointer;">Close</button>
+    </div>
+
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);line-height:1.6;">
+      <strong style="color:var(--text2);">What syncs:</strong> All sessions from the Daily Log tab — distance, pace, watts, stiffness, pain, sleep, protein. New entries are added, existing entries are updated. Your manually-logged workouts are preserved.<br><br>
+      <strong style="color:var(--text2);">Auto-sync:</strong> Runs every time you open the dashboard. The ⚡ button above forces an immediate sync.
+    </div>
+  </div>
+</div>
+</body>
+</html>
