@@ -646,6 +646,7 @@ function switchTab(name, el) {
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   if(el) el.classList.add('active');
   document.getElementById('panel-'+name).classList.add('active');
+  if(name==='aave'&&!aaveLoaded) loadAaveData();
 }
 
 // ── CONNECTION ─────────────────────────────────────────────────────────────
@@ -1211,12 +1212,6 @@ async function loadAaveData() {
   }
 }
 
-// Load Aave data when tab is first opened
-const _origSwitch = switchTab;
-function switchTab(name, el) {
-  _origSwitch(name, el);
-  if(name==='aave'&&!aaveLoaded) loadAaveData();
-}
 setInterval(()=>{ if(aaveLoaded) loadAaveData(); }, 5*60*1000);
 </script>
 </body>
