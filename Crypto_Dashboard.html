@@ -203,6 +203,7 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
   <div class="nav-tab" onclick="switchTab('bytype',this)">By Type</div>
   <div class="nav-tab" onclick="switchTab('bylocation',this)">By Location</div>
   <div class="nav-tab" onclick="switchTab('defi',this)">DeFi / LPs</div>
+  <div class="nav-tab" onclick="switchTab('aave',this)">Aave V3</div>
   <div class="nav-tab" onclick="switchTab('holdings',this)">All Holdings</div>
   <div class="nav-tab" onclick="switchTab('framework',this)">Framework</div>
   <div class="nav-tab" onclick="switchTab('tools',this)">Tools</div>
@@ -320,6 +321,68 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
     <div class="defi-block"><div class="defi-top"><span class="defi-name">OVN Vault</span><span class="defi-val">$21.64</span></div><div class="defi-meta"><span>Extra Finance</span><span>Base</span><span>Vault</span></div></div>
     <div class="defi-block"><div class="defi-top"><span class="defi-name">SUI Lending</span><span class="defi-val">$21.51</span></div><div class="defi-meta"><span>SUI</span><span>Lending</span></div></div>
     <div class="defi-block" style="border:none"><div class="defi-top"><span class="defi-name">USDC + PURR · Curve stXTZ+WXTZ</span><span class="defi-val">$15.12</span></div><div class="defi-meta"><span>Hyperliquid · Curve</span><span>EVM</span></div></div>
+  </div>
+</div>
+
+<!-- ══ AAVE V3 ARBITRUM ══ -->
+<div class="panel" id="panel-aave">
+
+  <div class="g4" id="aave-metrics">
+    <div class="card"><div class="card-label">Total Collateral</div><div class="card-fig" id="a-collateral" style="color:var(--slate)">—</div><div class="card-note" id="a-collateral-sub">Loading...</div></div>
+    <div class="card"><div class="card-label">Total Debt</div><div class="card-fig" id="a-debt" style="color:var(--rust)">—</div><div class="card-note" id="a-debt-sub">Loading...</div></div>
+    <div class="card"><div class="card-label">Health Factor</div><div class="card-fig" id="a-hf" style="color:var(--sage)">—</div><div class="card-note" id="a-hf-sub">Loading...</div></div>
+    <div class="card"><div class="card-label">Net Worth</div><div class="card-fig" id="a-net" style="color:var(--ink)">—</div><div class="card-note" id="a-net-sub">Available to borrow: —</div></div>
+  </div>
+
+  <div id="a-alert" style="margin-bottom:16px;"></div>
+
+  <div class="g2">
+    <div>
+      <div class="sec-label">Your Supplies · Arbitrum V3</div>
+      <div class="card" id="a-supplies-card">
+        <div style="padding:20px;text-align:center;color:var(--ink4);font-family:var(--font-mono);font-size:12px;">Loading position...</div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-label">Your Borrows · Arbitrum V3</div>
+      <div class="card" id="a-borrows-card">
+        <div style="padding:20px;text-align:center;color:var(--ink4);font-family:var(--font-mono);font-size:12px;">Loading position...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div>
+      <div class="sec-label">Health Factor &amp; Liquidation</div>
+      <div class="card" id="a-hf-card">
+        <div style="padding:20px;text-align:center;color:var(--ink4);font-family:var(--font-mono);font-size:12px;">Loading...</div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-label">Carry Trade Analysis</div>
+      <div class="card" id="a-carry-card">
+        <div style="padding:20px;text-align:center;color:var(--ink4);font-family:var(--font-mono);font-size:12px;">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label">Aave V3 Arbitrum — Live Market Rates</div>
+  <div class="card mb20" id="a-rates-card">
+    <div style="padding:20px;text-align:center;color:var(--ink4);font-family:var(--font-mono);font-size:12px;">Loading market rates...</div>
+  </div>
+
+  <div class="sec-label">Price Drop Scenarios</div>
+  <div class="card mb20" id="a-scenarios-card">
+    <div style="padding:20px;text-align:center;color:var(--ink4);font-family:var(--font-mono);font-size:12px;">Loading...</div>
+  </div>
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;">
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink4);" id="a-last-updated">Not yet loaded</div>
+    <div style="display:flex;gap:10px;">
+      <a href="https://app.aave.com/markets/?marketName=proto_arbitrum_v3" target="_blank" style="font-family:var(--font-mono);font-size:10px;color:var(--slate-l);text-decoration:none;">app.aave.com ↗</a>
+      <a href="https://aavescan.com/arbitrum-v3" target="_blank" style="font-family:var(--font-mono);font-size:10px;color:var(--slate-l);text-decoration:none;">Aavescan ↗</a>
+      <a href="https://arbiscan.io/address/0x2Ec1070b4583379517B78013919D663334e349BD" target="_blank" style="font-family:var(--font-mono);font-size:10px;color:var(--slate-l);text-decoration:none;">Arbiscan ↗</a>
+    </div>
   </div>
 </div>
 
@@ -887,6 +950,274 @@ buildByType();
 buildByLocation();
 renderHoldings();
 loadData();
+
+// ══ AAVE V3 ARBITRUM ════════════════════════════════════════════════════════
+const AAVE_WALLET = '0x2Ec1070b4583379517B78013919D663334e349BD';
+const AAVE_POOL_ADDR = '0x794a61358D6845594F94dc1DB02A252b5b4814aD';
+const AAVE_DATA_PROVIDER = '0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654';
+const ARB_RPC = 'https://arb1.arbitrum.io/rpc';
+let aaveLoaded = false;
+
+async function aaveRpcCall(to, data) {
+  const r = await fetch(ARB_RPC, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({jsonrpc:'2.0',method:'eth_call',params:[{to,data},'latest'],id:1})
+  });
+  return (await r.json()).result;
+}
+
+async function aaveFetchAccount() {
+  const sig = '0xbf92857c';
+  const addr = AAVE_WALLET.slice(2).toLowerCase().padStart(64,'0');
+  const res = await aaveRpcCall(AAVE_POOL_ADDR, sig+addr);
+  if(!res||res==='0x') return null;
+  const c = i => Number(BigInt('0x'+res.slice(2+i*64,2+(i+1)*64)));
+  return {
+    collateral: c(0)/1e8, debt: c(1)/1e8,
+    availableBorrows: c(2)/1e8,
+    liquidationThreshold: c(3)/10000,
+    ltv: c(4)/10000,
+    healthFactor: c(5)/1e18 > 1e10 ? Infinity : c(5)/1e18
+  };
+}
+
+async function aaveFetchEthPrice() {
+  try { const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'); return (await r.json()).ethereum?.usd||2100; } catch{return 2100;}
+}
+
+async function aaveFetchUserReserves() {
+  const assets = [
+    {sym:'ETH', addr:'0x82aF49447D8a07e3bd95BD0d56f35241523fBab1', dec:18, type:'Core'},
+    {sym:'wstETH', addr:'0x5979D7b546E38E414F7E9822514be443A4800529', dec:18, type:'LSD'},
+    {sym:'WBTC', addr:'0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f', dec:8, type:'Core'},
+    {sym:'USDC', addr:'0xaf88d065e77c8cC2239327C5EDb3A432268e5831', dec:6, type:'Stable'},
+    {sym:'USDT', addr:'0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9', dec:6, type:'Stable'},
+  ];
+  const ethPrice = await aaveFetchEthPrice();
+  const prices = {ETH:ethPrice, wstETH:ethPrice*1.198, WBTC:83000, USDC:1, USDT:1};
+  const supplies=[], borrows=[];
+  for(const a of assets) {
+    try {
+      const sig='0x28dd2d01';
+      const data=sig+a.addr.slice(2).padStart(64,'0')+AAVE_WALLET.slice(2).toLowerCase().padStart(64,'0');
+      const res=await aaveRpcCall(AAVE_DATA_PROVIDER, data);
+      if(!res||res==='0x') continue;
+      const c=i=>Number(BigInt('0x'+res.slice(2+i*64,2+(i+1)*64)));
+      const bal=c(0)/Math.pow(10,a.dec);
+      const debt=c(2)/Math.pow(10,a.dec);
+      const isCol=c(8)===1;
+      const price=prices[a.sym]||1;
+      if(bal>0.000001) supplies.push({...a,bal,usd:bal*price,collateral:isCol,price});
+      if(debt>0.000001) borrows.push({...a,bal:debt,usd:debt*price,price});
+    } catch(e){}
+  }
+  return {supplies, borrows};
+}
+
+async function aaveFetchRates() {
+  const assets = [
+    {sym:'ETH', addr:'0x82aF49447D8a07e3bd95BD0d56f35241523fBab1', dec:18},
+    {sym:'wstETH', addr:'0x5979D7b546E38E414F7E9822514be443A4800529', dec:18},
+    {sym:'WBTC', addr:'0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f', dec:8},
+    {sym:'USDC', addr:'0xaf88d065e77c8cC2239327C5EDb3A432268e5831', dec:6},
+    {sym:'USDT', addr:'0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9', dec:6},
+  ];
+  const rates=[];
+  for(const a of assets) {
+    try {
+      const sig='0x35ea6a75';
+      const res=await aaveRpcCall(AAVE_DATA_PROVIDER, sig+a.addr.slice(2).padStart(64,'0'));
+      if(!res||res==='0x') continue;
+      const chunk=i=>BigInt('0x'+res.slice(2+i*64,2+(i+1)*64));
+      const liqRate=Number(chunk(5))/1e27;
+      const varRate=Number(chunk(6))/1e27;
+      const supAPY=(Math.pow(1+liqRate/31536000,31536000)-1)*100;
+      const borAPY=(Math.pow(1+varRate/31536000,31536000)-1)*100;
+      const totSup=Number(chunk(2))/Math.pow(10,a.dec);
+      const totDbt=Number(chunk(3))/Math.pow(10,a.dec);
+      const util=totSup>0?(totDbt/totSup)*100:0;
+      rates.push({...a, supAPY, borAPY, util});
+    } catch(e){}
+  }
+  return rates;
+}
+
+function aaveHFColor(hf) {
+  if(!isFinite(hf)||hf>=2.0) return 'var(--sage)';
+  if(hf>=1.5) return 'var(--amber)';
+  return 'var(--rust)';
+}
+
+function aaveHFLabel(hf) {
+  if(!isFinite(hf)) return 'No borrows';
+  if(hf>=2.0) return 'Safe ✓';
+  if(hf>=1.5) return 'Moderate — monitor';
+  return 'Caution — act soon';
+}
+
+function aFmt(n, d=0) { return '$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function aPct(n) { return n<0.01?'<0.01%':Number(n).toFixed(2)+'%'; }
+
+function aaveRenderSupplies(supplies) {
+  if(!supplies.length) return '<div style="color:var(--ink4);font-size:12px;padding:8px 0;">No active supply positions. Add ETH or wstETH as collateral on Aave V3 Arbitrum.</div>';
+  let html='<table class="htable"><thead><tr><th>Asset</th><th>Balance</th><th>Value</th><th>Collateral</th></tr></thead><tbody>';
+  for(const s of supplies){
+    const lidoNote = s.sym==='wstETH'?'<div style="font-size:10px;color:var(--violet);font-family:var(--font-mono);">+~3.5% Lido APY</div>':'';
+    html+=`<tr><td><span class="sym">${s.sym}</span>${lidoNote}</td><td class="val" style="text-align:left;">${s.bal.toFixed(4)}</td><td class="val">${aFmt(s.usd,2)}</td><td style="text-align:center;">${s.collateral?'<span style="color:var(--sage);">✓</span>':'<span style="color:var(--ink5);">—</span>'}</td></tr>`;
+  }
+  return html+'</tbody></table>';
+}
+
+function aaveRenderBorrows(borrows, rates) {
+  if(!borrows.length) return '<div style="color:var(--ink4);font-size:12px;padding:8px 0;">No active borrows. Once collateral is supplied, borrow USDC here.</div>';
+  let html='<table class="htable"><thead><tr><th>Asset</th><th>Balance</th><th>Value</th><th>APY (var)</th></tr></thead><tbody>';
+  for(const b of borrows){
+    const rate=rates.find(r=>r.sym===b.sym);
+    html+=`<tr><td class="sym">${b.sym}</td><td class="val" style="text-align:left;">${b.bal.toFixed(4)}</td><td class="val" style="color:var(--rust);">${aFmt(b.usd,2)}</td><td class="val" style="color:var(--rust);">${rate?aPct(rate.borAPY):'—'}</td></tr>`;
+  }
+  return html+'</tbody></table>';
+}
+
+function aaveRenderHF(acct) {
+  if(!acct) return '<div style="color:var(--rust);font-size:12px;">Could not load position data.</div>';
+  const hf=acct.healthFactor;
+  const isInf=!isFinite(hf);
+  const hfPct=isInf?100:Math.min(((hf-1)/2)*100,100);
+  const col=aaveHFColor(hf);
+  const dropToLiq=acct.collateral>0&&acct.debt>0?((1-(acct.debt/(acct.collateral*acct.liquidationThreshold)))*100):null;
+  return `
+    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px;">
+      <span style="font-family:var(--font-serif);font-size:32px;font-weight:700;color:${col};">${isInf?'∞':hf.toFixed(2)}</span>
+      <span style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);">${aaveHFLabel(hf)}</span>
+    </div>
+    <div style="height:8px;background:var(--cream2);border-radius:4px;margin-bottom:6px;overflow:hidden;">
+      <div style="height:100%;width:${hfPct}%;background:${col};border-radius:4px;transition:width .5s;"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10px;color:var(--ink4);margin-bottom:14px;">
+      <span>Liquidation 1.0</span><span>Caution 1.5</span><span>Safe 2.0+</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+      <div style="background:var(--cream);border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink4);margin-bottom:3px;">Liq. Threshold</div>
+        <div style="font-family:var(--font-serif);font-size:16px;font-weight:700;color:var(--amber);">${(acct.liquidationThreshold*100).toFixed(0)}%</div>
+      </div>
+      <div style="background:var(--cream);border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink4);margin-bottom:3px;">Can Borrow</div>
+        <div style="font-family:var(--font-serif);font-size:16px;font-weight:700;color:var(--sage);">${aFmt(acct.availableBorrows,0)}</div>
+      </div>
+      <div style="background:var(--cream);border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink4);margin-bottom:3px;">Drop to Liq.</div>
+        <div style="font-family:var(--font-serif);font-size:16px;font-weight:700;color:${dropToLiq&&dropToLiq>30?'var(--sage)':'var(--amber)'};">${dropToLiq?dropToLiq.toFixed(0)+'%':'—'}</div>
+      </div>
+    </div>`;
+}
+
+function aaveRenderCarry(acct, supplies, borrows, rates) {
+  const wst=supplies.find(s=>s.sym==='wstETH');
+  const usdcBorrow=borrows.find(b=>b.sym==='USDC');
+  const usdcRate=rates.find(r=>r.sym==='USDC');
+  if(!wst&&!usdcBorrow) return '<div style="color:var(--ink4);font-size:12px;line-height:1.7;">Supply wstETH as collateral and borrow USDC to see carry analysis. wstETH Lido staking yield (~3.5% APY) can offset your USDC borrow cost (~2.84%).</div>';
+  const lidoYield=wst?wst.usd*0.035:0;
+  const borrowCost=usdcBorrow&&usdcRate?usdcBorrow.usd*(usdcRate.borAPY/100):0;
+  const ethYield=supplies.filter(s=>s.sym!=='wstETH').reduce((sum,s)=>{const r=rates.find(x=>x.sym===s.sym);return sum+(r?s.usd*(r.supAPY/100):0);},0);
+  const net=lidoYield+ethYield-borrowCost;
+  const rows=[
+    wst&&{label:'wstETH Lido staking yield',val:`+${aFmt(lidoYield,0)}/yr`,pos:true},
+    ethYield>0&&{label:'ETH Aave supply yield',val:`+${aFmt(ethYield,0)}/yr`,pos:true},
+    borrowCost>0&&{label:'USDC borrow cost',val:`−${aFmt(borrowCost,0)}/yr`,pos:false},
+    {label:'Net carry',val:`${net>=0?'+':''}${aFmt(net,0)}/yr`,pos:net>=0,bold:true},
+  ].filter(Boolean);
+  return rows.map(r=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--cream2);${r.bold?'border-bottom:none;margin-top:4px;':''}">
+    <span style="font-size:13px;color:${r.bold?'var(--ink)':'var(--ink3)'};${r.bold?'font-weight:600;':''}">${r.label}</span>
+    <span style="font-family:var(--font-mono);font-size:12px;font-weight:600;color:${r.pos?'var(--sage)':'var(--rust)'};">${r.val}</span>
+  </div>`).join('');
+}
+
+function aaveRenderRates(rates) {
+  if(!rates.length) return '<div style="color:var(--ink4);font-size:12px;">Could not load market rates.</div>';
+  return `<table class="htable"><thead><tr><th>Asset</th><th>Supply APY</th><th>Borrow APY (var)</th><th>Utilization</th></tr></thead><tbody>
+    ${rates.map(r=>`<tr><td class="sym">${r.sym}</td>
+      <td class="val" style="text-align:left;color:var(--sage);">${aPct(r.supAPY)}</td>
+      <td class="val" style="text-align:left;color:var(--rust);">${aPct(r.borAPY)}</td>
+      <td class="pct">${r.util.toFixed(0)}%</td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+
+function aaveRenderScenarios(acct) {
+  if(!acct||acct.debt===0) return '<div style="color:var(--ink4);font-size:12px;">Scenarios will appear once you have an active borrow position.</div>';
+  const drops=[0,10,20,30,40,50];
+  return drops.map(d=>{
+    const newCol=acct.collateral*(1-d/100);
+    const newHF=(newCol*acct.liquidationThreshold)/acct.debt;
+    const col=aaveHFColor(newHF);
+    const pct=Math.min(((newHF-1)/2)*100,100);
+    const status=newHF<1?'Liquidated':newHF<1.5?'Danger':'Safe';
+    return `<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--cream2);">
+      <span style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);width:42px;flex-shrink:0;">−${d}%</span>
+      <div style="flex:1;height:6px;background:var(--cream2);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${Math.max(pct,0)}%;background:${col};border-radius:3px;"></div>
+      </div>
+      <span style="font-family:var(--font-mono);font-size:11px;color:${col};width:38px;text-align:right;">${newHF>50?'∞':newHF.toFixed(2)}</span>
+      <span style="font-family:var(--font-mono);font-size:10px;color:${col};width:64px;text-align:right;">${status}</span>
+    </div>`;
+  }).join('');
+}
+
+function aaveRenderAlert(acct) {
+  if(!acct) return '';
+  const hf=acct.healthFactor;
+  if(!isFinite(hf)||hf>=2.0) return `<div class="alert sage"><div class="alert-icon">✓</div><div><div class="alert-head">Position healthy</div>Health factor ${isFinite(hf)?hf.toFixed(2):'∞'} — well above liquidation threshold. wstETH staking yield is accruing.</div></div>`;
+  if(hf>=1.5) return `<div class="alert amber"><div class="alert-icon">⚠️</div><div><div class="alert-head">Health factor ${hf.toFixed(2)} — moderate buffer</div>Monitor ETH price. Consider adding collateral if price drops further.</div></div>`;
+  return `<div class="alert red"><div class="alert-icon">🚨</div><div><div class="alert-head">Health factor ${hf.toFixed(2)} — approaching liquidation</div>Repay debt or add collateral immediately.</div></div>`;
+}
+
+async function loadAaveData() {
+  if(!aaveLoaded) {
+    document.getElementById('a-supplies-card').innerHTML='<div style="padding:16px;text-align:center;color:var(--ink4);font-family:var(--font-mono);font-size:12px;">Loading from Arbitrum RPC...</div>';
+  }
+  try {
+    const [acct, {supplies,borrows}, rates] = await Promise.all([
+      aaveFetchAccount(), aaveFetchUserReserves(), aaveFetchRates()
+    ]);
+
+    if(acct) {
+      const hf=acct.healthFactor;
+      const col=aaveHFColor(hf);
+      document.getElementById('a-collateral').textContent=aFmt(acct.collateral,0);
+      document.getElementById('a-collateral').style.color='var(--slate)';
+      document.getElementById('a-collateral-sub').textContent=`LTV max ${(acct.ltv*100).toFixed(0)}%`;
+      document.getElementById('a-debt').textContent=aFmt(acct.debt,0);
+      document.getElementById('a-debt-sub').textContent=acct.debt>0?`${aPct(2.84)} var borrow rate`:'No active borrows';
+      document.getElementById('a-hf').textContent=isFinite(hf)?hf.toFixed(2):'∞';
+      document.getElementById('a-hf').style.color=col;
+      document.getElementById('a-hf-sub').textContent=aaveHFLabel(hf);
+      document.getElementById('a-net').textContent=aFmt(acct.collateral-acct.debt,0);
+      document.getElementById('a-net-sub').textContent=`Available to borrow: ${aFmt(acct.availableBorrows,0)}`;
+    }
+
+    document.getElementById('a-alert').innerHTML=aaveRenderAlert(acct);
+    document.getElementById('a-supplies-card').innerHTML=aaveRenderSupplies(supplies);
+    document.getElementById('a-borrows-card').innerHTML=aaveRenderBorrows(borrows,rates);
+    document.getElementById('a-hf-card').innerHTML=aaveRenderHF(acct);
+    document.getElementById('a-carry-card').innerHTML=aaveRenderCarry(acct,supplies,borrows,rates);
+    document.getElementById('a-rates-card').innerHTML=aaveRenderRates(rates);
+    document.getElementById('a-scenarios-card').innerHTML=aaveRenderScenarios(acct);
+    document.getElementById('a-last-updated').textContent='Updated: '+new Date().toLocaleTimeString()+' · Auto-refreshes every 5 min';
+    aaveLoaded=true;
+  } catch(e) {
+    console.error('Aave load error:',e);
+    document.getElementById('a-alert').innerHTML='<div class="alert amber"><div class="alert-icon">⚠️</div><div>Could not reach Arbitrum RPC. Check connection and try refreshing.</div></div>';
+  }
+}
+
+// Load Aave data when tab is first opened
+const _origSwitch = switchTab;
+function switchTab(name, el) {
+  _origSwitch(name, el);
+  if(name==='aave'&&!aaveLoaded) loadAaveData();
+}
+setInterval(()=>{ if(aaveLoaded) loadAaveData(); }, 5*60*1000);
 </script>
 </body>
 </html>
