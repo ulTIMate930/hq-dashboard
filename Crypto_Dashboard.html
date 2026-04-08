@@ -384,7 +384,7 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
       <a href="https://arbiscan.io/address/0x2Ec1070b4583379517B78013919D663334e349BD" target="_blank" style="font-family:var(--font-mono);font-size:10px;color:var(--slate-l);text-decoration:none;">Arbiscan ↗</a>
     </div>
   </div>
-</div>
+</div><!-- /panel-aave -->
 
 <!-- ══ ALL HOLDINGS ══ -->
 <div class="panel" id="panel-holdings">
@@ -541,6 +541,8 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-
 // ══════════════════════════════════════════════════════════════════════════
 // CONFIG
 // ══════════════════════════════════════════════════════════════════════════
+// Aave tab flag — declared here so switchTab can safely reference it
+let aaveLoaded = false;
 // Crypto Backend script (Crypto_Backend.gs attached to Crypto_Data sheet)
 const CRYPTO_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxGeKzqjc2BRU85WCMbtN_UW-TBk5tAZpgIOrhpBEpmw-1ckdFuIxf_YRfbYzBUfw-X/exec';
 // HQ Script — for tasks only
@@ -957,7 +959,6 @@ const AAVE_WALLET = '0x2Ec1070b4583379517B78013919D663334e349BD';
 const AAVE_POOL_ADDR = '0x794a61358D6845594F94dc1DB02A252b5b4814aD';
 const AAVE_DATA_PROVIDER = '0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654';
 const ARB_RPC = 'https://arb1.arbitrum.io/rpc';
-let aaveLoaded = false;
 
 async function aaveRpcCall(to, data) {
   const r = await fetch(ARB_RPC, {
