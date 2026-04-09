@@ -13,6 +13,7 @@
   --amber:#c07a1a;--amber-l:#e8a030;--amber-bg:#fdf5e6;
   --sage:#3a6b4a;--sage-l:#5a9a6a;--sage-bg:#eef4f0;
   --slate:#2d4a6b;--slate-l:#4a78a8;--slate-bg:#edf2f8;
+  --violet:#5b4a8a;--violet-l:#8a78c8;--violet-bg:#f0eef8;
   --font-serif:'Playfair Display',Georgia,serif;
   --font-sans:'DM Sans',sans-serif;
   --font-mono:'DM Mono',monospace;
@@ -185,46 +186,70 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   <div class="sec-label">Snapshot</div>
   <div class="g4 mb20">
     <div class="card"><div class="card-label">Total CC Debt</div><div class="card-fig" style="color:var(--rust)" id="snap-debt">—</div><div class="card-note">Across all cards</div></div>
-    <div class="card"><div class="card-label">Accruing Interest</div><div class="card-fig" style="color:var(--amber)" id="snap-accruing">—</div><div class="card-note">Crypto.com + Prime + BOA2*</div></div>
+    <div class="card"><div class="card-label">Active Promo Cards</div><div class="card-fig" style="color:var(--sage)" id="snap-accruing">$0</div><div class="card-note" id="snap-accruing-note">BOA1 0% Jun · BB1 ⏰ Jul · BB2-3 safe</div></div>
     <div class="card"><div class="card-label">Monthly Fixed</div><div class="card-fig" style="color:var(--amber)" id="snap-monthly">—</div><div class="card-note">Bills &amp; subscriptions</div></div>
     <div class="card"><div class="card-label">Recoverable / yr</div><div class="card-fig" style="color:var(--sage)">$736</div><div class="card-note">If 3 flagged subs cut</div></div>
   </div>
 
-  <div class="sec-label">Priority Checklist</div>
+  <div class="sec-label">Financial Focus</div>
   <div class="g2">
     <div class="card">
-      <div class="card-label" style="margin-bottom:12px;">🚨 Do These First</div>
-      <div class="row"><div class="lbl"><strong>Set AutoPay on Crypto.com</strong> — 26.99% with no autopay protection</div></div>
-      <div class="row"><div class="lbl"><strong>Verify BOA2 APR</strong> — promo expired Oct 2025, $905 likely accruing ~27%</div></div>
-      <div class="row"><div class="lbl"><strong>Plan BB1 payoff</strong> — deferred interest expires Jul 14 (~$140/mo)</div></div>
-      <div class="row"><div class="lbl"><strong>Deploy $7,177 Roth IRA cash</strong> — uninvested buying power</div></div>
+      <div class="card-label" style="margin-bottom:12px;">✅ Wins This Month</div>
+      <div class="row"><div class="lbl" style="color:var(--sage)"><strong>Crypto.com paid off</strong> — $4,844 cleared · Set AutoPay · Consider closing</div></div>
+      <div class="row"><div class="lbl" style="color:var(--sage)"><strong>Chase Prime Visa paid off</strong> — $970 cleared · Keep card for 5% Amazon</div></div>
+      <div class="row"><div class="lbl" style="color:var(--sage)"><strong>BOA (...7720) paid off</strong> — $905 cleared · Cancel this card</div></div>
+      <div class="row"><div class="lbl"><strong>BB1 payoff plan</strong> — deferred interest expires Jul 14 · ~$140/mo to clear</div></div>
     </div>
     <div class="card">
       <div class="card-label" style="margin-bottom:12px;">📋 Next Actions</div>
-      <div class="row"><div class="lbl">Pay off BOA1 before Jun 6, 2026 (0% promo ends)</div></div>
+      <div class="row"><div class="lbl">Close BOA (...7720) — no ongoing value after payoff</div></div>
+      <div class="row"><div class="lbl">Pay BOA1 in full before Jun 6, 2026 (0% promo ends)</div></div>
       <div class="row"><div class="lbl">Contribute to 2026 Robinhood IRA ($5,000 remaining)</div></div>
-      <div class="row"><div class="lbl">Add crypto value from Coinstats for complete net worth</div></div>
+      <div class="row"><div class="lbl">Deploy Roth IRA buying power — sitting uninvested</div></div>
       <div class="row"><div class="lbl">Decide: cancel Skill Incubator? ($396/yr)</div></div>
-      <div class="row"><div class="lbl">Decide: Wix + Google Workspace replacement? ($341/yr)</div></div>
     </div>
+  </div>
+
+  <div class="sec-label" style="margin-top:24px;">🤖 AI Portfolio Scan</div>
+  <div class="card" style="border-left:3px solid var(--violet);">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:260px;">
+        <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:1px;color:var(--violet);font-weight:600;margin-bottom:6px;">PORTFOLIO INTELLIGENCE</div>
+        <div style="font-size:13px;color:var(--ink3);line-height:1.7;margin-bottom:12px;">Paste a summary of your current holdings, balances, or financial situation below and get AI-generated insights, opportunities, and action items specific to your portfolio.</div>
+        <textarea id="ai-portfolio-input" style="width:100%;min-height:80px;padding:10px 12px;font-family:var(--font-sans);font-size:13px;color:var(--ink);background:var(--cream);border:1px solid var(--cream2);border-radius:6px;resize:vertical;outline:none;line-height:1.5;" placeholder="e.g. My net worth is $62k, crypto is $280k, I have $5k in 0% promo cards, $32k in Betterment SEP IRA, $32k Robinhood Roth IRA with $7k uninvested. What should I focus on?"></textarea>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;padding-top:28px;">
+        <button onclick="runAIScan()" id="ai-scan-btn"
+          style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:8px 16px;background:var(--violet);color:#fff;border:none;border-radius:6px;cursor:pointer;transition:background .15s;white-space:nowrap;"
+          onmouseover="this.style.background='#7060b0'" onmouseout="this.style.background='var(--violet)'">
+          ⚡ SCAN PORTFOLIO
+        </button>
+        <button onclick="document.getElementById('ai-portfolio-input').value='';document.getElementById('ai-result').innerHTML=''"
+          style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:8px 16px;background:var(--paper);color:var(--ink4);border:1px solid var(--cream2);border-radius:6px;cursor:pointer;">
+          CLEAR
+        </button>
+      </div>
+    </div>
+    <div id="ai-result" style="margin-top:14px;font-size:13px;color:var(--ink3);line-height:1.7;border-top:1px solid var(--cream2);padding-top:14px;display:none;"></div>
   </div>
 </div>
 
 <!-- ══ ALERTS ══ -->
 <div class="panel" id="panel-alerts">
   <div class="sec-label">Active Flags — Prioritized</div>
-  <div class="alert red"><div class="alert-icon">🚨</div><div><div class="alert-head">Crypto.com Visa — No AutoPay on $4,844 at 26.99% APR</div>Largest high-APR balance with zero autopay protection. Log into Comenity Bank → set AutoPay to minimum (or more). Takes 5 minutes. At 26.99% you're paying ~$109/month in interest.</div></div>
-  <div class="alert red"><div class="alert-icon">⚠️</div><div><div class="alert-head">BOA (...7720) — 0% Promo Expired Oct 2025</div>Over 5 months past expiry. The $905 balance is almost certainly accruing BofA standard APR (~25–29%). That's ~$20/month in silent interest. Log in and check the current rate today.</div></div>
-  <div class="alert amber"><div class="alert-icon">⏰</div><div><div class="alert-head">Best Buy BB1 — Deferred Interest Expires Jul 14, 2026</div>Best Buy promos are DEFERRED — if $973 isn't paid in full by Jul 14, Citi back-charges interest from day one of purchase. You have ~3.5 months. That's ~$140/month to clear it safely. BB2 safe until Jan 2027, BB3 until Mar 2027.</div></div>
-  <div class="alert amber"><div class="alert-icon">📦</div><div><div class="alert-head">NSA Storage — $177/mo ($2,124/yr)</div>Rate jumped $43/month (+32%). That's more than your car insurance annually. Is everything in that unit worth $177/month? Downsizing frees direct cash flow toward Crypto.com payoff.</div></div>
-  <div class="alert slate"><div class="alert-icon">💡</div><div><div class="alert-head">Subscription Audit — $736/yr Recoverable</div><strong>Skill Incubator ($396/yr):</strong> Actively using it for trading improvement?<br><strong>Google Workspace ($202/yr):</strong> Zoho Mail is free with custom domain.<br><strong>Wix ($168/yr):</strong> Cheaper DJ site options exist.<br>Total: <strong>$736/yr</strong> → redirect straight to Crypto.com payoff.</div></div>
+  <div class="alert sage"><div class="alert-icon">✅</div><div><div class="alert-head">Crypto.com, Chase Prime, BOA (...7720) — All Paid Off</div>Three high-APR balances cleared this month. You were paying ~$130+/month in combined interest. That cash flow is now free. Next step: close BOA (...7720) — it has no ongoing rewards value.</div></div>
+  <div class="alert amber"><div class="alert-icon">⏰</div><div><div class="alert-head">Best Buy BB1 — Deferred Interest Expires Jul 14, 2026</div>Still the most urgent remaining item. Best Buy promos are DEFERRED — if the balance isn't paid in full by Jul 14, Citi back-charges all interest from day one. Pay ~$140/month to clear it safely. BB2 safe until Jan 2027, BB3 until Mar 2027.</div></div>
+  <div class="alert amber"><div class="alert-icon">📅</div><div><div class="alert-head">BOA (...8769) — 0% Promo Ends Jun 6, 2026</div>About 2 months left. Pay the remaining balance before Jun 6 to avoid revert to standard BofA APR (~25%). Set a calendar reminder now.</div></div>
+  <div class="alert amber"><div class="alert-icon">📦</div><div><div class="alert-head">NSA Storage — $177/mo ($2,124/yr)</div>Rate jumped $43/month (+32%). Now that high-APR debt is cleared, this is the next highest-cost line item to review. Is everything in that unit worth $177/month?</div></div>
+  <div class="alert slate"><div class="alert-icon">💡</div><div><div class="alert-head">Subscription Audit — $736/yr Recoverable</div><strong>Skill Incubator ($396/yr):</strong> Actively using it?<br><strong>Google Workspace ($202/yr):</strong> Zoho Mail is free with custom domain.<br><strong>Wix ($168/yr):</strong> Cheaper DJ site options exist.<br>Total: <strong>$736/yr</strong> freed up if all three cancelled.</div></div>
+  <div class="alert slate"><div class="alert-icon">💳</div><div><div class="alert-head">Credit Card Strategy — Apply for Costco Anywhere Visa</div>You're a Costco member — the Costco Anywhere Visa earns 5% at Costco gas, 4% all other gas, 3% dining, no annual fee. Best gas card available. Apply at costco.com/credit-card.</div></div>
 </div>
 
 <!-- ══ DEBT ══ -->
 <div class="panel" id="panel-debt">
   <div class="g3">
     <div class="card"><div class="card-label">Total CC Debt</div><div class="card-fig" style="color:var(--rust)" id="debt-total">—</div><div class="card-note">As of last update</div></div>
-    <div class="card"><div class="card-label">Currently Accruing</div><div class="card-fig" style="color:var(--amber)" id="debt-accruing">—</div><div class="card-note">Crypto.com + Prime + BOA2*</div></div>
+    <div class="card"><div class="card-label">Currently Accruing</div><div class="card-fig" style="color:var(--sage)" id="debt-accruing">$0</div><div class="card-note">All high-APR cards paid off ✓</div></div>
     <div class="card">
       <div class="card-label">Payoff Strategy</div>
       <div class="strat-row">
@@ -239,9 +264,9 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   <div class="card mb20">
     <div class="debt-block">
       <div class="debt-top"><span class="debt-name">Crypto.com Visa (Comenity)</span><span class="debt-bal" style="color:var(--rust)" id="d-cdc">—</span></div>
-      <div class="debt-meta-row"><span>Due: 10th</span><span>26.99% APR</span><span style="color:var(--rust);font-weight:600;">AutoPay: NONE 🚨</span></div>
-      <div><span class="badge red">NO AUTOPAY — SET TODAY</span><span class="badge red">ACCRUING ~$109/MO INTEREST</span></div>
-      <div class="track"><div class="track-fill" id="tr-cdc" style="background:var(--rust);width:0%"></div></div>
+      <div class="debt-meta-row"><span>Due: 10th</span><span>26.99% APR</span><span style="color:var(--sage);font-weight:600;">AutoPay: SET ✓</span></div>
+      <div><span class="badge green">✓ PAID OFF — CONSIDER CLOSING</span><span class="badge muted">Set as card-to-cancel per strategy</span></div>
+      <div class="track"><div class="track-fill" id="tr-cdc" style="background:var(--sage-l);width:0%"></div></div>
     </div>
     <div class="debt-block">
       <div class="debt-top"><span class="debt-name">Best Buy BB1 (...6761)</span><span class="debt-bal" style="color:var(--amber)" id="d-bb1">—</span></div>
@@ -258,14 +283,14 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     <div class="debt-block">
       <div class="debt-top"><span class="debt-name">Chase Prime Visa (...7376)</span><span class="debt-bal" style="color:var(--rust)" id="d-pv">—</span></div>
       <div class="debt-meta-row"><span>Due: Apr 4</span><span>24.99% APR</span><span>AutoPay: YES</span></div>
-      <div><span class="badge red">ACCRUING INTEREST</span></div>
-      <div class="track"><div class="track-fill" id="tr-pv" style="background:var(--rust);width:0%"></div></div>
+      <div><span class="badge green">✓ PAID OFF — Keep for 5% Amazon rewards</span></div>
+      <div class="track"><div class="track-fill" id="tr-pv" style="background:var(--sage-l);width:0%"></div></div>
     </div>
     <div class="debt-block">
       <div class="debt-top"><span class="debt-name">BOA (...7720)</span><span class="debt-bal" style="color:var(--amber)" id="d-boa2">—</span></div>
-      <div class="debt-meta-row"><span>Due: 6th</span><span>AutoPay: YES</span><span>Promo expired Oct 2025 ⚠</span></div>
-      <div><span class="badge amber">VERIFY APR — LIKELY ACCRUING</span></div>
-      <div class="track"><div class="track-fill" id="tr-boa2" style="background:var(--amber-l);width:0%"></div></div>
+      <div class="debt-meta-row"><span>Due: 6th</span><span>AutoPay: YES</span><span>Promo expired Oct 2025</span></div>
+      <div><span class="badge green">✓ PAID OFF — Close this card</span><span class="badge muted">No ongoing value · Cancel recommended</span></div>
+      <div class="track"><div class="track-fill" id="tr-boa2" style="background:var(--sage-l);width:0%"></div></div>
     </div>
     <div class="debt-block">
       <div class="debt-top"><span class="debt-name">Best Buy BB2 (...6761)</span><span class="debt-bal" style="color:var(--sage)" id="d-bb2">—</span></div>
@@ -360,17 +385,52 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 
 <!-- ══ EXPENSES ══ -->
 <div class="panel" id="panel-expenses">
+  <!-- SUMMARY CARDS -->
   <div class="g3">
     <div class="card"><div class="card-label">Monthly Fixed</div><div class="card-fig" style="color:var(--amber)" id="exp-monthly">—</div><div class="card-note">All recurring bills &amp; subs</div></div>
     <div class="card"><div class="card-label">Annual Total</div><div class="card-fig" style="color:var(--amber)" id="exp-annual">—</div><div class="card-note">Annualized</div></div>
-    <div class="card"><div class="card-label">If Flagged Subs Cut</div><div class="card-fig" style="color:var(--sage)">$736/yr</div><div class="card-note">Skill Incubator + Wix + GWorkspace</div></div>
+    <div class="card"><div class="card-label">If Flagged Subs Cut</div><div class="card-fig" style="color:var(--sage)" id="exp-savings">—</div><div class="card-note" id="exp-savings-note">Review items</div></div>
   </div>
-  <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--slate-bg);border:1px solid rgba(45,74,107,.15);border-radius:8px;margin-bottom:14px;font-size:13px;line-height:1.6;">
-    <div style="font-size:17px;flex-shrink:0;">✏️</div>
-    <div><strong>Edit in the spreadsheet — no code needed.</strong> Open <strong>⚙️ Config</strong> tab → update any Monthly $ cell. Add a row to add an expense, delete a row to remove one. Dashboard refreshes automatically.
-    <br><a id="exp-sheet-link" href="https://docs.google.com/spreadsheets/d/1usc1YxAz-Idtn6ASALZOJaX6ir4ooK2zxk1ORVTxz7s/edit" target="_blank" style="font-family:var(--font-mono);font-size:10px;color:var(--slate);">📊 Open Sheet → ⚙️ Config ↗</a></div>
+
+  <!-- TOOLBAR -->
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button onclick="showAddExpense()" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:6px 14px;background:var(--sage);color:#fff;border:none;border-radius:6px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='var(--sage-l)'" onmouseout="this.style.background='var(--sage)'">+ ADD EXPENSE</button>
+      <button onclick="addSectionHeader()" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:6px 14px;background:var(--paper);color:var(--ink4);border:1px solid var(--cream2);border-radius:6px;cursor:pointer;">+ SECTION</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink4);" id="exp-save-status"></div>
+      <button onclick="saveExpenses()" id="exp-save-btn" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:6px 14px;background:var(--slate);color:#fff;border:none;border-radius:6px;cursor:pointer;display:none;transition:background .15s;" onmouseover="this.style.background='var(--slate-l)'" onmouseout="this.style.background='var(--slate)'">💾 SAVE TO SHEET</button>
+      <a id="exp-sheet-link" href="https://docs.google.com/spreadsheets/d/1usc1YxAz-Idtn6ASALZOJaX6ir4ooK2zxk1ORVTxz7s/edit" target="_blank" style="font-family:var(--font-mono);font-size:10px;color:var(--ink4);text-decoration:none;letter-spacing:1px;">📊 Sheet ↗</a>
+    </div>
   </div>
-  <div class="sec-label">All Expenses — live from ⚙️ Config sheet</div>
+
+  <!-- ADD EXPENSE FORM (hidden) -->
+  <div id="add-exp-form" style="display:none;background:var(--sage-bg);border:1px solid rgba(58,107,74,.2);border-radius:8px;padding:14px;margin-bottom:14px;">
+    <div style="display:grid;grid-template-columns:1fr 120px 1fr;gap:10px;margin-bottom:10px;">
+      <div>
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--ink4);margin-bottom:4px;">EXPENSE NAME</div>
+        <input id="new-exp-name" type="text" placeholder="e.g. Netflix" style="width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+      </div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--ink4);margin-bottom:4px;">MONTHLY $</div>
+        <input id="new-exp-amount" type="number" step="0.01" placeholder="0.00" style="width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+      </div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--ink4);margin-bottom:4px;">SECTION (optional)</div>
+        <select id="new-exp-section" style="width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+          <option value="">— Add at bottom —</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="hideAddExpense()" style="font-family:var(--font-mono);font-size:10px;padding:6px 14px;background:var(--paper);border:1px solid var(--cream2);border-radius:6px;cursor:pointer;color:var(--ink4);">Cancel</button>
+      <button onclick="addExpense()" style="font-family:var(--font-mono);font-size:10px;padding:6px 14px;background:var(--sage);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">ADD</button>
+    </div>
+  </div>
+
+  <!-- EXPENSE TABLE -->
+  <div class="sec-label">All Expenses — click to edit · drag to reorder</div>
   <div class="card" id="exp-table-wrap">
     <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">Loading from Sheets...</div>
   </div>
@@ -708,7 +768,11 @@ function applyData(d) {
   const cc  = cur.crypto_com != null ? parseFloat(cur.crypto_com) : 0;
   const pv  = cur.prime_visa != null ? parseFloat(cur.prime_visa) : 0;
   const b2  = cur.boa2       != null ? parseFloat(cur.boa2)       : 0;
-  document.getElementById('snap-accruing').textContent = fmt(cc + pv + b2) + '+';
+  const accruing = cc + pv + b2;
+  document.getElementById('snap-accruing').textContent = accruing > 0 ? fmt(accruing)+'+' : '$0';
+  document.getElementById('snap-accruing').style.color = accruing > 0 ? 'var(--amber)' : 'var(--sage)';
+  const noteEl = document.getElementById('snap-accruing-note');
+  if(noteEl) noteEl.textContent = accruing > 0 ? 'Crypto.com + Prime + BOA2' : 'All high-APR cards paid off ✓';
 
   // ── DEBT TAB ──────────────────────────────────────────────────────────
   const bb1v = cur.bb1  != null ? parseFloat(cur.bb1)  : 0;
@@ -718,7 +782,8 @@ function applyData(d) {
   const tot  = cc + bb1v + bb2v + bb3v + b1 + b2 + pv;
 
   document.getElementById('debt-total').textContent    = fmt(debt);
-  document.getElementById('debt-accruing').textContent = fmt(cc + pv + b2) + '+';
+  document.getElementById('debt-accruing').textContent = accruing > 0 ? fmt(accruing)+'+' : '$0';
+  document.getElementById('debt-accruing').style.color = accruing > 0 ? 'var(--amber)' : 'var(--sage)';
 
   document.getElementById('d-cdc').textContent  = fmt(cc, 2);
   document.getElementById('d-bb1').textContent  = fmt(bb1v, 2);
@@ -769,44 +834,199 @@ function applyData(d) {
   loadTasks();
 }
 
-// ── RENDER EXPENSES (dynamic from ⚙️ Config sheet) ────────────────────────
+// ── EXPENSES STATE ────────────────────────────────────────────────────────
+let _expenses = []; // live copy — modified in-place
+let _expDirty  = false;
+
+function markExpDirty() {
+  _expDirty = true;
+  const btn = document.getElementById('exp-save-btn');
+  if (btn) btn.style.display = 'inline-block';
+  const st = document.getElementById('exp-save-status');
+  if (st) { st.textContent = 'Unsaved changes'; st.style.color = 'var(--amber)'; }
+}
+
+function recalcExpSummary() {
+  let total = 0, reviewTotal = 0, reviewItems = [];
+  _expenses.forEach(e => {
+    const mo = parseFloat(e.monthly) || 0;
+    const isSec = e.name && (e.name.startsWith('\u2500') || e.name.startsWith('\u25ba'));
+    if (!isSec) {
+      total += mo;
+      if (mo === 0) { reviewTotal += 0; reviewItems.push(e.name); }
+    }
+  });
+  const mEl = document.getElementById('exp-monthly');
+  const aEl = document.getElementById('exp-annual');
+  const sEl = document.getElementById('exp-savings');
+  const snEl = document.getElementById('exp-savings-note');
+  if (mEl) mEl.textContent = fmt(total, 2);
+  if (aEl) aEl.textContent = fmt(total * 12);
+  // Recoverable: skill incubator + wix + gworkspace if present
+  const recov = _expenses.filter(e => {
+    const n = (e.name||'').toLowerCase();
+    return n.includes('skill incubator') || n.includes('wix') || n.includes('workspace');
+  }).reduce((s,e) => s + (parseFloat(e.monthly)||0)*12, 0);
+  if (sEl) sEl.textContent = recov > 0 ? fmt(recov)+'/yr' : '—';
+  if (snEl && recov > 0) snEl.textContent = 'If Skill Incubator + Wix + GWorkspace cut';
+}
+
+// ── RENDER EXPENSES (editable) ────────────────────────────────────────────
 function renderExpenses(expenses) {
+  if (expenses) _expenses = expenses.map(e => ({...e})); // fresh copy on load
   const wrap = document.getElementById('exp-table-wrap');
-  if (!expenses || !expenses.length) {
-    wrap.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No expense data. Add rows to ⚙️ Config tab (rows 11+) in your Sheet.</div>';
+  if (!_expenses.length) {
+    wrap.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No expenses yet. Click + ADD EXPENSE to get started.</div>';
     return;
   }
+
+  // Populate section selector in add form
+  const sel = document.getElementById('new-exp-section');
+  if (sel) {
+    const sections = _expenses.filter(e => e.name && (e.name.startsWith('\u2500') || e.name.startsWith('\u25ba')));
+    sel.innerHTML = '<option value="">— Add at bottom —</option>' +
+      sections.map((s,i) => {
+        const label = s.name.replace(/^[\u2500\u25ba]+\s*/,'').replace(/\s*[\u2500\u25ba]+$/,'').trim();
+        return '<option value="' + _expenses.indexOf(s) + '">' + label + '</option>';
+      }).join('');
+  }
+
   let totalMo = 0;
-  const rows = expenses.map(e => {
-    const mo  = parseFloat(e.monthly) || 0;
-    const yr  = parseFloat(e.annual)  || mo * 12;
-    totalMo  += mo;
+  const rows = _expenses.map((e, idx) => {
+    const mo = parseFloat(e.monthly) || 0;
     const isSec = e.name && (e.name.startsWith('\u2500') || e.name.startsWith('\u25ba'));
-    const isRev = mo === 0 && !isSec;
+    const isRev = !isSec && mo === 0;
+    if (!isSec) totalMo += mo;
+
     if (isSec) {
-      const label = e.name.replace(/^[\u2500-]+\s*/,'').replace(/\s*[\u2500-]+$/,'').trim();
-      return '<tr><td colspan="3" style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);padding:10px 0 4px;border-bottom:1px solid var(--cream2);font-weight:700;">' + label + '</td></tr>';
+      const label = e.name.replace(/^[\u2500\u25ba]+\s*/,'').replace(/\s*[\u2500\u25ba]+$/,'').trim();
+      return '<tr data-idx="' + idx + '" class="exp-sec-row">' +
+        '<td colspan="4" style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);padding:12px 0 4px;border-bottom:1px solid var(--cream2);font-weight:700;">' +
+        label +
+        '<button onclick="deleteExpense(' + idx + ')" title="Delete section" style="float:right;background:none;border:none;cursor:pointer;color:var(--ink5);font-size:11px;padding:0 2px;" onmouseover="this.style.color='var(--rust)'" onmouseout="this.style.color='var(--ink5)'">✕</button>' +
+        '</td></tr>';
     }
-    const moStr = mo > 0 ? fmt(mo, 2) : '\u26a0 REVIEW';
-    const yrStr = yr > 0 ? fmt(yr, 0) : '\u2014';
-    return '<tr style="' + (isRev ? 'background:var(--amber-bg);' : '') + '">' +
-      '<td style="font-size:13px;color:' + (isRev ? 'var(--amber)' : 'var(--ink3)') + ';padding:7px 0;border-bottom:1px solid var(--cream2);">' + e.name + '</td>' +
-      '<td style="font-family:var(--font-mono);font-size:12px;color:var(--amber);font-weight:600;text-align:right;padding:7px 0;border-bottom:1px solid var(--cream2);">' + moStr + '</td>' +
-      '<td style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:right;padding:7px 0;border-bottom:1px solid var(--cream2);">' + yrStr + '</td>' +
-      '</tr>';
+
+    return '<tr data-idx="' + idx + '" style="' + (isRev ? 'background:var(--amber-bg);' : '') + '">' +
+      '<td style="padding:6px 0;border-bottom:1px solid var(--cream2);">' +
+        '<input type="text" value="' + (e.name||'').replace(/"/g,'&quot;') + '" ' +
+        'onchange="updateExpName(' + idx + ',this.value)" ' +
+        'style="font-size:13px;color:' + (isRev?'var(--amber)':'var(--ink3)') + ';background:transparent;border:none;border-bottom:1px dashed transparent;width:100%;outline:none;padding:1px 2px;" ' +
+        'onfocus="this.style.borderBottomColor='var(--slate)'" onblur="this.style.borderBottomColor='transparent'">' +
+      '</td>' +
+      '<td style="padding:6px 0;border-bottom:1px solid var(--cream2);text-align:right;width:110px;">' +
+        '<input type="number" value="' + (mo||'') + '" step="0.01" min="0" ' +
+        'onchange="updateExpAmount(' + idx + ',this.value)" ' +
+        'style="font-family:var(--font-mono);font-size:12px;color:var(--amber);font-weight:600;background:transparent;border:none;border-bottom:1px dashed transparent;width:90px;text-align:right;outline:none;padding:1px 2px;" ' +
+        'onfocus="this.style.borderBottomColor='var(--slate)'" onblur="this.style.borderBottomColor='transparent'">' +
+      '</td>' +
+      '<td style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:right;padding:6px 0;border-bottom:1px solid var(--cream2);width:80px;">' +
+        (mo > 0 ? fmt(mo*12, 0) : '—') +
+      '</td>' +
+      '<td style="padding:6px 0;border-bottom:1px solid var(--cream2);width:28px;text-align:center;">' +
+        '<button onclick="deleteExpense(' + idx + ')" title="Remove" style="background:none;border:none;cursor:pointer;color:var(--ink5);font-size:13px;line-height:1;padding:2px 4px;" ' +
+        'onmouseover="this.style.color='var(--rust)'" onmouseout="this.style.color='var(--ink5)'">✕</button>' +
+      '</td></tr>';
   }).join('');
+
   wrap.innerHTML =
     '<table style="width:100%;border-collapse:collapse;">' +
     '<thead><tr>' +
-    '<th style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:5px 0 9px;text-align:left;border-bottom:1px solid var(--cream2);">Expense</th>' +
-    '<th style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:5px 0 9px;text-align:right;border-bottom:1px solid var(--cream2);">Monthly</th>' +
+    '<th style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:5px 0 9px;text-align:left;border-bottom:1px solid var(--cream2);">Expense <span style="font-weight:400;opacity:.6;">(click to edit)</span></th>' +
+    '<th style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:5px 0 9px;text-align:right;border-bottom:1px solid var(--cream2);">Monthly $</th>' +
     '<th style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:5px 0 9px;text-align:right;border-bottom:1px solid var(--cream2);">Annual</th>' +
+    '<th style="border-bottom:1px solid var(--cream2);"></th>' +
     '</tr></thead><tbody>' + rows + '</tbody>' +
     '<tfoot><tr>' +
     '<td style="font-weight:700;font-size:13px;color:var(--ink);padding:11px 0 4px;border-top:2px solid var(--cream3);">TOTAL</td>' +
     '<td style="font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--amber);text-align:right;padding:11px 0 4px;border-top:2px solid var(--cream3);">' + fmt(totalMo, 2) + '</td>' +
-    '<td style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--amber);text-align:right;padding:11px 0 4px;border-top:2px solid var(--cream3);">' + fmt(totalMo * 12) + '/yr</td>' +
+    '<td style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--amber);text-align:right;padding:11px 0 4px;border-top:2px solid var(--cream3);">' + fmt(totalMo*12) + '/yr</td>' +
+    '<td style="border-top:2px solid var(--cream3);"></td>' +
     '</tr></tfoot></table>';
+
+  recalcExpSummary();
+}
+
+// ── EXPENSE EDIT HANDLERS ────────────────────────────────────────────────
+function updateExpName(idx, val) {
+  if (_expenses[idx]) { _expenses[idx].name = val; markExpDirty(); recalcExpSummary(); }
+}
+function updateExpAmount(idx, val) {
+  if (_expenses[idx]) {
+    _expenses[idx].monthly = parseFloat(val) || 0;
+    _expenses[idx].annual  = (_expenses[idx].monthly) * 12;
+    markExpDirty();
+    // Re-render to update the annual column display
+    renderExpenses(null);
+  }
+}
+function deleteExpense(idx) {
+  _expenses.splice(idx, 1);
+  markExpDirty();
+  renderExpenses(null);
+}
+
+// ── ADD EXPENSE ────────────────────────────────────────────────────────────
+function showAddExpense() { document.getElementById('add-exp-form').style.display='block'; document.getElementById('new-exp-name').focus(); }
+function hideAddExpense() { document.getElementById('add-exp-form').style.display='none'; }
+
+function addExpense() {
+  const name   = document.getElementById('new-exp-name').value.trim();
+  const amount = parseFloat(document.getElementById('new-exp-amount').value) || 0;
+  const secIdx = document.getElementById('new-exp-section').value;
+  if (!name) { document.getElementById('new-exp-name').style.borderColor='var(--rust)'; setTimeout(()=>document.getElementById('new-exp-name').style.borderColor='',1500); return; }
+  const newExp = {name, monthly: amount, annual: amount * 12};
+  if (secIdx !== '') {
+    // Insert after the section header and its items (before next section)
+    const si = parseInt(secIdx);
+    let insertAt = si + 1;
+    while (insertAt < _expenses.length) {
+      const n = _expenses[insertAt].name || '';
+      if (n.startsWith('\u2500') || n.startsWith('\u25ba')) break;
+      insertAt++;
+    }
+    _expenses.splice(insertAt, 0, newExp);
+  } else {
+    _expenses.push(newExp);
+  }
+  document.getElementById('new-exp-name').value = '';
+  document.getElementById('new-exp-amount').value = '';
+  hideAddExpense();
+  markExpDirty();
+  renderExpenses(null);
+}
+
+function addSectionHeader() {
+  const name = window.prompt('Section name (e.g. PERSONAL, CRYPTO, ABDJS):');
+  if (!name) return;
+  const header = '\u2500\u2500\u2500 ' + name.toUpperCase() + ' \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500';
+  _expenses.push({name: header, monthly: 0, annual: 0});
+  markExpDirty();
+  renderExpenses(null);
+}
+
+// ── SAVE EXPENSES TO SHEET ────────────────────────────────────────────────
+async function saveExpenses() {
+  const btn = document.getElementById('exp-save-btn');
+  const st  = document.getElementById('exp-save-status');
+  if (btn) { btn.textContent = 'Saving...'; btn.disabled = true; }
+  try {
+    const r = await fetch(SCRIPT_URL, {
+      method:'POST', redirect:'follow',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'saveExpenses', data:{expenses: _expenses}})
+    });
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'Save failed');
+    _expDirty = false;
+    if (btn) { btn.style.display = 'none'; btn.textContent = '💾 SAVE TO SHEET'; btn.disabled = false; }
+    if (st) { st.textContent = '✓ Saved to sheet'; st.style.color = 'var(--sage)'; setTimeout(()=>{ if(st) st.textContent=''; }, 3000); }
+    // Reload to confirm sheet values
+    loadData();
+  } catch(e) {
+    if (btn) { btn.textContent = '💾 SAVE TO SHEET'; btn.disabled = false; }
+    if (st) { st.textContent = '✗ Save failed: ' + e.message; st.style.color = 'var(--rust)'; }
+  }
 }
 
 // ── RENDER HISTORY ────────────────────────────────────────────────────────
@@ -1017,6 +1237,61 @@ async function saveUpdate(andLog) {
   } catch(e) {
     status.textContent = '❌ ' + e.message;
     status.style.color = 'var(--rust)';
+  }
+}
+
+// ── AI PORTFOLIO SCAN ────────────────────────────────────────────────────
+async function runAIScan() {
+  const input = document.getElementById('ai-portfolio-input');
+  const result = document.getElementById('ai-result');
+  const btn = document.getElementById('ai-scan-btn');
+  const text = input ? input.value.trim() : '';
+  if (!text) { input.style.borderColor='var(--rust)'; setTimeout(()=>input.style.borderColor='',1500); return; }
+  btn.textContent = '⚡ Scanning...'; btn.disabled = true;
+  result.style.display = 'block';
+  result.innerHTML = '<div style="color:var(--ink4);font-family:var(--font-mono);font-size:11px;">Analyzing your portfolio...</div>';
+
+  // Build context-aware prompt
+  const cashEl  = document.getElementById('ov-cash');
+  const investEl = document.getElementById('ov-invest');
+  const debtEl  = document.getElementById('ov-debt');
+  const nwEl    = document.getElementById('nw-hero');
+  const context = [
+    cashEl   ? 'Cash: ' + cashEl.textContent   : '',
+    investEl ? 'Investments: ' + investEl.textContent : '',
+    debtEl   ? 'Debt: ' + debtEl.textContent   : '',
+    nwEl     ? 'Net Worth: ' + nwEl.textContent : '',
+  ].filter(Boolean).join(' · ');
+
+  const prompt = context
+    ? 'My current financial snapshot: ' + context + '. Additional context: ' + text + '\n\nAs a personal finance assistant, give me 3-5 specific, actionable insights and next steps. Be concise and direct — no generic advice. Focus on opportunities, risks, and prioritization.'
+    : text + '\n\nAs a personal finance assistant, give me 3-5 specific, actionable insights and next steps. Be concise and direct — no generic advice.';
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{role:'user', content: prompt}]
+      })
+    });
+    const data = await resp.json();
+    const reply = data.content && data.content[0] ? data.content[0].text : 'No response received.';
+    // Format the reply — convert markdown bullets to HTML
+    const formatted = reply
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/^#{1,3}\s+(.+)$/gm, '<div style="font-weight:600;color:var(--slate);margin:12px 0 4px;">$1</div>')
+      .replace(/^[•\-\*]\s+(.+)$/gm, '<div style="padding:3px 0 3px 16px;border-left:2px solid var(--violet-l);margin:4px 0;">$1</div>')
+      .replace(/^\d+\.\s+(.+)$/gm, '<div style="padding:3px 0 3px 16px;border-left:2px solid var(--violet-l);margin:4px 0;">$1</div>')
+      .replace(/\n\n/g, '<br>')
+      .replace(/\n/g, ' ');
+    result.innerHTML = '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--violet);margin-bottom:10px;">AI ANALYSIS · claude-sonnet</div>' + formatted;
+  } catch(e) {
+    result.innerHTML = '<div style="color:var(--rust);">Scan failed: ' + e.message + '. Check connection.</div>';
+  } finally {
+    btn.textContent = '⚡ SCAN PORTFOLIO'; btn.disabled = false;
   }
 }
 
