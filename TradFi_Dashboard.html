@@ -598,12 +598,12 @@ const SHEET_ID   = '1usc1YxAz-Idtn6ASALZOJaX6ir4ooK2zxk1ORVTxz7s';
 // ── DEFAULTS (shown if Sheets offline) ────────────────────────────────────
 const DEFAULTS = {
   current: {
-    snapshot_mo:'March 2026', cash:836.57, crypto:0,
-    betterment:31897.98, robinhood:32273.79, invest_total:64171.77,
-    monthly_exp:1980, net_worth:52390.20, total_debt:-12618.14,
+    snapshot_mo:'April 2026', cash:3190, crypto:0,
+    betterment:32347, robinhood:32751, invest_total:65097,
+    monthly_exp:1980, net_worth:62422, total_debt:-5865,
     crypto_com:4844, bb1:973, bb2:1614, bb3:2164,
-    boa1:1148, boa2:905, prime_visa:970.14, venmo:0,
-    chase_chk:286.57, chase_sav1:250, chase_sav2:200, chase_biz:100,
+    boa1:1113, boa2:905, prime_visa:970, venmo:0,
+    chase_chk:0, chase_sav1:0, chase_sav2:0, chase_biz:0,
     eidl:0,
   },
   history:[
@@ -675,14 +675,14 @@ function applyData(d) {
   const history = d.history  || [];
   const expenses= d.expenses || [];
 
-  const cash     = parseFloat(cur.cash)        || 836.57;
-  const crypto   = parseFloat(cur.crypto)      || 0;
-  const bet      = parseFloat(cur.betterment)  || 31897.98;
-  const rh       = parseFloat(cur.robinhood)   || 32273.79;
+  const cash     = cur.cash        != null ? parseFloat(cur.cash)        : 836.57;
+  const crypto   = cur.crypto      != null ? parseFloat(cur.crypto)      : 0;
+  const bet      = cur.betterment  != null ? parseFloat(cur.betterment)  : 31897.98;
+  const rh       = cur.robinhood   != null ? parseFloat(cur.robinhood)   : 32273.79;
   const invest   = bet + rh;
-  const monthly  = parseFloat(cur.monthly_exp) || 1980;
-  const nw       = parseFloat(cur.net_worth)   || 52390.20;
-  const debt     = Math.abs(parseFloat(cur.total_debt) || 12618.14);
+  const monthly  = cur.monthly_exp != null ? parseFloat(cur.monthly_exp) : 1980;
+  const nw       = cur.net_worth   != null ? parseFloat(cur.net_worth)   : 52390.20;
+  const debt     = cur.total_debt  != null ? Math.abs(parseFloat(cur.total_debt)) : 5865;
 
   // ── HERO ────────────────────────────────────────────────────────────────
   const nwEl = document.getElementById('nw-hero');
@@ -705,16 +705,16 @@ function applyData(d) {
   // ── OVERVIEW CARDS ────────────────────────────────────────────────────
   document.getElementById('snap-debt').textContent    = fmt(debt);
   document.getElementById('snap-monthly').textContent = fmt(monthly);
-  const cc  = parseFloat(cur.crypto_com)  || 4844;
-  const pv  = parseFloat(cur.prime_visa)  || 970.14;
-  const b2  = parseFloat(cur.boa2)        || 905;
+  const cc  = cur.crypto_com != null ? parseFloat(cur.crypto_com) : 0;
+  const pv  = cur.prime_visa != null ? parseFloat(cur.prime_visa) : 0;
+  const b2  = cur.boa2       != null ? parseFloat(cur.boa2)       : 0;
   document.getElementById('snap-accruing').textContent = fmt(cc + pv + b2) + '+';
 
   // ── DEBT TAB ──────────────────────────────────────────────────────────
-  const bb1v = parseFloat(cur.bb1)  || 973;
-  const bb2v = parseFloat(cur.bb2)  || 1614;
-  const bb3v = parseFloat(cur.bb3)  || 2164;
-  const b1   = parseFloat(cur.boa1) || 1148;
+  const bb1v = cur.bb1  != null ? parseFloat(cur.bb1)  : 0;
+  const bb2v = cur.bb2  != null ? parseFloat(cur.bb2)  : 0;
+  const bb3v = cur.bb3  != null ? parseFloat(cur.bb3)  : 0;
+  const b1   = cur.boa1 != null ? parseFloat(cur.boa1) : 0;
   const tot  = cc + bb1v + bb2v + bb3v + b1 + b2 + pv;
 
   document.getElementById('debt-total').textContent    = fmt(debt);
@@ -914,15 +914,15 @@ function populateUpdateForm(cur) {
   set('upd-sav2', cur.chase_sav2 || 200);
   set('upd-biz',  cur.chase_biz  || 100);
   // Chase CCs
-  set('upd-prime', cur.prime_visa || 970.14);
+  set('upd-prime', cur.prime_visa != null ? cur.prime_visa : 0);
   set('upd-venmo', cur.venmo      || 0);
   // Other cards
-  set('upd-cdc',  cur.crypto_com || 4844);
-  set('upd-bb1',  cur.bb1        || 973);
-  set('upd-bb2',  cur.bb2        || 1614);
-  set('upd-bb3',  cur.bb3        || 2164);
-  set('upd-boa1', cur.boa1       || 1148);
-  set('upd-boa2', cur.boa2       || 905);
+  set('upd-cdc',  cur.crypto_com != null ? cur.crypto_com : 0);
+  set('upd-bb1',  cur.bb1  != null ? cur.bb1  : 0);
+  set('upd-bb2',  cur.bb2  != null ? cur.bb2  : 0);
+  set('upd-bb3',  cur.bb3  != null ? cur.bb3  : 0);
+  set('upd-boa1', cur.boa1 != null ? cur.boa1 : 0);
+  set('upd-boa2', cur.boa2 != null ? cur.boa2 : 0);
   set('upd-eidl', cur.eidl       || 0);
   // Investments
   set('upd-bet',    cur.betterment || 31897.98);
