@@ -336,16 +336,34 @@ textarea.modal-input{min-height:80px;resize:vertical;line-height:1.5;}
 
 <!-- GAME DETAIL MODAL -->
 <div class="modal-overlay" id="detail-modal">
-  <div class="modal" style="max-width:420px;">
+  <div class="modal" style="max-width:460px;">
     <button class="modal-close" onclick="closeModal('detail-modal')">✕</button>
-    <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:16px;">
+    <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:14px;">
       <div id="dm-cover-wrap" style="flex-shrink:0;width:90px;border-radius:10px;overflow:hidden;background:var(--surface2);"></div>
       <div style="flex:1;min-width:0;">
-        <div id="dm-title" style="font-size:1rem;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:6px;"></div>
-        <div id="dm-plat" style="margin-bottom:6px;"></div>
-        <div id="dm-tags" style="font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);margin-bottom:4px;"></div>
-        <div id="dm-notes" style="font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--dim);"></div>
+        <div id="dm-title" style="font-size:1rem;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:8px;"></div>
+        <!-- Platform selector -->
+        <div style="margin-bottom:8px;">
+          <div style="font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:1px;color:var(--dim);margin-bottom:4px;">PLATFORM</div>
+          <select id="dm-platform-sel" onchange="updateDetailPlatform(this.value)"
+            style="font-family:'DM Mono',monospace;font-size:0.7rem;padding:4px 8px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:6px;cursor:pointer;width:100%;">
+            <option value="PS5">🎮 PS5</option>
+            <option value="VR">🥽 VR/PSVR2</option>
+            <option value="PC">🖥 PC/Steam</option>
+            <option value="Switch">🕹 Switch</option>
+            <option value="Mobile">📱 Mobile</option>
+            <option value="2-Player">👥 2-Player</option>
+          </select>
+        </div>
+        <div id="dm-tags" style="font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);margin-bottom:2px;"></div>
       </div>
+    </div>
+    <!-- Notes field -->
+    <div style="margin-bottom:12px;">
+      <div style="font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:1px;color:var(--dim);margin-bottom:4px;">NOTES</div>
+      <textarea id="dm-notes-input" rows="2" placeholder="e.g. needs Nucleus co-op, buy on sale, play with Jake..."
+        style="width:100%;padding:7px 10px;font-family:'DM Mono',monospace;font-size:0.7rem;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:6px;resize:vertical;outline:none;line-height:1.5;box-sizing:border-box;"
+        oninput="updateDetailNotes(this.value)"></textarea>
     </div>
     <div id="dm-completed-section" style="display:none;border-top:1px solid var(--border);padding-top:12px;margin-bottom:12px;">
       <div id="dm-stars" style="font-size:1rem;margin-bottom:6px;"></div>
@@ -390,7 +408,9 @@ textarea.modal-input{min-height:80px;resize:vertical;line-height:1.5;}
 // ═══════════════════════════════════════════════════
 // CONFIG
 // ═══════════════════════════════════════════════════
-const HQ_URL     = 'https://script.google.com/macros/s/AKfycbwp5ZfmY8ZcME0QZaWO1DRmpA9zrZm_fVczqogGKA5MAmtmdUiVuzqQKbbaZFanaybn/exec';
+const HQ_URL      = 'https://script.google.com/macros/s/AKfycbwp5ZfmY8ZcME0QZaWO1DRmpA9zrZm_fVczqogGKA5MAmtmdUiVuzqQKbbaZFanaybn/exec';
+const GAMING_URL  = 'PASTE_GAMING_SCRIPT_URL_HERE';
+function gurl() { return (GAMING_URL !== 'PASTE_GAMING_SCRIPT_URL_HERE') ? GAMING_URL : HQ_URL; }
 const STEAM_ID   = '76561198313251626';
 const STEAM_BASE = 'https://cdn.akamai.steamstatic.com/steam/apps';
 
@@ -453,20 +473,23 @@ function setConn(state, msg) {
 
 // ── GAMING API ──────────────────────────────────────
 async function gamingGet() {
-  const res  = await fetch(HQ_URL+'?action=loadGaming', {redirect:'follow'});
+  const res  = await fetch(gurl()+'?action=loadGaming', {redirect:'follow'});
   const json = await res.json();
   if (!json.ok) throw new Error(json.error);
   return json.data;
 }
 async function gamingPost(action, data) {
-  await fetch(HQ_URL, {
+  const res = await fetch(gurl(), {
     method:'POST', redirect:'follow',
     headers:{'Content-Type':'text/plain'},
     body: JSON.stringify({action, data})
   });
+  const json = await res.json().catch(()=>({ok:false,error:'Invalid JSON'}));
+  if (!json.ok) throw new Error(json.error || 'Server error');
+  return json;
 }
 async function igdbSearch(query) {
-  const res  = await fetch(HQ_URL+'?action=igdbSearch&data='+encodeURIComponent(query), {redirect:'follow'});
+  const res  = await fetch(gurl()+'?action=igdbSearch&data='+encodeURIComponent(query), {redirect:'follow'});
   const json = await res.json();
   return json;
 }
@@ -478,7 +501,7 @@ function scheduleSave() {
     try {
       await gamingPost('saveGaming', games);
       setConn('ok', `${games.length} games saved`);
-    } catch(e) { setConn('err','Save failed'); }
+    } catch(e) { setConn('err','Save failed — ' + (e.message||'check console')); }
   }, 1200);
 }
 
@@ -577,13 +600,14 @@ function renderPlatformQueue(el, filterPlat) {
         <div class="qp-header">
           <span class="plat-badge ${pm.cls}">${pm.emoji} ${pm.label}</span>
           <span class="qp-limit">${platGames.length} game${platGames.length!==1?'s':''}</span>
-          <button onclick="openSearchModal(null,'queue','${plat}')"
+          <button data-plat="${plat}" onclick="openSearchModal(null,'queue',this.dataset.plat)"
             style="margin-left:auto;font-family:'DM Mono',monospace;font-size:0.55rem;padding:3px 10px;border:1px solid var(--pur-b);color:var(--purple);background:var(--pur-d);border-radius:8px;cursor:pointer;">+ Add</button>
         </div>
         <div class="qp-slots" id="queue-${plat}"
+             data-plat="${plat}"
              ondragover="event.preventDefault();this.classList.add('drag-over-active')"
              ondragleave="this.classList.remove('drag-over-active')"
-             ondrop="dropToQueue(event,'${plat}')">
+             ondrop="dropToQueue(event,this.dataset.plat)">
           ${platGames.map(g=>`
             <div class="queue-slot" draggable="true"
                  ondragstart="startDrag(event,${g.id})"
@@ -597,10 +621,11 @@ function renderPlatformQueue(el, filterPlat) {
               </div>
             </div>`).join('')}
           <div class="queue-add-slot"
+               data-plat="${plat}"
                ondragover="event.preventDefault();this.classList.add('drag-over')"
                ondragleave="this.classList.remove('drag-over')"
-               ondrop="dropToQueue(event,'${plat}')"
-               onclick="openSearchModal(null,'queue','${plat}')">
+               ondrop="dropToQueue(event,this.dataset.plat)"
+               onclick="openSearchModal(null,'queue',this.dataset.plat)">
             + drag or add
           </div>
         </div>
@@ -712,7 +737,7 @@ async function renderSteam(el) {
   </div>`;
 
   try {
-    const res  = await fetch(HQ_URL + '?action=steamWishlist', {redirect:'follow'});
+    const res  = await fetch(gurl()+'?action=steamWishlist', {redirect:'follow'});
     const json = await res.json();
     if (!json.ok) throw new Error(json.error || 'Failed to load wishlist');
     const items = json.data?.games || [];
@@ -726,13 +751,15 @@ async function renderSteam(el) {
     document.getElementById('steam-grid-wrap').innerHTML =
       `<div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);margin-bottom:10px;">${items.length} games on wishlist</div>
       <div class="steam-grid">${items.map(item => {
-        const cover = STEAM_BASE + '/' + item.appid + '/library_600x900.jpg';
+        const cover = STEAM_BASE + '/' + item.appid + '/header.jpg';
         const added = inPoolAppids.has(item.appid) || inPoolNames.has((item.name||'').toLowerCase());
+        const appid = String(item.appid);
         return '<div class="steam-card">'
-          + '<img class="steam-cover" src="' + cover + '" alt="' + item.name + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+          + '<img class="steam-cover" src="' + cover + '" alt="' + (item.name||'') + '"'
+          + ' onerror="this.src=\'https://cdn.akamai.steamstatic.com/steam/apps/' + appid + '/capsule_616x353.jpg\';this.onerror=function(){this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'}">'
           + '<div style="display:none;width:100%;height:150px;align-items:center;justify-content:center;font-size:2rem;background:var(--surface2);">💻</div>'
           + '<div class="steam-info">'
-          + '<div class="steam-title">' + item.name + '</div>'
+          + '<div class="steam-title">' + (item.name && !item.name.startsWith('App ') ? item.name : '<span style="color:var(--dim);font-style:italic;">Loading... #' + item.appid + '</span>') + '</div>'
           + (added ? '<div class="steam-in-pool">✓ In Library</div>'
                    : '<button class="steam-add-btn" onclick="addFromSteam(\'' + item.name.replace(/'/g,"\\'") + '\',\'' + item.appid + '\')">+ Add to Pool</button>')
           + '</div></div>';
@@ -745,7 +772,7 @@ async function renderSteam(el) {
 }
 
 function addFromSteam(name, appid) {
-  const cover = `${STEAM_BASE}/${appid}/library_600x900.jpg`;
+  const cover = `${STEAM_BASE}/${appid}/header.jpg`;
   games.push({id:nextId++, title:name, emoji:'💻', platform:'PC', status:'queue',
     tags:'PC,Steam', notes:`AppID:${appid}`, rating:0, review:'', dateCompleted:'', cover, igdbId:null});
   scheduleSave();
@@ -795,9 +822,16 @@ function openDetail(id) {
   }
 
   document.getElementById('dm-title').textContent = g.title;
-  document.getElementById('dm-plat').innerHTML = `<span class="plat-badge ${pm.cls}">${pm.emoji} ${pm.label}</span>`;
   document.getElementById('dm-tags').textContent = g.tags || '';
-  document.getElementById('dm-notes').textContent = g.notes ? '📝 ' + g.notes : '';
+  // Platform selector — set current value
+  const platSel = document.getElementById('dm-platform-sel');
+  if (platSel) platSel.value = g.platform || 'PS5';
+  // Notes textarea — prefill, but keep AppID hidden (not shown to user)
+  const notesInput = document.getElementById('dm-notes-input');
+  const userNotes = (g.notes||'').replace(/\s*AppID:\d+\s*/g,'').trim();
+  if (notesInput) notesInput.value = userNotes;
+  // Store current game id for live edits
+  document.getElementById('detail-modal').dataset.gid = id;
 
   // Completed section
   const doneSection = document.getElementById('dm-completed-section');
@@ -826,6 +860,25 @@ function openDetail(id) {
 }
 
 // ── DRAG & DROP ───────────────────────────────────
+// ── DETAIL MODAL LIVE EDIT HANDLERS ──────────────────────────────────────
+function updateDetailPlatform(val) {
+  const id = parseInt(document.getElementById('detail-modal').dataset.gid);
+  const g = games.find(x=>x.id===id);
+  if (!g) return;
+  g.platform = val;
+  scheduleSave();
+  renderAll(); // re-render cards so platform badge updates
+}
+function updateDetailNotes(val) {
+  const id = parseInt(document.getElementById('detail-modal').dataset.gid);
+  const g = games.find(x=>x.id===id);
+  if (!g) return;
+  // Preserve AppID tag if present
+  const appMatch = (g.notes||'').match(/AppID:\d+/);
+  g.notes = val + (appMatch ? ' ' + appMatch[0] : '');
+  scheduleSave();
+}
+
 function dropToPool(e) {
   e.preventDefault();
   e.currentTarget.classList.remove('drag-over');
@@ -988,7 +1041,7 @@ async function fetchAllCovers() {
   let fetched = 0;
   for (const g of missing) {
     try {
-      const res  = await fetch(HQ_URL + '?action=igdbSearch&data=' + encodeURIComponent(g.title), {redirect:'follow'});
+      const res  = await fetch(gurl()+'?action=igdbSearch&data='+encodeURIComponent(g.title), {redirect:'follow'});
       const json = await res.json();
       if (json.ok && json.data && json.data.length > 0) {
         // Pick best match — exact title match preferred, else first result
