@@ -481,10 +481,12 @@
 
   <!-- FLIGHTS -->
   <div class="section-title">Flights</div>
-  <div class="flights-row" style="margin-top:-4px">
+
+  <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:-4px 0 8px;">Jamie &amp; Jamie Reid · Denver</div>
+  <div class="flights-row" style="margin-top:0;margin-bottom:10px;">
     <div class="flight-card">
-      <div class="flight-label">Outbound · May 1</div>
-      <div class="flight-num">UA 1917</div>
+      <div class="flight-label">Outbound · Fri May 1</div>
+      <div class="flight-num" style="display:flex;align-items:baseline;gap:10px;">UA 1917 <span style="font-size:11px;font-weight:300;opacity:.65;">Conf: PE2RRM</span></div>
       <div class="flight-route">
         <div class="airport">
           <div class="airport-code">DEN</div>
@@ -497,10 +499,13 @@
         </div>
       </div>
       <div class="flight-date">Denver → Liberia, Costa Rica</div>
+      <div style="margin-top:8px;padding-top:8px;border-top:0.5px solid rgba(255,255,255,0.15);font-size:11px;color:rgba(240,232,213,0.6);">
+        T. Scanlin · seat 12E &nbsp;|&nbsp; J. Reid · seat 12D
+      </div>
     </div>
     <div class="flight-card">
-      <div class="flight-label">Return · May 10</div>
-      <div class="flight-num">UA 1918</div>
+      <div class="flight-label">Return · Sun May 10</div>
+      <div class="flight-num" style="display:flex;align-items:baseline;gap:10px;">UA 1918 <span style="font-size:11px;font-weight:300;opacity:.65;">Conf: PE2RRM</span></div>
       <div class="flight-route">
         <div class="airport">
           <div class="airport-code">LIR</div>
@@ -509,10 +514,55 @@
         <div class="flight-arrow"></div>
         <div class="airport">
           <div class="airport-code">DEN</div>
-          <div class="airport-time">5:17 PM</div>
+          <div class="airport-time">5:22 PM</div>
         </div>
       </div>
       <div class="flight-date">Liberia, Costa Rica → Denver</div>
+      <div style="margin-top:8px;padding-top:8px;border-top:0.5px solid rgba(255,255,255,0.15);font-size:11px;color:rgba(240,232,213,0.6);">
+        T. Scanlin · seat 8C &nbsp;|&nbsp; J. Reid · seat 8B
+      </div>
+    </div>
+  </div>
+
+  <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:8px 0 8px;">Tom &amp; Donna Scanlin · Chicago</div>
+  <div class="flights-row" style="margin-top:0;margin-bottom:52px;">
+    <div class="flight-card">
+      <div class="flight-label">Outbound · Sat May 2</div>
+      <div class="flight-num" style="display:flex;align-items:baseline;gap:10px;">UA 1120 <span style="font-size:11px;font-weight:300;opacity:.65;">Conf: JRX6W0</span></div>
+      <div class="flight-route">
+        <div class="airport">
+          <div class="airport-code">ORD</div>
+          <div class="airport-time">7:48 AM</div>
+        </div>
+        <div class="flight-arrow"></div>
+        <div class="airport">
+          <div class="airport-code">LIR</div>
+          <div class="airport-time">11:53 AM</div>
+        </div>
+      </div>
+      <div class="flight-date">Chicago O'Hare → Liberia, Costa Rica</div>
+      <div style="margin-top:8px;padding-top:8px;border-top:0.5px solid rgba(255,255,255,0.15);font-size:11px;color:rgba(240,232,213,0.6);">
+        Tom · seat 14E &nbsp;|&nbsp; Donna · seat 14F
+      </div>
+    </div>
+    <div class="flight-card">
+      <div class="flight-label">Return · Sat May 9</div>
+      <div class="flight-num" style="display:flex;align-items:baseline;gap:10px;">UA 1121 <span style="font-size:11px;font-weight:300;opacity:.65;">Conf: JRX6W0</span></div>
+      <div class="flight-route">
+        <div class="airport">
+          <div class="airport-code">LIR</div>
+          <div class="airport-time">1:03 PM</div>
+        </div>
+        <div class="flight-arrow"></div>
+        <div class="airport">
+          <div class="airport-code">ORD</div>
+          <div class="airport-time">7:30 PM</div>
+        </div>
+      </div>
+      <div class="flight-date">Liberia, Costa Rica → Chicago O'Hare</div>
+      <div style="margin-top:8px;padding-top:8px;border-top:0.5px solid rgba(255,255,255,0.15);font-size:11px;color:rgba(240,232,213,0.6);">
+        Tom · seat 15E &nbsp;|&nbsp; Donna · seat 15F
+      </div>
     </div>
   </div>
 
@@ -555,15 +605,29 @@
         <div class="booking-item">
           <div class="check-circle check-yes">✓</div>
           <div>
-            <div class="booking-name">United Airlines UA 1917 (outbound)</div>
-            <div class="booking-conf">May 1 · DEN 10:08a → LIR 3:19p</div>
+            <div class="booking-name">UA 1917 — Jamie & Jamie Reid (outbound)</div>
+            <div class="booking-conf">Fri May 1 · DEN 10:08a → LIR 3:19p · Conf: PE2RRM</div>
           </div>
         </div>
         <div class="booking-item">
           <div class="check-circle check-yes">✓</div>
           <div>
-            <div class="booking-name">United Airlines UA 1918 (return)</div>
-            <div class="booking-conf">May 10 · LIR 11:49a → DEN 5:17p</div>
+            <div class="booking-name">UA 1918 — Jamie & Jamie Reid (return)</div>
+            <div class="booking-conf">Sun May 10 · LIR 11:49a → DEN 5:22p · Conf: PE2RRM</div>
+          </div>
+        </div>
+        <div class="booking-item">
+          <div class="check-circle check-yes">✓</div>
+          <div>
+            <div class="booking-name">UA 1120 — Tom & Donna Scanlin (outbound)</div>
+            <div class="booking-conf">Sat May 2 · ORD 7:48a → LIR 11:53a · Conf: JRX6W0</div>
+          </div>
+        </div>
+        <div class="booking-item">
+          <div class="check-circle check-yes">✓</div>
+          <div>
+            <div class="booking-name">UA 1121 — Tom & Donna Scanlin (return)</div>
+            <div class="booking-conf">Sat May 9 · LIR 1:03p → ORD 7:30p · Conf: JRX6W0</div>
           </div>
         </div>
         <div class="booking-item">
