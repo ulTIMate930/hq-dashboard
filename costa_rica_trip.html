@@ -358,7 +358,7 @@
   <div class="cal-section">
     <div class="section-title">The <span>Calendar</span></div>
 
-    <div class="week-label">Week One — May 1 to 5</div>
+    <div class="week-label">May 1 – 5</div>
     <div class="cal-row" id="row1">
 
       <div class="day theme-transit" data-day="1" onclick="showDay(1)">
@@ -379,6 +379,7 @@
         </div>
         <div class="loc-badge badge-fortuna">La Fortuna</div>
         <div class="ev ev-hotel">Airbnb check-in 3 PM</div>
+        <div class="ev ev-flight" style="background:#e8f4e8;color:#1a5a32;">UA 1120 · Tom &amp; Donna arrive LIR 11:53a</div>
         <div class="ev ev-unbooked">Settle in / explore</div>
       </div>
 
@@ -389,7 +390,7 @@
         </div>
         <div class="loc-badge badge-fortuna">La Fortuna</div>
         <div class="ev ev-unbooked">River rafting</div>
-        <div class="ev ev-unbooked">Hot springs</div>
+        <div class="ev ev-booked">Hot Springs · 5 PM ✓</div>
         <div class="ev ev-unbooked">Wildlife tour</div>
       </div>
 
@@ -416,7 +417,7 @@
 
     </div>
 
-    <div class="week-label" style="margin-top:16px">Week Two — May 6 to 10</div>
+    <div class="week-label" style="margin-top:16px">May 6 – 10</div>
     <div class="cal-row">
 
       <div class="day theme-papagayo" data-day="6" onclick="showDay(6)">
@@ -454,8 +455,8 @@
           <div class="day-num">9</div>
         </div>
         <div class="loc-badge badge-papagayo">Papagayo</div>
+        <div class="ev ev-flight" style="background:#fdecea;color:#8a2a1a;">UA 1121 · Tom &amp; Donna depart LIR 1:03p</div>
         <div class="ev ev-unbooked">Free day / last night</div>
-        <div class="ev ev-unbooked">Optional activity</div>
       </div>
 
       <div class="day theme-transit" data-day="10" onclick="showDay(10)">
@@ -482,7 +483,7 @@
   <!-- FLIGHTS -->
   <div class="section-title">Flights</div>
 
-  <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:-4px 0 8px;">Jamie &amp; Jamie Reid · Denver</div>
+  <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:-4px 0 8px;">Tim Scanlin &amp; Jamie Reid · Denver</div>
   <div class="flights-row" style="margin-top:0;margin-bottom:10px;">
     <div class="flight-card">
       <div class="flight-label">Outbound · Fri May 1</div>
@@ -605,14 +606,14 @@
         <div class="booking-item">
           <div class="check-circle check-yes">✓</div>
           <div>
-            <div class="booking-name">UA 1917 — Jamie & Jamie Reid (outbound)</div>
+            <div class="booking-name">UA 1917 — Tim Scanlin & Jamie Reid (outbound)</div>
             <div class="booking-conf">Fri May 1 · DEN 10:08a → LIR 3:19p · Conf: PE2RRM</div>
           </div>
         </div>
         <div class="booking-item">
           <div class="check-circle check-yes">✓</div>
           <div>
-            <div class="booking-name">UA 1918 — Jamie & Jamie Reid (return)</div>
+            <div class="booking-name">UA 1918 — Tim Scanlin & Jamie Reid (return)</div>
             <div class="booking-conf">Sun May 10 · LIR 11:49a → DEN 5:22p · Conf: PE2RRM</div>
           </div>
         </div>
@@ -646,8 +647,15 @@
         <div class="booking-item">
           <div class="check-circle check-yes">✓</div>
           <div>
+            <div class="booking-name">Hot Springs — 5:00 PM</div>
+            <div class="booking-conf">Sunday May 3 · Reservation #PLHV4RR · <a href="https://costaricatravellife.com/la-fortuna-hot-springs/" target="_blank" style="color:var(--jungle-light)">Info ↗</a></div>
+          </div>
+        </div>
+        <div class="booking-item">
+          <div class="check-circle check-yes">✓</div>
+          <div>
             <div class="booking-name">La Fortuna Waterfall Tour</div>
-            <div class="booking-conf">Sunday May 4 · 9:00 AM · Reservation #50938</div>
+            <div class="booking-conf">Monday May 4 · 9:00 AM · Reservation #50938</div>
           </div>
         </div>
         <div class="booking-item">
@@ -688,18 +696,6 @@
             <div class="booking-conf">La Fortuna · Suggest May 3 or 5 morning</div>
             <div style="margin-top:5px">
               <a href="https://www.viator.com/tours/La-Fortuna-de-San-Carlos/Tubing-La-Fortuna/d22546-73847P1" target="_blank" class="book-link">Book on Viator ↗</a>
-            </div>
-          </div>
-        </div>
-        <div class="booking-item">
-          <div class="check-circle check-no">○</div>
-          <div>
-            <div class="booking-name">Hot Springs</div>
-            <div class="booking-conf">Multiple options near La Fortuna · May 3 or 4 evening</div>
-            <div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:5px">
-              <a href="https://costaricatravellife.com/la-fortuna-hot-springs/" target="_blank" class="book-link">Hot Springs Guide ↗</a>
-              <a href="https://www.tabacon.com/en/day-pass" target="_blank" class="book-link">Tabacón ↗</a>
-              <a href="https://www.baldihotsprings.cr/day-pass/" target="_blank" class="book-link">Baldi ↗</a>
             </div>
           </div>
         </div>
@@ -768,17 +764,16 @@
     3: {
       label: "Sunday, May 3",
       location: "La Fortuna, Alajuela",
-      confirmed: [],
+      confirmed: [
+        { icon: "♨️", name: "Hot Springs — 5:00 PM", meta: "Reservation #PLHV4RR · Confirmed",
+          links: [{ label: "Hot Springs Guide", url: "https://costaricatravellife.com/la-fortuna-hot-springs/" }] }
+      ],
       options: [
         { icon: "🌊", name: "River Rafting", meta: "Half or full day on the Arenal or Sarapiquí river",
           links: [{ label: "Arenal Rafting", url: "https://arenalrafting.com/" },
                   { label: "Browse on Viator", url: "https://www.viator.com/La-Fortuna-de-San-Carlos-tours/Water-Sports/d22546-g12-c56" }] },
         { icon: "🦦", name: "Tubes, Waterfall & Wildlife Tour", meta: "Half day · Very popular combo",
           links: [{ label: "Book on Viator", url: "https://www.viator.com/tours/La-Fortuna-de-San-Carlos/Tubing-La-Fortuna/d22546-73847P1" }] },
-        { icon: "♨️", name: "Hot Springs", meta: "Tabacón (luxury) or Baldi (great value)",
-          links: [{ label: "Hot Springs Guide", url: "https://costaricatravellife.com/la-fortuna-hot-springs/" },
-                  { label: "Tabacón Hot Springs", url: "https://www.tabacon.com/en/day-pass" },
-                  { label: "Baldi Hot Springs", url: "https://www.baldihotsprings.cr/day-pass/" }] },
         { icon: "🌿", name: "Hanging Bridges Tour", meta: "Mistico Arenal Park — morning recommended",
           links: [{ label: "Mistico Arenal Park", url: "https://misticopark.com/tours/natural-history-walk/" }] },
         { icon: "🦥", name: "Sloth Territory", meta: "Morning wildlife sanctuary experience",
