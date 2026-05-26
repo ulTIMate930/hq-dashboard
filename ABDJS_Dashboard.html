@@ -533,7 +533,11 @@ function scheduleSaveTasks() {
 
 // ── PARSE BOOKINGS/LEADS ──────────────────────────
 const BC = {id:0,date:1,name:2,type:3,location:4,amount:5,status:6,services:7,market:8,worker:9};
-const LC = {id:0,source:1,date:2,name:3,status:4,type:5,amount:6,services:7,priority:8};
+// Lead columns — corrected to include all 14 columns (was missing 9-13)
+// A:ID  B:Source  C:Event Date  D:Client  E:Status  F:Type  G:Value  H:Services
+// I:Last Contact  J:Follow-Up  K:Priority  L:Notes  M:Phone  N:Email
+const LC = {id:0,source:1,date:2,name:3,status:4,type:5,amount:6,services:7,
+            lastContact:8,followUp:9,priority:10,notes:11,phone:12,email:13};
 
 function parseBooking(row, idx) {
   // Skip summary/total rows — must have a numeric ID and a string event name
@@ -559,15 +563,24 @@ function parseBooking(row, idx) {
 }
 function parseLead(row) {
   if (!row[LC.name] || typeof row[LC.name] !== 'string') return null;
-  const sm={open:'open',contacted:'contacted',quoted:'quoted',won:'won',lost:'lost'};
+  const sm={open:'open',new:'open',contacted:'contacted',quoted:'quoted',won:'won',lost:'lost'};
   const rawAmt = row[LC.amount];
   const amount = typeof rawAmt === 'number' ? rawAmt
                : parseFloat(String(rawAmt||'0').replace(/[$,]/g,''))||0;
+  // Normalize date to ISO YYYY-MM-DD same as parseBooking — accepts datetimes,
+  // "M/D/YYYY", or "YYYY-MM-DD" from the Sheet and emits a single canonical format
+  let date = '';
+  const rawDate = row[LC.date] || '';
+  if (rawDate) {
+    const d = new Date(rawDate);
+    if (!isNaN(d)) date = d.toISOString().split('T')[0];
+  }
   return {
-    id:parseInt(row[LC.id])||0, source:row[LC.source]||'', date:row[LC.date]||'',
+    id:parseInt(row[LC.id])||0, source:row[LC.source]||'', date,
     name:row[LC.name].trim(), status:sm[(row[LC.status]||'').toLowerCase()]||'open',
     type:row[LC.type]||'', amount,
-    services:row[LC.services]||'', priority:row[LC.priority]||''
+    services:row[LC.services]||'', priority:row[LC.priority]||'',
+    notes:row[LC.notes]||'', phone:row[LC.phone]||'', email:row[LC.email]||''
   };
 }
 
@@ -912,9 +925,12 @@ function addToCalendar(b) {
 }
 
 // ── HELPERS ───────────────────────────────────────
+// Accepts ISO ("2026-07-25"), US ("7/25/2026"), or any other format Date() parses
 function getMonthDay(s) {
   if (!s) return null;
-  const d = new Date(s+'T12:00:00');
+  // ISO format ("YYYY-MM-DD") needs explicit time to avoid timezone shift
+  // Other formats (M/D/YYYY, full datetime strings) parse fine without it
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(s) ? new Date(s+'T12:00:00') : new Date(s);
   return isNaN(d) ? null : {month:MONTHS[d.getMonth()], day:d.getDate()};
 }
 function workerClass(w){return{'Tim':'w-tim','Terry':'w-terry','Matt':'w-matt'}[w]||'w-un';}
