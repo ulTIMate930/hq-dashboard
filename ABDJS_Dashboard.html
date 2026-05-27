@@ -205,6 +205,34 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .cal-btn{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:transparent;border:1px solid var(--border2);border-radius:6px;font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--muted);cursor:pointer;transition:all 0.15s;white-space:nowrap;margin-top:3px;}
 .cal-btn:hover{border-color:var(--green);color:var(--green);background:var(--grn-d);}
 
+/* ── EMAIL CONTRACTOR BUTTONS ── */
+.email-btn{flex:1;min-width:200px;display:flex;align-items:center;gap:12px;padding:14px 18px;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;color:var(--text);cursor:pointer;transition:all 0.15s;text-align:left;font-family:'Syne',sans-serif;}
+.email-btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px #00000040;}
+.email-btn-matt:hover{border-color:var(--green);background:var(--grn-d);}
+.email-btn-terry:hover{border-color:var(--orange);background:var(--org-d);}
+.email-btn-icon{font-size:1.4rem;flex-shrink:0;}
+.email-btn-name{font-size:0.95rem;font-weight:700;}
+.email-btn-meta{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:2px;}
+
+/* ── EMAIL PREVIEW MODAL ── */
+.email-modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px;max-width:780px;width:94%;max-height:92vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px #00000060;}
+.email-modal-title{font-size:1.05rem;font-weight:800;margin-bottom:6px;color:var(--text);}
+.email-modal-sub{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);margin-bottom:16px;}
+.email-preview-wrap{background:#FFFFFF;border:1px solid var(--border2);border-radius:10px;padding:24px;color:#222;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;max-height:50vh;overflow-y:auto;margin-bottom:14px;}
+.email-preview-wrap .placeholder-msg{color:#999;font-style:italic;}
+.email-preview-wrap table{border-collapse:collapse;width:100%;margin:14px 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;}
+.email-preview-wrap th{background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;font-size:12px;letter-spacing:0.3px;border:1px solid #1E2A4A;}
+.email-preview-wrap td{padding:7px 10px;border:1px solid #D8D8D8;vertical-align:top;}
+.email-preview-wrap tr:nth-child(even) td{background:#F7F7FA;}
+.email-preview-wrap .pay-col{text-align:right;font-weight:700;white-space:nowrap;}
+.email-preview-wrap .no-shows{color:#666;font-style:italic;padding:12px 0;}
+
+.email-modal-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.copy-btn{flex:1;min-width:160px;padding:11px 16px;background:var(--ab);color:#000;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.copy-btn:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.copy-btn.copied{background:var(--green);}
+.copy-hint{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);flex:1 1 100%;margin-top:4px;}
+
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
@@ -289,6 +317,35 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <div class="block-body">
         <div id="booking-list"><div class="empty-msg">Loading...</div></div>
       </div>
+    </div>
+  </div>
+
+  <!-- EMAIL CONTRACTORS -->
+  <div class="block" style="animation:fadeUp 0.35s 0.1s ease both;">
+    <div class="block-header">
+      <div class="block-title">
+        <div class="bdot" style="background:var(--orange)"></div>
+        Email Contractors
+      </div>
+      <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--muted);">
+        Schedule update emails — click → preview → copy → paste into Gmail
+      </span>
+    </div>
+    <div class="block-body" style="display:flex;gap:12px;flex-wrap:wrap;">
+      <button class="email-btn email-btn-matt" onclick="openEmailModal('Matt')">
+        <span class="email-btn-icon">📧</span>
+        <div>
+          <div class="email-btn-name">Email Matt</div>
+          <div class="email-btn-meta" id="matt-show-count">— upcoming</div>
+        </div>
+      </button>
+      <button class="email-btn email-btn-terry" onclick="openEmailModal('Terry')">
+        <span class="email-btn-icon">📧</span>
+        <div>
+          <div class="email-btn-name">Email Terry</div>
+          <div class="email-btn-meta" id="terry-show-count">— upcoming</div>
+        </div>
+      </button>
     </div>
   </div>
 
@@ -425,6 +482,23 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 </div>
 
+<!-- EMAIL PREVIEW MODAL -->
+<div class="modal-overlay" id="email-modal-overlay">
+  <div class="email-modal">
+    <div class="email-modal-title" id="email-modal-title">📧 Email Preview</div>
+    <div class="email-modal-sub" id="email-modal-sub">Preview of email body — copy and paste into Gmail</div>
+    <button class="modal-close" onclick="closeEmailModal()">✕</button>
+    <div class="email-preview-wrap" id="email-preview"></div>
+    <div class="email-modal-actions">
+      <button class="copy-btn" id="email-copy-btn" onclick="copyEmailToClipboard()">
+        <span>📋</span><span id="email-copy-label">Copy formatted email</span>
+      </button>
+      <button class="btn-cancel" onclick="closeEmailModal()">Close</button>
+      <div class="copy-hint">After copying: open Gmail compose → paste → edit the [YOUR MESSAGE] line → send.</div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════════
 // CONFIG
@@ -532,8 +606,14 @@ function scheduleSaveTasks() {
 }
 
 // ── PARSE BOOKINGS/LEADS ──────────────────────────
-const BC = {id:0,date:1,name:2,type:3,location:4,amount:5,status:6,services:7,market:8,worker:9};
-// Lead columns — corrected to include all 14 columns (was missing 9-13)
+// Bookings column layout (v7, 17 cols):
+// A:ID  B:Date  C:Event  D:Type  E:Location  F:Time  G:Phone  H:Email
+// I:Amount  J:DJ Pay  K:Status  L:Services  M:Market  N:Worker
+// O:Deposit  P:Contract  Q:Notes
+const BC = {id:0,date:1,name:2,type:3,location:4,time:5,phone:6,email:7,
+            amount:8,djPay:9,status:10,services:11,market:12,worker:13,
+            deposit:14,contract:15,notes:16};
+// Lead columns — all 14. Previously stopped at priority:8 which was also wrong (real position is 10)
 // A:ID  B:Source  C:Event Date  D:Client  E:Status  F:Type  G:Value  H:Services
 // I:Last Contact  J:Follow-Up  K:Priority  L:Notes  M:Phone  N:Email
 const LC = {id:0,source:1,date:2,name:3,status:4,type:5,amount:6,services:7,
@@ -550,15 +630,19 @@ function parseBooking(row, idx) {
                'deposit paid':'deposit',lead:'lead',inquiry:'inquiry',
                unconfirmed:'inquiry',cancelled:'cancelled',maybe:'inquiry'};
   const sr = (row[BC.status]||'').toLowerCase().replace(/\s+/g,'');
-  // Amount may come back as number or string
   const rawAmt = row[BC.amount];
   const amount = typeof rawAmt === 'number' ? rawAmt
                : parseFloat(String(rawAmt||'0').replace(/[$,]/g,''))||0;
+  const rawDjPay = row[BC.djPay];
+  const djPay = typeof rawDjPay === 'number' ? rawDjPay
+              : parseFloat(String(rawDjPay||'0').replace(/[$,]/g,''))||0;
   return {
     id:parseInt(row[BC.id])||idx+1, name:row[BC.name].trim(), date,
-    amount, type:row[BC.type]||'Other', services:row[BC.services]||'DJ Only',
+    amount, djPay,
+    type:row[BC.type]||'Other', services:row[BC.services]||'DJ Only',
     status:sm[sr]||'inquiry', market:row[BC.market]||'',
-    worker:row[BC.worker]||'', notes:row[13]||'', time:row[12]||''
+    worker:row[BC.worker]||'', notes:row[BC.notes]||'', time:row[BC.time]||'',
+    phone:row[BC.phone]||'', email:row[BC.email]||''
   };
 }
 function parseLead(row) {
@@ -567,8 +651,8 @@ function parseLead(row) {
   const rawAmt = row[LC.amount];
   const amount = typeof rawAmt === 'number' ? rawAmt
                : parseFloat(String(rawAmt||'0').replace(/[$,]/g,''))||0;
-  // Normalize date to ISO YYYY-MM-DD same as parseBooking — accepts datetimes,
-  // "M/D/YYYY", or "YYYY-MM-DD" from the Sheet and emits a single canonical format
+  // Normalize date to ISO YYYY-MM-DD (matches parseBooking) — handles M/D/YYYY,
+  // ISO strings, and raw datetime objects so getMonthDay reads them the same way
   let date = '';
   const rawDate = row[LC.date] || '';
   if (rawDate) {
@@ -807,6 +891,158 @@ function renderStats() {
   document.getElementById('stat-revenue').textContent  = '$'+rev.toLocaleString();
   document.getElementById('stat-co').textContent       = '$'+co.toLocaleString();
   document.getElementById('stat-il').textContent       = '$'+il.toLocaleString();
+
+  // Update email contractor button counts
+  const mattCount  = upcomingForWorker('Matt').length;
+  const terryCount = upcomingForWorker('Terry').length;
+  const mattEl  = document.getElementById('matt-show-count');
+  const terryEl = document.getElementById('terry-show-count');
+  if (mattEl)  mattEl.textContent  = `${mattCount} upcoming show${mattCount === 1 ? '' : 's'}`;
+  if (terryEl) terryEl.textContent = `${terryCount} upcoming show${terryCount === 1 ? '' : 's'}`;
+}
+
+// ── EMAIL CONTRACTOR ──────────────────────────────
+// Filters bookings for a worker, only Confirmed + future-dated
+function upcomingForWorker(workerName) {
+  return bookings
+    .filter(b => (b.worker || '').toUpperCase() === workerName.toUpperCase())
+    .filter(b => b.status === 'confirmed')
+    .filter(b => {
+      if (!b.date) return true;
+      return new Date(b.date+'T12:00:00') >= today;
+    })
+    .sort((a, b) => {
+      if (!a.date) return 1;
+      if (!b.date) return -1;
+      return new Date(a.date) - new Date(b.date);
+    });
+}
+
+// Format date as "Sat, Jun 27" for email-friendly display
+function emailDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso + 'T12:00:00');
+  if (isNaN(d)) return iso;
+  return d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+}
+
+// Escape HTML special chars for safe injection into preview
+function escHtml(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// Build email body HTML for a worker
+function buildEmailBodyHTML(workerName, shows) {
+  const intro = `<p style="margin:0 0 12px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">Hi ${escHtml(workerName)},</p>`;
+  const placeholder = `<p class="placeholder-msg" style="margin:0 0 14px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#999;font-style:italic;">[YOUR MESSAGE HERE — replace this line with any updates, reminders, or personal notes before sending]</p>`;
+  const tableIntro = `<p style="margin:0 0 10px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">Here's your current upcoming schedule. Let me know if anything looks off or if you have questions on any of these.</p>`;
+
+  let tableHtml = '';
+  if (shows.length === 0) {
+    tableHtml = `<p class="no-shows" style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#666;font-style:italic;">(No upcoming shows on the schedule right now.)</p>`;
+  } else {
+    const rows = shows.map((s, i) => {
+      const bg = i % 2 === 1 ? 'background:#F7F7FA;' : '';
+      const pay = s.djPay || s.amount;
+      const payStr = pay ? `$${pay.toLocaleString()}` : 'TBD';
+      return `<tr>
+        <td style="padding:7px 10px;border:1px solid #D8D8D8;${bg}">${escHtml(emailDate(s.date))}</td>
+        <td style="padding:7px 10px;border:1px solid #D8D8D8;${bg}">${escHtml(s.name)}</td>
+        <td style="padding:7px 10px;border:1px solid #D8D8D8;${bg}">${escHtml(s.type)}</td>
+        <td style="padding:7px 10px;border:1px solid #D8D8D8;${bg}">${escHtml(s.time)}</td>
+        <td style="padding:7px 10px;border:1px solid #D8D8D8;${bg}">${escHtml(s.location||'')}</td>
+        <td class="pay-col" style="padding:7px 10px;border:1px solid #D8D8D8;text-align:right;font-weight:700;white-space:nowrap;${bg}">${escHtml(payStr)}</td>
+        <td style="padding:7px 10px;border:1px solid #D8D8D8;${bg}">${escHtml(s.notes||'')}</td>
+      </tr>`;
+    }).join('');
+    tableHtml = `<table style="border-collapse:collapse;width:100%;margin:8px 0 14px 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;">
+      <thead><tr>
+        <th style="background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;border:1px solid #1E2A4A;">DATE</th>
+        <th style="background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;border:1px solid #1E2A4A;">EVENT</th>
+        <th style="background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;border:1px solid #1E2A4A;">TYPE</th>
+        <th style="background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;border:1px solid #1E2A4A;">TIME</th>
+        <th style="background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;border:1px solid #1E2A4A;">LOCATION</th>
+        <th style="background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;border:1px solid #1E2A4A;">PAY</th>
+        <th style="background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;border:1px solid #1E2A4A;">NOTES</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  }
+
+  const closing = `<p style="margin:14px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">As always, I'll be in touch the week of each event to confirm final details. Thanks!</p>`;
+  const sig = `<p style="margin:14px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">— Tim</p>
+               <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#666;font-style:italic;">Answer Back DJ &amp; Entertainment</p>`;
+
+  return intro + placeholder + tableIntro + tableHtml + closing + sig;
+}
+
+function openEmailModal(workerName) {
+  const shows = upcomingForWorker(workerName);
+  const html = buildEmailBodyHTML(workerName, shows);
+
+  document.getElementById('email-modal-title').textContent = `📧 Email ${workerName}'s Schedule`;
+  document.getElementById('email-modal-sub').textContent =
+    `${shows.length} upcoming confirmed show${shows.length === 1 ? '' : 's'} · click "Copy formatted email" to copy with full styling`;
+  document.getElementById('email-preview').innerHTML = html;
+
+  // Reset copy button state
+  const btn = document.getElementById('email-copy-btn');
+  btn.classList.remove('copied');
+  document.getElementById('email-copy-label').textContent = 'Copy formatted email';
+
+  document.getElementById('email-modal-overlay').classList.add('open');
+}
+
+function closeEmailModal() {
+  document.getElementById('email-modal-overlay').classList.remove('open');
+}
+
+// Close on overlay click
+document.getElementById('email-modal-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeEmailModal();
+});
+
+async function copyEmailToClipboard() {
+  const preview = document.getElementById('email-preview');
+  const html = preview.innerHTML;
+  // Build a plain-text fallback (strip tags)
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  const plain = tmp.innerText;
+
+  const btn = document.getElementById('email-copy-btn');
+  const label = document.getElementById('email-copy-label');
+
+  try {
+    if (navigator.clipboard && window.ClipboardItem) {
+      // Modern path — copy both HTML and plain text so Gmail picks rich version
+      const item = new ClipboardItem({
+        'text/html':  new Blob([html],  {type: 'text/html'}),
+        'text/plain': new Blob([plain], {type: 'text/plain'})
+      });
+      await navigator.clipboard.write([item]);
+    } else {
+      // Fallback: select preview contents and run execCommand('copy')
+      const range = document.createRange();
+      range.selectNodeContents(preview);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand('copy');
+      sel.removeAllRanges();
+    }
+    btn.classList.add('copied');
+    label.textContent = '✓ Copied — paste into Gmail';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      label.textContent = 'Copy formatted email';
+    }, 3000);
+  } catch (err) {
+    label.textContent = 'Copy failed — select text manually';
+    console.error('Clipboard error:', err);
+  }
 }
 
 // ── CALENDAR ICS ─────────────────────────────────
@@ -925,11 +1161,10 @@ function addToCalendar(b) {
 }
 
 // ── HELPERS ───────────────────────────────────────
-// Accepts ISO ("2026-07-25"), US ("7/25/2026"), or any other format Date() parses
+// Accepts ISO ("2026-07-25") or US ("7/25/2026") — robust against either source
 function getMonthDay(s) {
   if (!s) return null;
-  // ISO format ("YYYY-MM-DD") needs explicit time to avoid timezone shift
-  // Other formats (M/D/YYYY, full datetime strings) parse fine without it
+  // ISO needs explicit time to avoid timezone shift; other formats parse fine without it
   const d = /^\d{4}-\d{2}-\d{2}$/.test(s) ? new Date(s+'T12:00:00') : new Date(s);
   return isNaN(d) ? null : {month:MONTHS[d.getMonth()], day:d.getDate()};
 }
