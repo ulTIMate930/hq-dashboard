@@ -205,6 +205,19 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .cal-btn{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:transparent;border:1px solid var(--border2);border-radius:6px;font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--muted);cursor:pointer;transition:all 0.15s;white-space:nowrap;margin-top:3px;}
 .cal-btn:hover{border-color:var(--green);color:var(--green);background:var(--grn-d);}
 
+/* Convert lead → booking button */
+.convert-btn{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:transparent;border:1px solid var(--border2);border-radius:6px;font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--muted);cursor:pointer;transition:all 0.15s;white-space:nowrap;margin-top:3px;margin-left:6px;}
+.convert-btn:hover{border-color:var(--ab);color:var(--ab);background:#3a3520;}
+
+/* Toast for convert-with-undo */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:14px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 8px 32px #00000080;z-index:9999;font-family:'Syne',sans-serif;font-size:0.85rem;color:var(--text);opacity:0;pointer-events:none;transition:opacity 0.2s,transform 0.25s;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
+.toast-icon{font-size:1.1rem;}
+.toast-msg{font-weight:600;}
+.toast-meta{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);}
+.toast-undo{background:var(--ab);color:#000;border:none;border-radius:8px;padding:6px 12px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;cursor:pointer;transition:filter 0.15s;}
+.toast-undo:hover{filter:brightness(1.1);}
+
 /* ── EMAIL CONTRACTOR BUTTONS ── */
 .email-btn{flex:1;min-width:200px;display:flex;align-items:center;gap:12px;padding:14px 18px;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;color:var(--text);cursor:pointer;transition:all 0.15s;text-align:left;font-family:'Syne',sans-serif;}
 .email-btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px #00000040;}
@@ -219,6 +232,14 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .email-modal-title{font-size:1.05rem;font-weight:800;margin-bottom:6px;color:var(--text);}
 .email-modal-sub{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);margin-bottom:16px;}
 .email-preview-wrap{background:#FFFFFF;border:1px solid var(--border2);border-radius:10px;padding:24px;color:#222;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;max-height:55vh;overflow:auto;margin-bottom:14px;}
+
+/* Subject row in email modal */
+.email-subject-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;margin-bottom:12px;}
+.email-subject-label{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;flex-shrink:0;}
+.email-subject-text{flex:1;font-family:'Syne',sans-serif;font-size:0.88rem;font-weight:600;color:var(--text);}
+.copy-subject-btn{background:transparent;border:1px solid var(--border2);border-radius:8px;padding:6px 10px;font-size:0.9rem;cursor:pointer;transition:all 0.15s;}
+.copy-subject-btn:hover{background:var(--ab);color:#000;border-color:var(--ab);}
+.copy-subject-btn.copied{background:var(--green);color:#FFF;border-color:var(--green);}
 .email-preview-wrap .placeholder-msg{color:#999;font-style:italic;}
 .email-preview-wrap table{border-collapse:collapse;width:100%;margin:14px 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;}
 .email-preview-wrap th{background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;font-size:12px;letter-spacing:0.3px;border:1px solid #1E2A4A;white-space:nowrap;}
@@ -486,17 +507,34 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 <div class="modal-overlay" id="email-modal-overlay">
   <div class="email-modal">
     <div class="email-modal-title" id="email-modal-title">📧 Email Preview</div>
-    <div class="email-modal-sub" id="email-modal-sub">Preview of email body — copy and paste into Gmail</div>
+    <div class="email-modal-sub" id="email-modal-sub">Preview of email body — copy and paste into your mail app</div>
     <button class="modal-close" onclick="closeEmailModal()">✕</button>
+
+    <div class="email-subject-row">
+      <span class="email-subject-label">Subject:</span>
+      <span class="email-subject-text" id="email-subject-text"></span>
+      <button class="copy-subject-btn" id="copy-subject-btn" onclick="copyEmailSubject()" title="Copy subject line">📋</button>
+    </div>
+
     <div class="email-preview-wrap" id="email-preview"></div>
     <div class="email-modal-actions">
       <button class="copy-btn" id="email-copy-btn" onclick="copyEmailToClipboard()">
         <span>📋</span><span id="email-copy-label">Copy formatted email</span>
       </button>
       <button class="btn-cancel" onclick="closeEmailModal()">Close</button>
-      <div class="copy-hint">After copying: open Gmail compose → paste → edit the [YOUR MESSAGE] line → send.</div>
+      <div class="copy-hint">Copy subject + body separately, paste each into your mail app, edit the [YOUR MESSAGE] line, send.</div>
     </div>
   </div>
+</div>
+
+<!-- TOAST for convert-with-undo -->
+<div class="toast" id="convert-toast">
+  <span class="toast-icon">✓</span>
+  <div>
+    <div class="toast-msg" id="toast-msg">Booking added · Lead deleted</div>
+    <div class="toast-meta" id="toast-meta">Auto-dismiss in 8s</div>
+  </div>
+  <button class="toast-undo" id="toast-undo-btn" onclick="undoLeadDelete()">Undo</button>
 </div>
 
 <script>
@@ -760,6 +798,9 @@ function bookingHTML(b, isLead) {
   const calBtn = (!isLead && b.date)
     ? `<button class="cal-btn" onclick="addToCalendar(${JSON.stringify(b).replace(/"/g,'&quot;')})" title="Add to Calendar">📅 Add to Cal</button>`
     : '';
+  const convertBtn = isLead
+    ? `<button class="convert-btn" onclick="convertLeadToBooking(${b.id})" title="Convert this lead to a booking">→ Convert</button>`
+    : '';
   return `
   <div class="booking-item">
     <div class="date-box ${isLead?'lead':''} ${isPast?'past':''}">
@@ -773,7 +814,7 @@ function bookingHTML(b, isLead) {
         ${b.market?`<span>${b.market}</span>`:''}
         ${b.source?`<span>${b.source}</span>`:''}
       </div>
-      ${calBtn}
+      ${calBtn}${convertBtn}
     </div>
     <div class="bk-right">
       <div class="bk-amount">${b.amount?'$'+b.amount.toLocaleString():'TBD'}</div>
@@ -949,9 +990,8 @@ function emailStatusLabel(s) {
 
 // Build email body HTML for a worker
 function buildEmailBodyHTML(workerName, shows) {
-  const intro = `<p style="margin:0 0 12px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">Hi ${escHtml(workerName)},</p>`;
+  const intro = `<p style="margin:0 0 12px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">DJ ${escHtml(workerName)},</p>`;
   const placeholder = `<p class="placeholder-msg" style="margin:0 0 14px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#999;font-style:italic;">[YOUR MESSAGE HERE — replace this line with any updates, reminders, or personal notes before sending]</p>`;
-  const tableIntro = `<p style="margin:0 0 10px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">Here's your current upcoming schedule.</p>`;
 
   let tableHtml = '';
   if (shows.length === 0) {
@@ -974,7 +1014,7 @@ function buildEmailBodyHTML(workerName, shows) {
         <td style="padding:7px 10px;border:1px solid #D8D8D8;${bg}">${escHtml(s.notes||'')}</td>
       </tr>`;
     }).join('');
-    tableHtml = `<table style="border-collapse:collapse;width:100%;margin:8px 0 14px 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;">
+    tableHtml = `<table style="border-collapse:collapse;width:100%;margin:8px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;">
       <thead><tr>
         <th style="background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;border:1px solid #1E2A4A;">DATE</th>
         <th style="background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;border:1px solid #1E2A4A;">EVENT</th>
@@ -989,28 +1029,51 @@ function buildEmailBodyHTML(workerName, shows) {
     </table>`;
   }
 
-  const closing = `<p style="margin:14px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">Let me know if you have any questions.</p>`;
-  const sig = `<p style="margin:14px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">— Tim</p>
-               <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#666;font-style:italic;">Answer Back DJ &amp; Entertainment</p>`;
+  return intro + placeholder + tableHtml;
+}
 
-  return intro + placeholder + tableIntro + tableHtml + closing + sig;
+// Build the subject line: "M.D.YYYY - ABDJS [Name]'s Updated Show List"
+function buildEmailSubject(workerName) {
+  const d = new Date();
+  return `${d.getMonth()+1}.${d.getDate()}.${d.getFullYear()} - ABDJS ${workerName}'s Updated Show List`;
 }
 
 function openEmailModal(workerName) {
   const shows = upcomingForWorker(workerName);
   const html = buildEmailBodyHTML(workerName, shows);
+  const subject = buildEmailSubject(workerName);
 
   document.getElementById('email-modal-title').textContent = `📧 Email ${workerName}'s Schedule`;
   document.getElementById('email-modal-sub').textContent =
-    `${shows.length} upcoming confirmed show${shows.length === 1 ? '' : 's'} · click "Copy formatted email" to copy with full styling`;
+    `${shows.length} upcoming show${shows.length === 1 ? '' : 's'} · copy the subject and body separately into your mail app`;
+  document.getElementById('email-subject-text').textContent = subject;
   document.getElementById('email-preview').innerHTML = html;
 
-  // Reset copy button state
+  // Reset copy button states
   const btn = document.getElementById('email-copy-btn');
   btn.classList.remove('copied');
   document.getElementById('email-copy-label').textContent = 'Copy formatted email';
+  const subjBtn = document.getElementById('copy-subject-btn');
+  subjBtn.classList.remove('copied');
+  subjBtn.textContent = '📋';
 
   document.getElementById('email-modal-overlay').classList.add('open');
+}
+
+async function copyEmailSubject() {
+  const subject = document.getElementById('email-subject-text').textContent;
+  const btn = document.getElementById('copy-subject-btn');
+  try {
+    await navigator.clipboard.writeText(subject);
+    btn.classList.add('copied');
+    btn.textContent = '✓';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.textContent = '📋';
+    }, 2000);
+  } catch (err) {
+    console.error('Subject copy failed:', err);
+  }
 }
 
 function closeEmailModal() {
@@ -1198,8 +1261,109 @@ function openModal(defaultStatus) {
   document.getElementById('modal-overlay').classList.add('open');
   setTimeout(()=>document.getElementById('f-name').focus(), 100);
 }
-function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  // Clear conversion context if user dismisses without saving
+  pendingConversion = null;
+}
 document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+
+// ── CONVERT LEAD → BOOKING ────────────────────────
+// pendingConversion holds the lead snapshot during the modal flow.
+// If addBooking succeeds, we delete the lead and show an undo toast.
+let pendingConversion = null;
+let undoTimer = null;
+let undoCountdownInterval = null;
+
+function convertLeadToBooking(leadId) {
+  const lead = leads.find(l => l.id === leadId);
+  if (!lead) {
+    setConn('err', 'Lead not found — try reloading');
+    return;
+  }
+
+  // Stash the full lead so we can delete after save (and undo if needed)
+  pendingConversion = { ...lead };
+
+  // Pre-fill the booking modal with lead data. User can edit anything before saving.
+  document.getElementById('f-name').value     = lead.name || '';
+  document.getElementById('f-date').value     = lead.date || '';
+  document.getElementById('f-amount').value   = lead.amount || '';
+  document.getElementById('f-type').value     = lead.type || 'Other';
+  document.getElementById('f-services').value = lead.services || 'DJ Only';
+  document.getElementById('f-status').value   = 'Confirmed';  // converting → booking
+  document.getElementById('f-market').value   = lead.market || '';
+  document.getElementById('f-worker').value   = lead.worker || '';
+  document.getElementById('f-phone').value    = lead.phone || '';
+  document.getElementById('f-email').value    = lead.email || '';
+  document.getElementById('f-notes-modal').value = lead.notes || '';
+
+  // Open modal
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('f-name').focus(), 100);
+}
+
+function showToast(msg, withUndo) {
+  const toast = document.getElementById('convert-toast');
+  document.getElementById('toast-msg').textContent = msg;
+  document.getElementById('toast-undo-btn').style.display = withUndo ? 'block' : 'none';
+  toast.classList.add('show');
+
+  // Clear any prior timers
+  if (undoTimer) clearTimeout(undoTimer);
+  if (undoCountdownInterval) clearInterval(undoCountdownInterval);
+
+  if (withUndo) {
+    let secs = 8;
+    document.getElementById('toast-meta').textContent = `Auto-dismiss in ${secs}s`;
+    undoCountdownInterval = setInterval(() => {
+      secs--;
+      document.getElementById('toast-meta').textContent = `Auto-dismiss in ${secs}s`;
+      if (secs <= 0) clearInterval(undoCountdownInterval);
+    }, 1000);
+    undoTimer = setTimeout(() => {
+      toast.classList.remove('show');
+      pendingConversion = null;  // commit: undo no longer possible
+    }, 8000);
+  } else {
+    document.getElementById('toast-meta').textContent = '';
+    undoTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+  }
+}
+
+async function undoLeadDelete() {
+  if (!pendingConversion) return;
+  const lead = pendingConversion;
+  pendingConversion = null;
+
+  // Clear timers + hide toast
+  if (undoTimer) clearTimeout(undoTimer);
+  if (undoCountdownInterval) clearInterval(undoCountdownInterval);
+  document.getElementById('convert-toast').classList.remove('show');
+
+  // Re-add the lead via the existing appendLead endpoint
+  // (Sheet may have re-issued a new ID since the row was deleted — that's fine)
+  setConn('syn','Restoring lead...');
+  try {
+    await abdjsPost('appendLead', {
+      source:   lead.source   || 'Website',
+      date:     lead.date     || '',
+      name:     lead.name     || '',
+      status:   lead.status   || 'Contacted',
+      type:     lead.type     || '',
+      amount:   lead.amount   || 0,
+      services: lead.services || '',
+      priority: lead.priority || 'Medium',
+      notes:    lead.notes    || '',
+      phone:    lead.phone    || '',
+      email:    lead.email    || ''
+    });
+    setConn('ok','Lead restored');
+    setTimeout(loadBookings, 1200);
+  } catch (e) {
+    setConn('err','Restore failed — check the Sheet');
+  }
+}
 
 async function addBooking() {
   const name = document.getElementById('f-name').value.trim();
@@ -1222,17 +1386,25 @@ async function addBooking() {
     priority: 'Medium',
   };
 
+  // Capture conversion context before we close the modal (closeModal clears it)
+  const conversionLead = pendingConversion;
+  const isConversion = !!conversionLead && !isLead;
+
   // Add to local state immediately so UI updates instantly
   const localEntry = {...payload, id: nextId++};
   if (isLead) {
     leads.push(localEntry);
   } else {
     bookings.push(localEntry);
+    // If converting, optimistically remove the lead from local state too
+    if (isConversion) {
+      leads = leads.filter(l => l.id !== conversionLead.id);
+    }
   }
 
-  // Clear form + close
+  // Clear form + close (closeModal nulls pendingConversion — that's why we captured above)
   ['f-name','f-date','f-amount','f-phone','f-email','f-notes-modal'].forEach(id=>document.getElementById(id).value='');
-  closeModal();
+  document.getElementById('modal-overlay').classList.remove('open');
   renderAll();
 
   // Save to Sheet via Apps Script
@@ -1240,11 +1412,26 @@ async function addBooking() {
   try {
     const action = isLead ? 'appendLead' : 'appendBooking';
     const result = await abdjsPost(action, payload);
-    setConn('ok','Saved · ' + (isLead ? 'Lead' : 'Booking') + ' added to Sheet');
+
+    if (isConversion) {
+      // Booking saved — now delete the lead row
+      try {
+        await abdjsPost('deleteLead', {id: conversionLead.id});
+        pendingConversion = conversionLead;  // restore for the toast/undo window
+        showToast('Booking added · Lead deleted', true);
+        setConn('ok','Lead converted to booking');
+      } catch (delErr) {
+        setConn('err','Booking saved but lead delete failed — remove it manually from the Sheet');
+      }
+    } else {
+      setConn('ok','Saved · ' + (isLead ? 'Lead' : 'Booking') + ' added to Sheet');
+    }
+
     // Reload from sheet to get the proper ID back
     setTimeout(loadBookings, 1500);
   } catch(e) {
     setConn('err','Save failed — entry is local only');
+    pendingConversion = null;  // don't try to delete the lead if the booking didn't save
   }
 }
 
