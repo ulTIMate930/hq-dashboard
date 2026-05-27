@@ -215,13 +215,13 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .email-btn-meta{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:2px;}
 
 /* ── EMAIL PREVIEW MODAL ── */
-.email-modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px;max-width:780px;width:94%;max-height:92vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px #00000060;}
+.email-modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px;max-width:1200px;width:97%;max-height:92vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px #00000060;}
 .email-modal-title{font-size:1.05rem;font-weight:800;margin-bottom:6px;color:var(--text);}
 .email-modal-sub{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);margin-bottom:16px;}
-.email-preview-wrap{background:#FFFFFF;border:1px solid var(--border2);border-radius:10px;padding:24px;color:#222;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;max-height:50vh;overflow-y:auto;margin-bottom:14px;}
+.email-preview-wrap{background:#FFFFFF;border:1px solid var(--border2);border-radius:10px;padding:24px;color:#222;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;max-height:55vh;overflow:auto;margin-bottom:14px;}
 .email-preview-wrap .placeholder-msg{color:#999;font-style:italic;}
 .email-preview-wrap table{border-collapse:collapse;width:100%;margin:14px 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;}
-.email-preview-wrap th{background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;font-size:12px;letter-spacing:0.3px;border:1px solid #1E2A4A;}
+.email-preview-wrap th{background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;font-size:12px;letter-spacing:0.3px;border:1px solid #1E2A4A;white-space:nowrap;}
 .email-preview-wrap td{padding:7px 10px;border:1px solid #D8D8D8;vertical-align:top;}
 .email-preview-wrap tr:nth-child(even) td{background:#F7F7FA;}
 .email-preview-wrap .pay-col{text-align:right;font-weight:700;white-space:nowrap;}
@@ -642,6 +642,7 @@ function parseBooking(row, idx) {
     type:row[BC.type]||'Other', services:row[BC.services]||'DJ Only',
     status:sm[sr]||'inquiry', market:row[BC.market]||'',
     worker:row[BC.worker]||'', notes:row[BC.notes]||'', time:row[BC.time]||'',
+    location:row[BC.location]||'',
     phone:row[BC.phone]||'', email:row[BC.email]||''
   };
 }
@@ -902,11 +903,13 @@ function renderStats() {
 }
 
 // ── EMAIL CONTRACTOR ──────────────────────────────
-// Filters bookings for a worker, only Confirmed + future-dated
+// Filters bookings for a worker — Confirmed + Unconfirmed + Maybe, future-dated.
+// Completed (past) and Cancelled are always excluded.
 function upcomingForWorker(workerName) {
+  const visibleStatuses = ['confirmed', 'inquiry', 'lead']; // inquiry/lead cover Unconfirmed/Maybe per the status map
   return bookings
     .filter(b => (b.worker || '').toUpperCase() === workerName.toUpperCase())
-    .filter(b => b.status === 'confirmed')
+    .filter(b => visibleStatuses.includes(b.status))
     .filter(b => {
       if (!b.date) return true;
       return new Date(b.date+'T12:00:00') >= today;
@@ -933,11 +936,22 @@ function escHtml(s) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// Map a parsed status back to a display label and pill color for the email table.
+// Keep this aligned with what contractors actually need to see.
+function emailStatusLabel(s) {
+  const m = {
+    confirmed:  {label:'Confirmed',   bg:'#1A6B3A', fg:'#FFFFFF'},  // dark green
+    inquiry:    {label:'Unconfirmed', bg:'#FFB060', fg:'#5A3000'},  // orange
+    lead:       {label:'Unconfirmed', bg:'#FFB060', fg:'#5A3000'},
+  };
+  return m[s] || {label:s || '—', bg:'#E0E0E0', fg:'#333'};
+}
+
 // Build email body HTML for a worker
 function buildEmailBodyHTML(workerName, shows) {
   const intro = `<p style="margin:0 0 12px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">Hi ${escHtml(workerName)},</p>`;
   const placeholder = `<p class="placeholder-msg" style="margin:0 0 14px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#999;font-style:italic;">[YOUR MESSAGE HERE — replace this line with any updates, reminders, or personal notes before sending]</p>`;
-  const tableIntro = `<p style="margin:0 0 10px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">Here's your current upcoming schedule. Let me know if anything looks off or if you have questions on any of these.</p>`;
+  const tableIntro = `<p style="margin:0 0 10px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">Here's your current upcoming schedule.</p>`;
 
   let tableHtml = '';
   if (shows.length === 0) {
@@ -947,12 +961,15 @@ function buildEmailBodyHTML(workerName, shows) {
       const bg = i % 2 === 1 ? 'background:#F7F7FA;' : '';
       const pay = s.djPay || s.amount;
       const payStr = pay ? `$${pay.toLocaleString()}` : 'TBD';
+      const st = emailStatusLabel(s.status);
+      const statusPill = `<span style="display:inline-block;padding:3px 8px;border-radius:10px;background:${st.bg};color:${st.fg};font-weight:700;font-size:11px;white-space:nowrap;">${escHtml(st.label)}</span>`;
       return `<tr>
-        <td style="padding:7px 10px;border:1px solid #D8D8D8;${bg}">${escHtml(emailDate(s.date))}</td>
+        <td style="padding:7px 10px;border:1px solid #D8D8D8;white-space:nowrap;${bg}">${escHtml(emailDate(s.date))}</td>
         <td style="padding:7px 10px;border:1px solid #D8D8D8;${bg}">${escHtml(s.name)}</td>
-        <td style="padding:7px 10px;border:1px solid #D8D8D8;${bg}">${escHtml(s.type)}</td>
-        <td style="padding:7px 10px;border:1px solid #D8D8D8;${bg}">${escHtml(s.time)}</td>
-        <td style="padding:7px 10px;border:1px solid #D8D8D8;${bg}">${escHtml(s.location||'')}</td>
+        <td style="padding:7px 10px;border:1px solid #D8D8D8;white-space:nowrap;${bg}">${escHtml(s.type)}</td>
+        <td style="padding:7px 10px;border:1px solid #D8D8D8;white-space:nowrap;${bg}">${escHtml(s.time)}</td>
+        <td style="padding:7px 10px;border:1px solid #D8D8D8;white-space:nowrap;${bg}">${escHtml(s.location||'')}</td>
+        <td style="padding:7px 10px;border:1px solid #D8D8D8;text-align:center;white-space:nowrap;${bg}">${statusPill}</td>
         <td class="pay-col" style="padding:7px 10px;border:1px solid #D8D8D8;text-align:right;font-weight:700;white-space:nowrap;${bg}">${escHtml(payStr)}</td>
         <td style="padding:7px 10px;border:1px solid #D8D8D8;${bg}">${escHtml(s.notes||'')}</td>
       </tr>`;
@@ -964,6 +981,7 @@ function buildEmailBodyHTML(workerName, shows) {
         <th style="background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;border:1px solid #1E2A4A;">TYPE</th>
         <th style="background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;border:1px solid #1E2A4A;">TIME</th>
         <th style="background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;border:1px solid #1E2A4A;">LOCATION</th>
+        <th style="background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:center;border:1px solid #1E2A4A;">STATUS</th>
         <th style="background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;border:1px solid #1E2A4A;">PAY</th>
         <th style="background:#1E2A4A;color:#FFFFFF;font-weight:700;padding:8px 10px;text-align:left;border:1px solid #1E2A4A;">NOTES</th>
       </tr></thead>
@@ -971,7 +989,7 @@ function buildEmailBodyHTML(workerName, shows) {
     </table>`;
   }
 
-  const closing = `<p style="margin:14px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">As always, I'll be in touch the week of each event to confirm final details. Thanks!</p>`;
+  const closing = `<p style="margin:14px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">Let me know if you have any questions.</p>`;
   const sig = `<p style="margin:14px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">— Tim</p>
                <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#666;font-style:italic;">Answer Back DJ &amp; Entertainment</p>`;
 
