@@ -945,7 +945,7 @@
                 <div class="card">
                     <div class="card-label">Currently Accruing</div>
                     <div class="card-fig" style="color:var(--sage)" id="debt-accruing">$0</div>
-                    <div class="card-note">All high-APR cards paid off ✓</div>
+                    <div class="card-note">Interest-bearing balances</div>
                 </div>
                 <div class="card">
                     <div class="card-label">Payoff Strategy</div>
@@ -953,133 +953,13 @@
                         <button id="btn-av" class="strat-btn on" onclick="strat('avalanche')">AVALANCHE</button>
                         <button id="btn-sb" class="strat-btn off" onclick="strat('snowball')">SNOWBALL</button>
                     </div>
-                    <div id="strat-note" style="font-size:12px;color:var(--ink3);margin-top:8px;line-height:1.6;">Highest APR first — Crypto.com → BOA2 → Prime Visa. Saves the most interest.</div>
+                    <div id="strat-note" style="font-size:12px;color:var(--ink3);margin-top:8px;line-height:1.6;">Highest APR first — Crypto.com (27%) → Prime Visa (25%). Clear BB1 before Jul 14 regardless.</div>
                 </div>
             </div>
 
             <div class="sec-label">All Cards — by Priority</div>
-            <div class="card mb20">
-                <div class="debt-block">
-                    <div class="debt-top">
-                        <span class="debt-name">Crypto.com Visa (Comenity)</span>
-                        <span class="debt-bal" style="color:var(--rust)" id="d-cdc">—</span>
-                    </div>
-                    <div class="debt-meta-row">
-                        <span>Due: 10th</span>
-                        <span>26.99% APR</span>
-                        <span style="color:var(--sage);font-weight:600;">AutoPay: SET ✓</span>
-                    </div>
-                    <div>
-                        <span class="badge green">✓ PAID OFF — CONSIDER CLOSING</span>
-                        <span class="badge muted">Set as card-to-cancel per strategy</span>
-                    </div>
-                    <div class="track">
-                        <div class="track-fill" id="tr-cdc" style="background:var(--sage-l);width:0%"></div>
-                    </div>
-                </div>
-                <div class="debt-block">
-                    <div class="debt-top">
-                        <span class="debt-name">Best Buy BB1 (...6761)</span>
-                        <span class="debt-bal" style="color:var(--amber)" id="d-bb1">—</span>
-                    </div>
-                    <div class="debt-meta-row">
-                        <span>Due: 14th</span>
-                        <span>AutoPay: YES</span>
-                        <span>0% — DEFERRED, expires Jul 14, 2026</span>
-                    </div>
-                    <div>
-                        <span class="badge amber">⏰ PAY IN FULL BY JUL 14 — ~$140/mo</span>
-                    </div>
-                    <div class="track">
-                        <div class="track-fill" id="tr-bb1" style="background:var(--amber-l);width:0%"></div>
-                    </div>
-                </div>
-                <div class="debt-block">
-                    <div class="debt-top">
-                        <span class="debt-name">BOA (...8769)</span>
-                        <span class="debt-bal" style="color:var(--sage)" id="d-boa1">—</span>
-                    </div>
-                    <div class="debt-meta-row">
-                        <span>Due: 3rd</span>
-                        <span>AutoPay: YES</span>
-                        <span>0% until Jun 6, 2026</span>
-                    </div>
-                    <div>
-                        <span class="badge green">✓ 0% PROMO — PAY BEFORE JUN 2026</span>
-                    </div>
-                    <div class="track">
-                        <div class="track-fill" id="tr-boa1" style="background:var(--sage-l);width:0%"></div>
-                    </div>
-                </div>
-                <div class="debt-block">
-                    <div class="debt-top">
-                        <span class="debt-name">Chase Prime Visa (...7376)</span>
-                        <span class="debt-bal" style="color:var(--rust)" id="d-pv">—</span>
-                    </div>
-                    <div class="debt-meta-row">
-                        <span>Due: Apr 4</span>
-                        <span>24.99% APR</span>
-                        <span>AutoPay: YES</span>
-                    </div>
-                    <div>
-                        <span class="badge green">✓ PAID OFF — Keep for 5% Amazon rewards</span>
-                    </div>
-                    <div class="track">
-                        <div class="track-fill" id="tr-pv" style="background:var(--sage-l);width:0%"></div>
-                    </div>
-                </div>
-                <div class="debt-block">
-                    <div class="debt-top">
-                        <span class="debt-name">BOA (...7720)</span>
-                        <span class="debt-bal" style="color:var(--amber)" id="d-boa2">—</span>
-                    </div>
-                    <div class="debt-meta-row">
-                        <span>Due: 6th</span>
-                        <span>AutoPay: YES</span>
-                        <span>Promo expired Oct 2025</span>
-                    </div>
-                    <div>
-                        <span class="badge green">✓ PAID OFF — Close this card</span>
-                        <span class="badge muted">No ongoing value · Cancel recommended</span>
-                    </div>
-                    <div class="track">
-                        <div class="track-fill" id="tr-boa2" style="background:var(--sage-l);width:0%"></div>
-                    </div>
-                </div>
-                <div class="debt-block">
-                    <div class="debt-top">
-                        <span class="debt-name">Best Buy BB2 (...6761)</span>
-                        <span class="debt-bal" style="color:var(--sage)" id="d-bb2">—</span>
-                    </div>
-                    <div class="debt-meta-row">
-                        <span>Due: 14th</span>
-                        <span>AutoPay: YES</span>
-                        <span>0% until Jan 14, 2027</span>
-                    </div>
-                    <div>
-                        <span class="badge green">✓ SAFE UNTIL JAN 2027</span>
-                    </div>
-                    <div class="track">
-                        <div class="track-fill" id="tr-bb2" style="background:var(--sage-l);width:0%"></div>
-                    </div>
-                </div>
-                <div class="debt-block">
-                    <div class="debt-top">
-                        <span class="debt-name">Best Buy BB3 (...6761)</span>
-                        <span class="debt-bal" style="color:var(--sage)" id="d-bb3">—</span>
-                    </div>
-                    <div class="debt-meta-row">
-                        <span>Due: 14th</span>
-                        <span>AutoPay: YES</span>
-                        <span>0% until Mar 16, 2027</span>
-                    </div>
-                    <div>
-                        <span class="badge green">✓ SAFE UNTIL MAR 2027</span>
-                    </div>
-                    <div class="track">
-                        <div class="track-fill" id="tr-bb3" style="background:var(--sage-l);width:0%"></div>
-                    </div>
-                </div>
+            <div class="card mb20" id="debt-cards-wrap">
+                <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">Loading cards...</div>
             </div>
 
             <div class="card">
@@ -1733,37 +1613,37 @@
       const cc  = cur.crypto_com != null ? parseFloat(cur.crypto_com) : 0;
       const pv  = cur.prime_visa != null ? parseFloat(cur.prime_visa) : 0;
       const b2  = cur.boa2       != null ? parseFloat(cur.boa2)       : 0;
+      // "Accruing" = balances on cards that charge interest (not 0% promos).
+      // Crypto.com (27%) and Prime Visa (24.99%) accrue; BOA2 only if it has a balance post-promo.
       const accruing = cc + pv + b2;
       document.getElementById('snap-accruing').textContent = accruing > 0 ? fmt(accruing)+'+' : '$0';
       document.getElementById('snap-accruing').style.color = accruing > 0 ? 'var(--amber)' : 'var(--sage)';
       const noteEl = document.getElementById('snap-accruing-note');
-      if(noteEl) noteEl.textContent = accruing > 0 ? 'Crypto.com + Prime + BOA2' : 'All high-APR cards paid off ✓';
+      if(noteEl) noteEl.textContent = accruing > 0 ? 'Interest-bearing balances' : 'No interest-bearing balances ✓';
 
-      // ── DEBT TAB ──────────────────────────────────────────────────────────
+      // ── DEBT TAB (fully data-driven) ──────────────────────────────────────
       const bb1v = cur.bb1  != null ? parseFloat(cur.bb1)  : 0;
       const bb2v = cur.bb2  != null ? parseFloat(cur.bb2)  : 0;
       const bb3v = cur.bb3  != null ? parseFloat(cur.bb3)  : 0;
       const b1   = cur.boa1 != null ? parseFloat(cur.boa1) : 0;
-      const tot  = cc + bb1v + bb2v + bb3v + b1 + b2 + pv;
+      const flex = cur.freedom_flex != null ? parseFloat(cur.freedom_flex) : 0;
+      const efi  = cur.etherfi != null ? parseFloat(cur.etherfi) : 0;
 
       document.getElementById('debt-total').textContent    = fmt(debt);
       document.getElementById('debt-accruing').textContent = accruing > 0 ? fmt(accruing)+'+' : '$0';
       document.getElementById('debt-accruing').style.color = accruing > 0 ? 'var(--amber)' : 'var(--sage)';
 
-      document.getElementById('d-cdc').textContent  = fmt(cc, 2);
-      document.getElementById('d-bb1').textContent  = fmt(bb1v, 2);
-      document.getElementById('d-bb2').textContent  = fmt(bb2v, 2);
-      document.getElementById('d-bb3').textContent  = fmt(bb3v, 2);
-      document.getElementById('d-boa1').textContent = fmt(b1, 2);
-      document.getElementById('d-boa2').textContent = fmt(b2, 2);
-      document.getElementById('d-pv').textContent   = fmt(pv, 2);
-
-      function setTrack(id, val) {
-        const el = document.getElementById(id);
-        if (el) el.style.width = Math.min(Math.round((val / tot) * 100), 100) + '%';
-      }
-      setTrack('tr-cdc', cc); setTrack('tr-bb1', bb1v); setTrack('tr-bb2', bb2v);
-      setTrack('tr-bb3', bb3v); setTrack('tr-boa1', b1); setTrack('tr-boa2', b2); setTrack('tr-pv', pv);
+      renderDebt([
+        {name:'Crypto.com Visa (Comenity)', bal:cc,   apr:'26.99% APR', due:'10th',  autopay:'AutoPay: SET ✓', promo:null,            accrues:true,  kind:'high'},
+        {name:'Best Buy BB1 (...6761)',      bal:bb1v, apr:'0% deferred', due:'14th',  autopay:'AutoPay: YES',   promo:'Jul 14, 2026',  accrues:false, kind:'deadline'},
+        {name:'Chase Prime Visa (...7376)',  bal:pv,   apr:'24.99% APR', due:'Apr 4', autopay:'AutoPay: YES',   promo:null,            accrues:true,  kind:'high', rewards:'5% Amazon'},
+        {name:'Freedom Flex (...7733)',      bal:flex, apr:'0% promo',   due:'Aug 4', autopay:'AutoPay: YES',   promo:'~Aug 2027',     accrues:false, kind:'promo'},
+        {name:'Best Buy BB2 (...6761)',      bal:bb2v, apr:'0% deferred', due:'14th',  autopay:'AutoPay: YES',   promo:'Jan 14, 2027',  accrues:false, kind:'promo'},
+        {name:'Best Buy BB3 (...6761)',      bal:bb3v, apr:'0% deferred', due:'14th',  autopay:'AutoPay: YES',   promo:'Mar 16, 2027',  accrues:false, kind:'promo'},
+        {name:'BOA (...8769)',               bal:b1,   apr:'0%→? APR',   due:'3rd',   autopay:'AutoPay: YES',   promo:'Jun 6, 2026',   accrues:false, kind:'promo'},
+        {name:'BOA (...7720)',               bal:b2,   apr:'? APR',      due:'6th',   autopay:'AutoPay: YES',   promo:'expired Oct 2025', accrues:true, kind:'cancel'},
+        {name:'ether.fi Cash borrow',        bal:efi,  apr:'4% APY',     due:'—',     autopay:'collateralized', promo:null,            accrues:true,  kind:'defi'},
+      ]);
 
       // ── INVESTMENTS TAB ───────────────────────────────────────────────────
       if (invest > 0) document.getElementById('inv-total').textContent = fmt(invest);
@@ -2137,13 +2017,69 @@
       } catch(e) { msg.textContent = '✗ ' + e.message; msg.style.color='var(--rust)'; }
     }
 
+    // ── RENDER DEBT CARDS (data-driven badges) ────────────────────────────────
+    function renderDebt(cards) {
+      const wrap = document.getElementById('debt-cards-wrap');
+      if (!wrap) return;
+      const maxBal = Math.max(1, ...cards.map(c => c.bal || 0));
+      let html = '';
+      cards.forEach(c => {
+        const bal = c.bal || 0;
+        const hasBal = bal > 0.005;
+        // Derive badge + colors from actual balance and card kind
+        let badges = '', balColor = 'var(--sage)', barColor = 'var(--sage-l)';
+        if (!hasBal) {
+          balColor = 'var(--sage)';
+          if (c.kind === 'cancel') {
+            badges = '<span class="badge green">✓ PAID OFF</span><span class="badge muted">No ongoing value · cancel candidate</span>';
+          } else if (c.kind === 'high' && c.rewards) {
+            badges = '<span class="badge green">✓ PAID OFF — keep for ' + c.rewards + '</span>';
+          } else {
+            badges = '<span class="badge green">✓ PAID OFF</span>';
+          }
+        } else {
+          // Carrying a balance — badge depends on kind
+          if (c.kind === 'high') {
+            balColor = 'var(--rust)'; barColor = 'var(--rust-l)';
+            badges = '<span class="badge red">🚨 ACCRUING ' + c.apr + ' — pay first</span>';
+          } else if (c.kind === 'deadline') {
+            balColor = 'var(--amber)'; barColor = 'var(--amber-l)';
+            badges = '<span class="badge amber">⏰ DEFERRED — clear by ' + c.promo + '</span>';
+          } else if (c.kind === 'promo') {
+            balColor = 'var(--slate)'; barColor = 'var(--slate-l)';
+            badges = '<span class="badge green">✓ 0% PROMO' + (c.promo ? ' until ' + c.promo : '') + '</span>';
+          } else if (c.kind === 'defi') {
+            balColor = 'var(--violet)'; barColor = 'var(--violet-l)';
+            badges = '<span class="badge blue">DeFi borrow · ' + c.apr + ' · collateralized</span>';
+          } else if (c.kind === 'cancel') {
+            balColor = 'var(--amber)'; barColor = 'var(--amber-l)';
+            badges = '<span class="badge amber">⚠ Balance + promo expired — verify APR</span>';
+          } else {
+            balColor = 'var(--rust)'; barColor = 'var(--rust-l)';
+            badges = '<span class="badge red">Carrying balance</span>';
+          }
+        }
+        const pct = Math.min(Math.round((bal / maxBal) * 100), 100);
+        const meta = [c.due ? 'Due: ' + c.due : '', c.apr, c.autopay, c.promo && c.kind!=='deadline' && c.kind!=='promo' ? c.promo : '']
+                      .filter(Boolean).map(m => '<span>' + m + '</span>').join('');
+        html += '<div class="debt-block">' +
+          '<div class="debt-top"><span class="debt-name">' + c.name + '</span>' +
+          '<span class="debt-bal" style="color:' + balColor + '">' + (hasBal ? fmt(bal,2) : '$0') + '</span></div>' +
+          '<div class="debt-meta-row">' + meta + '</div>' +
+          '<div>' + badges + '</div>' +
+          '<div class="track"><div class="track-fill" style="background:' + barColor + ';width:' + pct + '%"></div></div>' +
+          '</div>';
+      });
+      wrap.innerHTML = html;
+    }
+
     // ── DEBT STRATEGY TOGGLE ──────────────────────────────────────────────────
     function strat(type) {
       document.getElementById('btn-av').className = 'strat-btn ' + (type==='avalanche' ? 'on' : 'off');
       document.getElementById('btn-sb').className = 'strat-btn ' + (type==='snowball'  ? 'on' : 'off');
       document.getElementById('strat-note').textContent = type === 'avalanche'
-        ? 'Highest APR first — Crypto.com (26.99%) → BOA2 (verify%) → Prime Visa (24.99%). Saves the most interest.'
-        : 'Smallest balance first — BB1 ($973) → Prime Visa ($970) → BOA2 ($905). Builds momentum fastest.';
+        ? 'Highest APR first — Crypto.com (27%) → Prime Visa (25%) → verify BOA. Clear BB1 before Jul 14 deadline regardless. Saves the most interest.'
+        : 'Smallest balance first — Southwest ($159) → BB1 ($823) → BOA1 ($1,065) → Prime Visa ($1,172). Builds momentum, but watch the BB1 deadline + Crypto.com 27%.';
     }
 
     // ── LOG MONTH ─────────────────────────────────────────────────────────────
