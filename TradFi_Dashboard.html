@@ -678,6 +678,13 @@
             display: none;
         }
     }
+    .ac-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--ink4);margin-bottom:3px;}
+    .ac-in{width:100%;padding:6px 8px;font-size:12px;border:1px solid var(--cream2);border-radius:5px;background:var(--paper);color:var(--ink);font-family:var(--font-sans);}
+    .ac-in:focus{outline:none;border-color:var(--slate);}
+    .card-status-grp{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--cream2);font-weight:700;}
+    .card-reg-row{display:grid;grid-template-columns:50px 1fr 90px 80px 1fr;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--cream2);font-size:12px;}
+    .card-reg-row .c4{font-family:var(--font-mono);color:var(--ink4);}
+    .card-reg-bal{font-family:var(--font-mono);text-align:right;font-weight:600;}
     </style>
 </head>
 <body>
@@ -706,11 +713,12 @@
         <div class="nav-tab active" onclick="switchTab('overview',this)">Overview</div>
         <div class="nav-tab" onclick="switchTab('alerts',this)">
             Alerts 
-            <span class="badge-cnt" id="alert-count">4</span>
+            <span class="badge-cnt" id="alert-count">6</span>
         </div>
         <div class="nav-tab" onclick="switchTab('debt',this)">Debt</div>
         <div class="nav-tab" onclick="switchTab('investments',this)">Investments</div>
         <div class="nav-tab" onclick="switchTab('expenses',this)">Expenses</div>
+        <div class="nav-tab" onclick="switchTab('cards',this)">💳 Cards</div>
         <div class="nav-tab" onclick="switchTab('history',this)">History</div>
         <div class="nav-tab" onclick="switchTab('tasks',this)">Tasks</div>
         <div class="nav-tab" onclick="switchTab('update',this)">📝 Update</div>
@@ -758,7 +766,7 @@
                 <div class="card">
                     <div class="card-label">Active Promo Cards</div>
                     <div class="card-fig" style="color:var(--sage)" id="snap-accruing">$0</div>
-                    <div class="card-note" id="snap-accruing-note">BOA1 0% Jun · BB1 ⏰ Jul · BB2-3 safe</div>
+                    <div class="card-note" id="snap-accruing-note">BB1 ⏰ Jul 14 · Flex 0% · BB2-3 safe</div>
                 </div>
                 <div class="card">
                     <div class="card-label">Monthly Fixed</div>
@@ -775,48 +783,48 @@
             <div class="sec-label">Financial Focus</div>
             <div class="g2">
                 <div class="card">
-                    <div class="card-label" style="margin-bottom:12px;">✅ Wins This Month</div>
+                    <div class="card-label" style="margin-bottom:12px;">📈 June Snapshot</div>
                     <div class="row">
                         <div class="lbl" style="color:var(--sage)">
-                            <strong>Crypto.com paid off</strong>
-                             — $4,844 cleared · Set AutoPay · Consider closing
+                            <strong>Net worth $67.6k</strong>
+                             — up ~$15.2k from March, driven by investment gains
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="lbl" style="color:var(--rust)">
+                            <strong>Debt nearly tripled</strong>
+                             — $5.9k → $18.1k (Crypto.com, Prime Visa, Freedom Flex)
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="lbl" style="color:var(--rust)">
+                            <strong>Cash down to $799</strong>
+                             — liquidity tight; most net worth is locked in retirement/crypto
                         </div>
                     </div>
                     <div class="row">
                         <div class="lbl" style="color:var(--sage)">
-                            <strong>Chase Prime Visa paid off</strong>
-                             — $970 cleared · Keep card for 5% Amazon
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="lbl" style="color:var(--sage)">
-                            <strong>BOA (...7720) paid off</strong>
-                             — $905 cleared · Cancel this card
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="lbl">
-                            <strong>BB1 payoff plan</strong>
-                             — deferred interest expires Jul 14 · ~$140/mo to clear
+                            <strong>Crypto.com AutoPay now ON</strong>
+                             — but minimum only; balance still accruing at 27%
                         </div>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-label" style="margin-bottom:12px;">📋 Next Actions</div>
+                    <div class="card-label" style="margin-bottom:12px;">📋 Next Actions — Priority Order</div>
                     <div class="row">
-                        <div class="lbl">Close BOA (...7720) — no ongoing value after payoff</div>
+                        <div class="lbl" style="color:var(--rust)"><strong>1. Clear BB1 $823 before Jul 14</strong> — deferred interest, ~3 weeks out</div>
                     </div>
                     <div class="row">
-                        <div class="lbl">Pay BOA1 in full before Jun 6, 2026 (0% promo ends)</div>
+                        <div class="lbl" style="color:var(--rust)"><strong>2. Attack Crypto.com $4,032 @ 27%</strong> — only balance bleeding interest (~$90/mo)</div>
                     </div>
                     <div class="row">
-                        <div class="lbl">Contribute to 2026 Robinhood IRA ($5,000 remaining)</div>
+                        <div class="lbl">3. Deploy $12,366 idle Roth IRA buying power — tax-free growth lost monthly</div>
                     </div>
                     <div class="row">
-                        <div class="lbl">Deploy Roth IRA buying power — sitting uninvested</div>
+                        <div class="lbl">4. Confirm Freedom Flex promo end date (~mid-2027) — log it in sheet</div>
                     </div>
                     <div class="row">
-                        <div class="lbl">Decide: cancel Skill Incubator? ($396/yr)</div>
+                        <div class="lbl">5. Review crypto subs — ~$208/mo (Obsidian + Rubix + Skill + TradingView)</div>
                     </div>
                 </div>
             </div>
@@ -844,58 +852,84 @@
 
         <!-- ══ ALERTS ══ -->
         <div class="panel" id="panel-alerts">
-            <div class="sec-label">Active Flags — Prioritized</div>
-            <div class="alert sage">
-                <div class="alert-icon">✅</div>
+            <div class="sec-label">Active Flags — June 2026, Prioritized</div>
+            <div class="alert red">
+                <div class="alert-icon">🚨</div>
                 <div>
-                    <div class="alert-head">Crypto.com, Chase Prime, BOA (...7720) — All Paid Off</div>
-                    Three high-APR balances cleared this month. You were paying ~$130+/month in combined interest. That cash flow is now free. Next step: close BOA (...7720) — it has no ongoing rewards value.
+                    <div class="alert-head">Crypto.com $4,032 @ 26.99% — Only Balance Bleeding Interest</div>
+                    This is your single most expensive debt. At 27% APR you're paying roughly $90/month in interest alone. AutoPay is now ON (good) but at the minimum (~$96) it barely covers interest. Every spare dollar should go here first, ahead of everything else. Balance was $0 in March — it's back.
                 </div>
             </div>
             <div class="alert amber">
                 <div class="alert-icon">⏰</div>
                 <div>
-                    <div class="alert-head">Best Buy BB1 — Deferred Interest Expires Jul 14, 2026</div>
-                    Still the most urgent remaining item. Best Buy promos are DEFERRED — if the balance isn't paid in full by Jul 14, Citi back-charges all interest from day one. Pay ~$140/month to clear it safely. BB2 safe until Jan 2027, BB3 until Mar 2027.
+                    <div class="alert-head">Best Buy BB1 $823 — Deferred Interest Expires Jul 14, 2026</div>
+                    About 3 weeks out. Best Buy promos are DEFERRED — if not paid in full by Jul 14, Citi back-charges ALL interest from the original purchase date (~$386 already accrued). Small enough to just clear and eliminate the risk. BB2 safe until Jan 2027, BB3 until Mar 2027.
                 </div>
             </div>
             <div class="alert amber">
-                <div class="alert-icon">📅</div>
+                <div class="alert-icon">💳</div>
                 <div>
-                    <div class="alert-head">BOA (...8769) — 0% Promo Ends Jun 6, 2026</div>
-                    About 2 months left. Pay the remaining balance before Jun 6 to avoid revert to standard BofA APR (~25%). Set a calendar reminder now.
+                    <div class="alert-head">Chase Prime Visa $1,172 + Freedom Flex $4,000 — New Balances</div>
+                    Prime Visa is carrying a balance again (verify if accruing — it's standard APR, no promo). Freedom Flex $4,000 is on a ~15-month 0% promo — confirm the exact end date and log it so it doesn't sneak up. Not urgent while at 0%, but it's now your largest single balance.
                 </div>
             </div>
-            <div class="alert amber">
+            <div class="alert slate">
+                <div class="alert-icon">💰</div>
+                <div>
+                    <div class="alert-head">$12,366 Roth IRA Buying Power Sitting Idle</div>
+                    Cash in a tax-advantaged account earns nothing. This is the highest-leverage idle money you have — every month uninvested is tax-free compounding lost. Doesn't help the cash crunch (locked in Roth) but it's the clearest money left on the table.
+                </div>
+            </div>
+            <div class="alert slate">
                 <div class="alert-icon">📦</div>
                 <div>
-                    <div class="alert-head">NSA Storage — $177/mo ($2,124/yr)</div>
-                    Rate jumped $43/month (+32%). Now that high-APR debt is cleared, this is the next highest-cost line item to review. Is everything in that unit worth $177/month?
+                    <div class="alert-head">Cash Tight — $799 Liquid</div>
+                    Down from ~$3,190 in March. Lots of net worth, little liquidity, plus an expensive revolving balance. Worth rebuilding a small buffer alongside the Crypto.com payoff so an emergency doesn't force more high-APR borrowing.
                 </div>
             </div>
             <div class="alert slate">
                 <div class="alert-icon">💡</div>
                 <div>
-                    <div class="alert-head">Subscription Audit — $736/yr Recoverable</div>
-                    <strong>Skill Incubator ($396/yr):</strong>
-                     Actively using it?
-                    <br>
-                    <strong>Google Workspace ($202/yr):</strong>
-                     Zoho Mail is free with custom domain.
-                    <br>
-                    <strong>Wix ($168/yr):</strong>
-                     Cheaper DJ site options exist.
-                    <br>
-                    Total: 
-                    <strong>$736/yr</strong>
-                     freed up if all three cancelled.
+                    <div class="alert-head">Crypto Subscriptions Creeping Up — ~$208/mo</div>
+                    <strong>Obsidian Council ($94/mo)</strong> + <strong>Rubix/CryptoLabs ($97/mo, new)</strong> + <strong>Skill Incubator ($396/yr)</strong> + <strong>TradingView ($16.70/mo)</strong> = roughly $2,500/yr on trading education/tooling. Worth an "is each earning its keep" pass while a 27% card balance is open.
                 </div>
             </div>
-            <div class="alert slate">
-                <div class="alert-icon">💳</div>
+
+            <div class="sec-label" style="margin-top:24px;">Payoff Plan — Two Framings</div>
+            <div class="g2">
+                <div class="card" style="border-left:3px solid var(--rust);">
+                    <div class="card-label" style="margin-bottom:10px;color:var(--rust);">🔥 AVALANCHE — Lowest Total Cost</div>
+                    <div style="font-size:13px;color:var(--ink3);line-height:1.7;">
+                        Kill the only interest-bearing balance first, then ride the 0% promos to their deadlines.
+                        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--cream2);">
+                        <strong>1.</strong> Crypto.com $4,032 @ 27% — everything spare here<br>
+                        <strong>2.</strong> Verify Prime Visa $1,172 APR; if accruing, next<br>
+                        <strong>3.</strong> BB1 $823 — only as Jul 14 nears<br>
+                        <strong>4.</strong> BB2 / BB3 / Freedom Flex — ride 0% to deadlines
+                        </div>
+                        <div style="margin-top:10px;color:var(--rust);font-weight:600;">Saves the most interest. Risk: BB1 deadline is hard — don't let avalanche logic delay it past Jul 14.</div>
+                    </div>
+                </div>
+                <div class="card" style="border-left:3px solid var(--amber);">
+                    <div class="card-label" style="margin-bottom:10px;color:var(--amber);">⏰ DEADLINE-DRIVEN — Protect Promos First</div>
+                    <div style="font-size:13px;color:var(--ink3);line-height:1.7;">
+                        Clear anything with a near deadline before its clock runs out, then attack APR.
+                        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--cream2);">
+                        <strong>1.</strong> BB1 $823 — before Jul 14 (avoids ~$386 back-charge)<br>
+                        <strong>2.</strong> Crypto.com $4,032 @ 27% — the real bleed<br>
+                        <strong>3.</strong> BB2 $1,614 before Jan 2027<br>
+                        <strong>4.</strong> Freedom Flex / BB3 — by their 2027 dates
+                        </div>
+                        <div style="margin-top:10px;color:var(--amber);font-weight:600;">Eliminates deadline risk first. Costs slightly more interest on Crypto.com while BB1 clears.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="alert sage" style="margin-top:14px;">
+                <div class="alert-icon">🎯</div>
                 <div>
-                    <div class="alert-head">Credit Card Strategy — Apply for Costco Anywhere Visa</div>
-                    You're a Costco member — the Costco Anywhere Visa earns 5% at Costco gas, 4% all other gas, 3% dining, no annual fee. Best gas card available. Apply at costco.com/credit-card.
+                    <div class="alert-head">The Hybrid That Probably Wins</div>
+                    BB1 is only $823 — small enough to clear in one or two payments. Knock it out before Jul 14 to kill the deadline risk, then point everything at Crypto.com's 27%. You get the avalanche's savings without gambling on the deferred-interest deadline. The two framings basically converge here because BB1 is small.
                 </div>
             </div>
         </div>
@@ -1296,6 +1330,60 @@
             </div>
         </div>
 
+        <!-- ══ CARDS ══ -->
+        <div class="panel" id="panel-cards">
+            <div class="g3">
+                <div class="card">
+                    <div class="card-label">Total Cards</div>
+                    <div class="card-fig" style="color:var(--slate)" id="cards-count">—</div>
+                    <div class="card-note" id="cards-count-note">Active + dormant + cancelled</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Total Balances</div>
+                    <div class="card-fig" style="color:var(--rust)" id="cards-balance">—</div>
+                    <div class="card-note">Across all open cards</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Cancel Candidates</div>
+                    <div class="card-fig" style="color:var(--amber)" id="cards-cancel">—</div>
+                    <div class="card-note">Marked Cancel / Review</div>
+                </div>
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+                <button onclick="showAddCard()" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:6px 14px;background:var(--slate);color:#fff;border:none;border-radius:6px;cursor:pointer;">+ ADD CARD</button>
+                <div style="font-family:var(--font-mono);font-size:9px;color:var(--ink4);">Last-4 only · full numbers belong in your password manager</div>
+            </div>
+
+            <!-- ADD CARD FORM (hidden) -->
+            <div id="add-card-form" style="display:none;background:var(--slate-bg);border:1px solid rgba(45,74,107,.2);border-radius:8px;padding:14px;margin-bottom:14px;">
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px;">
+                    <div><div class="ac-lbl">Last-4</div><input id="nc-last4" type="text" maxlength="6" class="ac-in"></div>
+                    <div><div class="ac-lbl">Issuer</div><input id="nc-issuer" type="text" class="ac-in"></div>
+                    <div><div class="ac-lbl">Network</div><input id="nc-network" type="text" class="ac-in"></div>
+                    <div><div class="ac-lbl">Product</div><input id="nc-product" type="text" class="ac-in"></div>
+                    <div><div class="ac-lbl">Status</div><select id="nc-status" class="ac-in"><option>Active</option><option>Dormant</option><option>Promo</option><option>Cancelled</option></select></div>
+                    <div><div class="ac-lbl">Intent</div><input id="nc-intent" type="text" placeholder="Keep / Cancel / Review" class="ac-in"></div>
+                    <div><div class="ac-lbl">Balance</div><input id="nc-balance" type="number" step="0.01" class="ac-in"></div>
+                    <div><div class="ac-lbl">Credit Limit</div><input id="nc-limit" type="number" step="1" class="ac-in"></div>
+                    <div><div class="ac-lbl">APR</div><input id="nc-apr" type="text" placeholder="24.99% / 0%" class="ac-in"></div>
+                    <div><div class="ac-lbl">Rewards</div><input id="nc-rewards" type="text" class="ac-in"></div>
+                    <div><div class="ac-lbl">Promo End</div><input id="nc-promo" type="text" placeholder="YYYY-MM-DD" class="ac-in"></div>
+                    <div><div class="ac-lbl">Open Date</div><input id="nc-open" type="text" placeholder="YYYY-MM" class="ac-in"></div>
+                </div>
+                <div style="margin-bottom:10px;"><div class="ac-lbl">Notes</div><input id="nc-notes" type="text" class="ac-in" style="width:100%;"></div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;">
+                    <button onclick="hideAddCard()" style="font-family:var(--font-mono);font-size:10px;padding:6px 14px;background:var(--paper);border:1px solid var(--cream2);border-radius:6px;cursor:pointer;color:var(--ink4);">Cancel</button>
+                    <button onclick="saveCard()" style="font-family:var(--font-mono);font-size:10px;padding:6px 14px;background:var(--slate);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">SAVE CARD</button>
+                </div>
+                <div id="nc-status-msg" style="font-family:var(--font-mono);font-size:10px;margin-top:8px;text-align:right;"></div>
+            </div>
+
+            <div class="card" id="cards-wrap">
+                <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">Loading cards...</div>
+            </div>
+        </div>
+
         <!-- ══ HISTORY ══ -->
         <div class="panel" id="panel-history">
             <div class="sec-label">Net Worth Over Time</div>
@@ -1534,12 +1622,13 @@
     // ── DEFAULTS (shown if Sheets offline) ────────────────────────────────────
     const DEFAULTS = {
       current: {
-        snapshot_mo:'April 2026', cash:3190, crypto:0,
-        betterment:32347, robinhood:32751, invest_total:65097,
-        monthly_exp:1980, net_worth:62422, total_debt:-5865,
-        crypto_com:4844, bb1:973, bb2:1614, bb3:2164,
-        boa1:1113, boa2:905, prime_visa:970, venmo:0,
-        chase_chk:0, chase_sav1:0, chase_sav2:0, chase_biz:0,
+        snapshot_mo:'June 2026', cash:798.74, crypto:7770.93,
+        betterment:36469.37, robinhood:40709.17, invest_total:77178.54,
+        monthly_exp:1980, net_worth:67614.68, total_debt:-18133.53,
+        crypto_com:4031.99, bb1:823.25, bb2:1614.39, bb3:2163.99,
+        boa1:1064.84, boa2:0, prime_visa:1172.49, venmo:0,
+        freedom_flex:3999.75, etherfi:2970.65,
+        chase_chk:498.74, chase_sav1:100, chase_sav2:100, chase_biz:100,
         eidl:0,
       },
       history:[
@@ -1708,6 +1797,9 @@
 
       // ── TASKS TAB ─────────────────────────────────────────────────────────
       loadTasks();
+
+      // ── CARDS TAB ─────────────────────────────────────────────────────────
+      loadCards();
     }
 
     // ── EXPENSES STATE ────────────────────────────────────────────────────────
@@ -1957,6 +2049,92 @@
           '</div>'
         ).join('');
       } catch(e) { /* silent */ }
+    }
+
+    // ── CARD REGISTRY ─────────────────────────────────────────────────────────
+    let _cards = [];
+    async function loadCards() {
+      try {
+        const r = await fetch(SCRIPT_URL + '?action=loadCards', {redirect:'follow'});
+        const j = await r.json();
+        if (!j.ok || !j.data) { renderCards([]); return; }
+        _cards = j.data.cards || [];
+        renderCards(_cards);
+      } catch(e) { renderCards([]); }
+    }
+
+    function renderCards(cards) {
+      const wrap = document.getElementById('cards-wrap');
+      if (!cards || !cards.length) {
+        wrap.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No cards yet. Click + ADD CARD.</div>';
+        document.getElementById('cards-count').textContent = '0';
+        document.getElementById('cards-balance').textContent = fmt(0);
+        document.getElementById('cards-cancel').textContent = '0';
+        return;
+      }
+      let totalBal = 0, cancelCt = 0;
+      cards.forEach(c => {
+        totalBal += parseFloat(c.balance) || 0;
+        if (/cancel|review/i.test(c.intent) || /cancel/i.test(c.status)) cancelCt++;
+      });
+      document.getElementById('cards-count').textContent = cards.length;
+      document.getElementById('cards-balance').textContent = fmt(totalBal);
+      document.getElementById('cards-cancel').textContent = cancelCt;
+
+      // Group by status
+      const order = ['Active','Promo','Dormant','Cancelled'];
+      const groups = {};
+      cards.forEach(c => { const s = c.status || 'Other'; (groups[s] = groups[s] || []).push(c); });
+      const seen = Object.keys(groups).sort((a,b) => {
+        const ia = order.indexOf(a), ib = order.indexOf(b);
+        return (ia<0?99:ia) - (ib<0?99:ib);
+      });
+
+      let html = '';
+      seen.forEach(status => {
+        html += '<div class="card-status-grp">' + status + ' (' + groups[status].length + ')</div>';
+        groups[status].forEach(c => {
+          const bal = parseFloat(c.balance) || 0;
+          const balColor = bal > 0 ? 'var(--rust)' : 'var(--sage)';
+          const promo = c.promo_end ? ' · promo ends ' + c.promo_end : '';
+          html += '<div class="card-reg-row">' +
+            '<span class="c4">…' + (c.last4||'') + '</span>' +
+            '<span><strong>' + (c.product||'') + '</strong> <span style="color:var(--ink4);font-size:11px;">' + (c.issuer||'') + '</span>' +
+              (c.notes ? '<br><span style="font-size:10px;color:var(--ink4);">' + c.notes + '</span>' : '') + '</span>' +
+            '<span style="font-family:var(--font-mono);font-size:10px;color:var(--ink4);">' + (c.apr||'') + (c.rewards?'<br>'+c.rewards:'') + '</span>' +
+            '<span style="font-family:var(--font-mono);font-size:10px;color:var(--ink4);">' + (c.intent||'') + promo + '</span>' +
+            '<span class="card-reg-bal" style="color:' + balColor + ';">' + (bal>0?fmt(bal,2):'$0') + '</span>' +
+            '</div>';
+        });
+      });
+      wrap.innerHTML = html;
+    }
+
+    function showAddCard() { document.getElementById('add-card-form').style.display='block'; document.getElementById('nc-last4').focus(); }
+    function hideAddCard() { document.getElementById('add-card-form').style.display='none'; }
+
+    async function saveCard() {
+      const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+      const msg = document.getElementById('nc-status-msg');
+      if (!v('nc-last4')) { msg.textContent = '⚠ Last-4 required'; msg.style.color='var(--amber)'; return; }
+      const data = {
+        last4: v('nc-last4'), issuer: v('nc-issuer'), network: v('nc-network'),
+        product: v('nc-product'), status: v('nc-status'), intent: v('nc-intent'),
+        balance: parseFloat(v('nc-balance'))||0, limit: v('nc-limit'), apr: v('nc-apr'),
+        rewards: v('nc-rewards'), promo_end: v('nc-promo'), open_date: v('nc-open'), notes: v('nc-notes')
+      };
+      msg.textContent = 'Saving...'; msg.style.color='var(--ink4)';
+      try {
+        const r = await fetch(SCRIPT_URL, {
+          method:'POST', redirect:'follow', headers:{'Content-Type':'text/plain'},
+          body: JSON.stringify({action:'saveCard', data})
+        });
+        const j = await r.json();
+        if (!j.ok) throw new Error(j.error || 'Save failed');
+        msg.textContent = '✓ ' + (j.added ? 'Added' : 'Updated'); msg.style.color='var(--sage)';
+        ['nc-last4','nc-issuer','nc-network','nc-product','nc-intent','nc-balance','nc-limit','nc-apr','nc-rewards','nc-promo','nc-open','nc-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+        setTimeout(() => { hideAddCard(); msg.textContent=''; loadCards(); }, 1000);
+      } catch(e) { msg.textContent = '✗ ' + e.message; msg.style.color='var(--rust)'; }
     }
 
     // ── DEBT STRATEGY TOGGLE ──────────────────────────────────────────────────
