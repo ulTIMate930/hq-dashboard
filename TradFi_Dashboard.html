@@ -1,1302 +1,2178 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>TradFi & Wealth — Answer Back</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-:root{
-  --cream:#f5f0e8;--cream2:#ede7d9;--cream3:#e4dccb;
-  --paper:#faf7f2;--ink:#1e1a14;--ink2:#3d3629;--ink3:#6b6050;--ink4:#a89880;--ink5:#c8b99a;
-  --rust:#c44b2b;--rust-l:#e8705a;--rust-bg:#fdf0ed;
-  --amber:#c07a1a;--amber-l:#e8a030;--amber-bg:#fdf5e6;
-  --sage:#3a6b4a;--sage-l:#5a9a6a;--sage-bg:#eef4f0;
-  --slate:#2d4a6b;--slate-l:#4a78a8;--slate-bg:#edf2f8;
-  --violet:#5b4a8a;--violet-l:#8a78c8;--violet-bg:#f0eef8;
-  --font-serif:'Playfair Display',Georgia,serif;
-  --font-sans:'DM Sans',sans-serif;
-  --font-mono:'DM Mono',monospace;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--cream);color:var(--ink);font-family:var(--font-sans);font-size:14px;min-height:100vh;}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>TradFi & Wealth — Answer Back</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+    :root {
+        --cream: #f5f0e8;
+        --cream2: #ede7d9;
+        --cream3: #e4dccb;
+        --paper: #faf7f2;
+        --ink: #1e1a14;
+        --ink2: #3d3629;
+        --ink3: #6b6050;
+        --ink4: #a89880;
+        --ink5: #c8b99a;
+        --rust: #c44b2b;
+        --rust-l: #e8705a;
+        --rust-bg: #fdf0ed;
+        --amber: #c07a1a;
+        --amber-l: #e8a030;
+        --amber-bg: #fdf5e6;
+        --sage: #3a6b4a;
+        --sage-l: #5a9a6a;
+        --sage-bg: #eef4f0;
+        --slate: #2d4a6b;
+        --slate-l: #4a78a8;
+        --slate-bg: #edf2f8;
+        --violet: #5b4a8a;
+        --violet-l: #8a78c8;
+        --violet-bg: #f0eef8;
+        --font-serif: 'Playfair Display', Georgia, serif;
+        --font-sans: 'DM Sans', sans-serif;
+        --font-mono: 'DM Mono', monospace;
+    }
 
-.topbar{background:var(--ink);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:100;}
-.logo{font-family:var(--font-serif);font-size:17px;font-weight:700;color:#f5f0e8;display:flex;align-items:center;gap:10px;}
-.logo-sub{font-family:var(--font-mono);font-size:10px;color:var(--ink4);letter-spacing:2px;}
-.back-link{font-family:var(--font-mono);font-size:10px;color:var(--ink4);text-decoration:none;letter-spacing:1px;transition:color .2s;}
-.back-link:hover{color:var(--cream);}
-.topbar-right{display:flex;align-items:center;gap:8px;}
-.sheet-btn{font-family:var(--font-mono);font-size:10px;color:var(--sage-l);background:rgba(90,154,106,.12);border:1px solid rgba(90,154,106,.3);padding:5px 12px;border-radius:5px;text-decoration:none;letter-spacing:1px;transition:background .2s;}
-.sheet-btn:hover{background:rgba(90,154,106,.22);}
-.log-btn{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:6px 14px;background:var(--sage);color:#fff;border:none;border-radius:5px;cursor:pointer;transition:background .2s;}
-.log-btn:hover{background:var(--sage-l);}
-.log-btn:disabled{opacity:.5;cursor:default;}
-.conn-chip{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:5px 12px;border-radius:4px;border:1px solid rgba(255,255,255,.1);color:var(--ink4);}
-.conn-chip.ok{color:var(--sage-l);border-color:rgba(90,154,106,.3);background:rgba(90,154,106,.08);}
-.conn-chip.err{color:var(--rust-l);border-color:rgba(196,75,43,.3);}
-.cdot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
-.conn-chip.ok .cdot{box-shadow:0 0 4px currentColor;animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-.nav-strip{background:var(--paper);border-bottom:1px solid var(--cream2);padding:0 28px;display:flex;overflow-x:auto;}
-.nav-tab{padding:13px 16px;font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;}
-.nav-tab:hover{color:var(--ink2);}
-.nav-tab.active{color:var(--slate);border-bottom-color:var(--slate);}
-.badge-cnt{background:var(--rust);color:#fff;font-size:9px;padding:1px 5px;border-radius:8px;margin-left:4px;vertical-align:middle;}
+    body {
+        background: var(--cream);
+        color: var(--ink);
+        font-family: var(--font-sans);
+        font-size: 14px;
+        min-height: 100vh;
+    }
 
-.main{max-width:960px;margin:0 auto;padding:28px 20px 80px;}
-.panel{display:none;}
-.panel.active{display:block;}
+    .topbar {
+        background: var(--ink);
+        padding: 0 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 54px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
 
-/* HERO */
-.hero{background:var(--ink);border-radius:12px;padding:26px 30px;margin-bottom:24px;}
-.hero-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:5px;}
-.hero-nw{font-family:var(--font-serif);font-size:40px;font-weight:700;line-height:1.05;margin-bottom:7px;}
-.hero-nw.pos{color:var(--sage-l);}
-.hero-nw.neg{color:var(--rust-l);}
-.hero-sub{font-size:12px;color:var(--ink4);margin-bottom:18px;line-height:1.5;}
-.hero-row{display:flex;gap:24px;flex-wrap:wrap;}
-.hero-stat label{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);display:block;margin-bottom:2px;}
-.hero-stat .fig{font-family:var(--font-serif);font-size:19px;font-weight:600;}
+    .logo {
+        font-family: var(--font-serif);
+        font-size: 17px;
+        font-weight: 700;
+        color: #f5f0e8;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 
-/* CARDS */
-.card{background:var(--paper);border:1px solid var(--cream2);border-radius:10px;padding:18px;box-shadow:0 1px 3px rgba(30,26,20,.05);}
-.card-label{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:7px;}
-.card-fig{font-family:var(--font-serif);font-size:24px;font-weight:700;line-height:1.1;}
-.card-note{font-size:11px;color:var(--ink4);margin-top:4px;}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
-.mb20{margin-bottom:20px;}
+    .logo-sub {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--ink4);
+        letter-spacing: 2px;
+    }
 
-.sec-label{font-family:var(--font-mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--ink4);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--cream2);}
+    .back-link {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--ink4);
+        text-decoration: none;
+        letter-spacing: 1px;
+        transition: color .2s;
+    }
 
-/* ROWS */
-.row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--cream2);}
-.row:last-child{border-bottom:none;}
-.lbl{font-size:13px;color:var(--ink);flex:1;}
-.val{font-family:var(--font-serif);font-size:15px;font-weight:600;min-width:80px;text-align:right;}
-.meta{font-family:var(--font-mono);font-size:10px;color:var(--ink4);min-width:110px;text-align:right;}
+    .back-link:hover {
+        color: var(--cream);
+    }
 
-/* ALERTS */
-.alert{display:flex;gap:12px;padding:14px;border-radius:8px;margin-bottom:10px;font-size:13px;line-height:1.6;}
-.alert-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
-.alert-head{font-weight:600;margin-bottom:2px;}
-.alert.red{background:var(--rust-bg);border:1px solid rgba(196,75,43,.2);}
-.alert.amber{background:var(--amber-bg);border:1px solid rgba(192,122,26,.2);}
-.alert.slate{background:var(--slate-bg);border:1px solid rgba(45,74,107,.2);}
-.alert.sage{background:var(--sage-bg);border:1px solid rgba(58,107,74,.2);}
+    .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 
-/* DEBT */
-.debt-block{padding:14px 0;border-bottom:1px solid var(--cream2);}
-.debt-block:last-child{border-bottom:none;}
-.debt-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
-.debt-name{font-size:14px;font-weight:600;}
-.debt-bal{font-family:var(--font-serif);font-size:19px;font-weight:700;}
-.debt-meta-row{display:flex;gap:14px;font-family:var(--font-mono);font-size:11px;color:var(--ink4);margin-bottom:7px;flex-wrap:wrap;}
-.track{height:5px;background:var(--cream2);border-radius:10px;overflow:hidden;margin-top:7px;}
-.track-fill{height:100%;border-radius:10px;transition:width .8s ease;}
-.badge{display:inline-flex;align-items:center;font-family:var(--font-mono);font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:10px;font-weight:600;margin-right:4px;margin-bottom:3px;}
-.badge.red{background:var(--rust-bg);color:var(--rust);border:1px solid rgba(196,75,43,.2);}
-.badge.amber{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(192,122,26,.2);}
-.badge.green{background:var(--sage-bg);color:var(--sage);border:1px solid rgba(58,107,74,.2);}
-.badge.blue{background:var(--slate-bg);color:var(--slate);border:1px solid rgba(45,74,107,.2);}
-.badge.muted{background:var(--cream2);color:var(--ink4);}
+    .sheet-btn {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--sage-l);
+        background: rgba(90, 154, 106, .12);
+        border: 1px solid rgba(90, 154, 106, .3);
+        padding: 5px 12px;
+        border-radius: 5px;
+        text-decoration: none;
+        letter-spacing: 1px;
+        transition: background .2s;
+    }
 
-/* STRAT TOGGLE */
-.strat-row{display:flex;gap:8px;margin-top:10px;}
-.strat-btn{flex:1;padding:8px 6px;border:none;border-radius:6px;font-family:var(--font-mono);font-size:10px;font-weight:500;cursor:pointer;letter-spacing:1px;transition:all .15s;}
-.strat-btn.on{background:var(--ink);color:var(--cream);}
-.strat-btn.off{background:var(--cream2);color:var(--ink4);border:1px solid var(--cream3);}
+    .sheet-btn:hover {
+        background: rgba(90, 154, 106, .22);
+    }
 
-/* INVESTMENTS */
-.inv-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-.inv-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.inv-name{font-family:var(--font-serif);font-size:15px;font-weight:700;}
-.inv-total-fig{margin-left:auto;font-family:var(--font-serif);font-size:17px;font-weight:700;}
-.inv-link{font-size:11px;text-decoration:none;font-family:var(--font-mono);opacity:.7;transition:opacity .15s;}
-.inv-link:hover{opacity:1;}
+    .log-btn {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 1px;
+        padding: 6px 14px;
+        background: var(--sage);
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background .2s;
+    }
 
-/* HISTORY TABLE */
-.hist-table{width:100%;border-collapse:collapse;font-size:12px;}
-.hist-table th{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:7px 8px;text-align:right;border-bottom:1px solid var(--cream2);background:var(--cream2);}
-.hist-table th:first-child{text-align:left;}
-.hist-table td{padding:8px;border-bottom:1px solid var(--cream2);font-family:var(--font-mono);font-size:11px;color:var(--ink3);text-align:right;}
-.hist-table td:first-child{text-align:left;font-weight:600;color:var(--ink);font-family:var(--font-sans);}
-.hist-table tr:last-child td{border-bottom:none;}
-.hist-table .pos{color:var(--sage);font-weight:700;}
-.hist-table .neg{color:var(--rust);font-weight:700;}
-.hist-table tr:first-child td{background:var(--sage-bg);}
+    .log-btn:hover {
+        background: var(--sage-l);
+    }
 
-input[type=number]:focus,input[type=text]:focus{outline:none;border-color:var(--slate)!important;box-shadow:0 0 0 2px rgba(45,74,107,.12);}
-input[type=number]{-moz-appearance:textfield;}
-input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-@media(max-width:680px){
-  .g4{grid-template-columns:1fr 1fr;}
-  .g3{grid-template-columns:1fr 1fr;}
-  .meta{display:none;}
-}
-</style>
+    .log-btn:disabled {
+        opacity: .5;
+        cursor: default;
+    }
+
+    .conn-chip {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 1px;
+        padding: 5px 12px;
+        border-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, .1);
+        color: var(--ink4);
+    }
+
+    .conn-chip.ok {
+        color: var(--sage-l);
+        border-color: rgba(90, 154, 106, .3);
+        background: rgba(90, 154, 106, .08);
+    }
+
+    .conn-chip.err {
+        color: var(--rust-l);
+        border-color: rgba(196, 75, 43, .3);
+    }
+
+    .cdot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+        flex-shrink: 0;
+    }
+
+    .conn-chip.ok .cdot {
+        box-shadow: 0 0 4px currentColor;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            opacity:1
+        }
+
+        50% {
+            opacity: .4
+        }
+    }
+
+    .nav-strip {
+        background: var(--paper);
+        border-bottom: 1px solid var(--cream2);
+        padding: 0 28px;
+        display: flex;
+        overflow-x: auto;
+    }
+
+    .nav-tab {
+        padding: 13px 16px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ink4);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        white-space: nowrap;
+        transition: all .15s;
+    }
+
+    .nav-tab:hover {
+        color: var(--ink2);
+    }
+
+    .nav-tab.active {
+        color: var(--slate);
+        border-bottom-color: var(--slate);
+    }
+
+    .badge-cnt {
+        background: var(--rust);
+        color: #fff;
+        font-size: 9px;
+        padding: 1px 5px;
+        border-radius: 8px;
+        margin-left: 4px;
+        vertical-align: middle;
+    }
+
+    .main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 28px 20px 80px;
+    }
+
+    .panel {
+        display: none;
+    }
+
+    .panel.active {
+        display: block;
+    }/* HERO */
+    .hero {
+        background: var(--ink);
+        border-radius: 12px;
+        padding: 26px 30px;
+        margin-bottom: 24px;
+    }
+
+    .hero-eyebrow {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--ink4);
+        margin-bottom: 5px;
+    }
+
+    .hero-nw {
+        font-family: var(--font-serif);
+        font-size: 40px;
+        font-weight: 700;
+        line-height: 1.05;
+        margin-bottom: 7px;
+    }
+
+    .hero-nw.pos {
+        color: var(--sage-l);
+    }
+
+    .hero-nw.neg {
+        color: var(--rust-l);
+    }
+
+    .hero-sub {
+        font-size: 12px;
+        color: var(--ink4);
+        margin-bottom: 18px;
+        line-height: 1.5;
+    }
+
+    .hero-row {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .hero-stat label {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ink4);
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .hero-stat .fig {
+        font-family: var(--font-serif);
+        font-size: 19px;
+        font-weight: 600;
+    }/* CARDS */
+    .card {
+        background: var(--paper);
+        border: 1px solid var(--cream2);
+        border-radius: 10px;
+        padding: 18px;
+        box-shadow: 0 1px 3px rgba(30, 26, 20, .05);
+    }
+
+    .card-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--ink4);
+        margin-bottom: 7px;
+    }
+
+    .card-fig {
+        font-family: var(--font-serif);
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    .card-note {
+        font-size: 11px;
+        color: var(--ink4);
+        margin-top: 4px;
+    }
+
+    .g4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .g3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .g2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .mb20 {
+        margin-bottom: 20px;
+    }
+
+    .sec-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--ink4);
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--cream2);
+    }/* ROWS */
+    .row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--cream2);
+    }
+
+    .row:last-child {
+        border-bottom: none;
+    }
+
+    .lbl {
+        font-size: 13px;
+        color: var(--ink);
+        flex: 1;
+    }
+
+    .val {
+        font-family: var(--font-serif);
+        font-size: 15px;
+        font-weight: 600;
+        min-width: 80px;
+        text-align: right;
+    }
+
+    .meta {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--ink4);
+        min-width: 110px;
+        text-align: right;
+    }/* ALERTS */
+    .alert {
+        display: flex;
+        gap: 12px;
+        padding: 14px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .alert-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    .alert-head {
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+
+    .alert.red {
+        background: var(--rust-bg);
+        border: 1px solid rgba(196, 75, 43, .2);
+    }
+
+    .alert.amber {
+        background: var(--amber-bg);
+        border: 1px solid rgba(192, 122, 26, .2);
+    }
+
+    .alert.slate {
+        background: var(--slate-bg);
+        border: 1px solid rgba(45, 74, 107, .2);
+    }
+
+    .alert.sage {
+        background: var(--sage-bg);
+        border: 1px solid rgba(58, 107, 74, .2);
+    }/* DEBT */
+    .debt-block {
+        padding: 14px 0;
+        border-bottom: 1px solid var(--cream2);
+    }
+
+    .debt-block:last-child {
+        border-bottom: none;
+    }
+
+    .debt-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+    }
+
+    .debt-name {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .debt-bal {
+        font-family: var(--font-serif);
+        font-size: 19px;
+        font-weight: 700;
+    }
+
+    .debt-meta-row {
+        display: flex;
+        gap: 14px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--ink4);
+        margin-bottom: 7px;
+        flex-wrap: wrap;
+    }
+
+    .track {
+        height: 5px;
+        background: var(--cream2);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 7px;
+    }
+
+    .track-fill {
+        height: 100%;
+        border-radius: 10px;
+        transition: width .8s ease;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 1px;
+        padding: 2px 7px;
+        border-radius: 10px;
+        font-weight: 600;
+        margin-right: 4px;
+        margin-bottom: 3px;
+    }
+
+    .badge.red {
+        background: var(--rust-bg);
+        color: var(--rust);
+        border: 1px solid rgba(196, 75, 43, .2);
+    }
+
+    .badge.amber {
+        background: var(--amber-bg);
+        color: var(--amber);
+        border: 1px solid rgba(192, 122, 26, .2);
+    }
+
+    .badge.green {
+        background: var(--sage-bg);
+        color: var(--sage);
+        border: 1px solid rgba(58, 107, 74, .2);
+    }
+
+    .badge.blue {
+        background: var(--slate-bg);
+        color: var(--slate);
+        border: 1px solid rgba(45, 74, 107, .2);
+    }
+
+    .badge.muted {
+        background: var(--cream2);
+        color: var(--ink4);
+    }/* STRAT TOGGLE */
+    .strat-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .strat-btn {
+        flex: 1;
+        padding: 8px 6px;
+        border: none;
+        border-radius: 6px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 500;
+        cursor: pointer;
+        letter-spacing: 1px;
+        transition: all .15s;
+    }
+
+    .strat-btn.on {
+        background: var(--ink);
+        color: var(--cream);
+    }
+
+    .strat-btn.off {
+        background: var(--cream2);
+        color: var(--ink4);
+        border: 1px solid var(--cream3);
+    }/* INVESTMENTS */
+    .inv-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .inv-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .inv-name {
+        font-family: var(--font-serif);
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .inv-total-fig {
+        margin-left: auto;
+        font-family: var(--font-serif);
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .inv-link {
+        font-size: 11px;
+        text-decoration: none;
+        font-family: var(--font-mono);
+        opacity: .7;
+        transition: opacity .15s;
+    }
+
+    .inv-link:hover {
+        opacity: 1;
+    }/* HISTORY TABLE */
+    .hist-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+
+    .hist-table th {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ink4);
+        padding: 7px 8px;
+        text-align: right;
+        border-bottom: 1px solid var(--cream2);
+        background: var(--cream2);
+    }
+
+    .hist-table th:first-child {
+        text-align: left;
+    }
+
+    .hist-table td {
+        padding: 8px;
+        border-bottom: 1px solid var(--cream2);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--ink3);
+        text-align: right;
+    }
+
+    .hist-table td:first-child {
+        text-align: left;
+        font-weight: 600;
+        color: var(--ink);
+        font-family: var(--font-sans);
+    }
+
+    .hist-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .hist-table .pos {
+        color: var(--sage);
+        font-weight: 700;
+    }
+
+    .hist-table .neg {
+        color: var(--rust);
+        font-weight: 700;
+    }
+
+    .hist-table tr:first-child td {
+        background: var(--sage-bg);
+    }
+
+    input[type=number]:focus, input[type=text]:focus {
+        outline: none;
+        border-color: var(--slate) !important;
+        box-shadow: 0 0 0 2px rgba(45, 74, 107, .12);
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    input[type=number]::-webkit-outer-spin-button, input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    @media (max-width: 680px) {
+        .g4 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .g3 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .meta {
+            display: none;
+        }
+    }
+    </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
-<div class="topbar">
-  <div style="display:flex;align-items:center;gap:14px;">
-    <a href="index.html" class="back-link">← HQ</a>
-    <div class="logo">💰 TradFi &amp; Wealth <span class="logo-sub">Answer Back</span></div>
-  </div>
-  <div class="topbar-right">
-    <a id="sheet-link" href="https://docs.google.com/spreadsheets/d/1usc1YxAz-Idtn6ASALZOJaX6ir4ooK2zxk1ORVTxz7s/edit" target="_blank" class="sheet-btn" title="Open Google Sheet">📊 Sheet ↗</a>
-    <button id="log-btn" class="log-btn" onclick="logMonth()">📅 Log Month</button>
-    <div class="conn-chip" id="conn-chip"><div class="cdot"></div><span id="conn-text">Connecting...</span></div>
-  </div>
-</div>
-
-<!-- NAV -->
-<div class="nav-strip">
-  <div class="nav-tab active" onclick="switchTab('overview',this)">Overview</div>
-  <div class="nav-tab" onclick="switchTab('alerts',this)">Alerts <span class="badge-cnt" id="alert-count">4</span></div>
-  <div class="nav-tab" onclick="switchTab('debt',this)">Debt</div>
-  <div class="nav-tab" onclick="switchTab('investments',this)">Investments</div>
-  <div class="nav-tab" onclick="switchTab('expenses',this)">Expenses</div>
-  <div class="nav-tab" onclick="switchTab('history',this)">History</div>
-  <div class="nav-tab" onclick="switchTab('tasks',this)">Tasks</div>
-  <div class="nav-tab" onclick="switchTab('update',this)">📝 Update</div>
-</div>
-
-<div class="main">
-
-<!-- ══ OVERVIEW ══ -->
-<div class="panel active" id="panel-overview">
-  <div class="hero">
-    <div class="hero-eyebrow" id="nw-eyebrow">Net Worth · Loading...</div>
-    <div class="hero-nw" id="nw-hero">—</div>
-    <div class="hero-sub" id="hero-sub">Loading from Sheets...</div>
-    <div class="hero-row">
-      <div class="hero-stat"><label>Cash</label><div class="fig" style="color:var(--slate-l)" id="ov-cash">—</div></div>
-      <div class="hero-stat"><label>Crypto</label><div class="fig" style="color:var(--amber-l)" id="ov-crypto">—</div></div>
-      <div class="hero-stat"><label>Investments</label><div class="fig" style="color:var(--sage-l)" id="ov-invest">—</div></div>
-      <div class="hero-stat"><label>CC Debt</label><div class="fig" style="color:var(--rust-l)" id="ov-debt">—</div></div>
-      <div class="hero-stat"><label>Monthly Burn</label><div class="fig" style="color:var(--amber-l)" id="ov-monthly">—</div></div>
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div style="display:flex;align-items:center;gap:14px;">
+            <a href="index.html" class="back-link">← HQ</a>
+            <div class="logo">
+                💰 TradFi &amp; Wealth 
+                <span class="logo-sub">Answer Back</span>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <a id="sheet-link" href="https://docs.google.com/spreadsheets/d/1usc1YxAz-Idtn6ASALZOJaX6ir4ooK2zxk1ORVTxz7s/edit" target="_blank" class="sheet-btn" title="Open Google Sheet">📊 Sheet ↗</a>
+            <button id="log-btn" class="log-btn" onclick="logMonth()">📅 Log Month</button>
+            <div class="conn-chip" id="conn-chip">
+                <div class="cdot"></div>
+                <span id="conn-text">Connecting...</span>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="sec-label">Snapshot</div>
-  <div class="g4 mb20">
-    <div class="card"><div class="card-label">Total CC Debt</div><div class="card-fig" style="color:var(--rust)" id="snap-debt">—</div><div class="card-note">Across all cards</div></div>
-    <div class="card"><div class="card-label">Active Promo Cards</div><div class="card-fig" style="color:var(--sage)" id="snap-accruing">$0</div><div class="card-note" id="snap-accruing-note">BOA1 0% Jun · BB1 ⏰ Jul · BB2-3 safe</div></div>
-    <div class="card"><div class="card-label">Monthly Fixed</div><div class="card-fig" style="color:var(--amber)" id="snap-monthly">—</div><div class="card-note">Bills &amp; subscriptions</div></div>
-    <div class="card"><div class="card-label">Recoverable / yr</div><div class="card-fig" style="color:var(--sage)">$736</div><div class="card-note">If 3 flagged subs cut</div></div>
-  </div>
-
-  <div class="sec-label">Financial Focus</div>
-  <div class="g2">
-    <div class="card">
-      <div class="card-label" style="margin-bottom:12px;">✅ Wins This Month</div>
-      <div class="row"><div class="lbl" style="color:var(--sage)"><strong>Crypto.com paid off</strong> — $4,844 cleared · Set AutoPay · Consider closing</div></div>
-      <div class="row"><div class="lbl" style="color:var(--sage)"><strong>Chase Prime Visa paid off</strong> — $970 cleared · Keep card for 5% Amazon</div></div>
-      <div class="row"><div class="lbl" style="color:var(--sage)"><strong>BOA (...7720) paid off</strong> — $905 cleared · Cancel this card</div></div>
-      <div class="row"><div class="lbl"><strong>BB1 payoff plan</strong> — deferred interest expires Jul 14 · ~$140/mo to clear</div></div>
+    <!-- NAV -->
+    <div class="nav-strip">
+        <div class="nav-tab active" onclick="switchTab('overview',this)">Overview</div>
+        <div class="nav-tab" onclick="switchTab('alerts',this)">
+            Alerts 
+            <span class="badge-cnt" id="alert-count">4</span>
+        </div>
+        <div class="nav-tab" onclick="switchTab('debt',this)">Debt</div>
+        <div class="nav-tab" onclick="switchTab('investments',this)">Investments</div>
+        <div class="nav-tab" onclick="switchTab('expenses',this)">Expenses</div>
+        <div class="nav-tab" onclick="switchTab('history',this)">History</div>
+        <div class="nav-tab" onclick="switchTab('tasks',this)">Tasks</div>
+        <div class="nav-tab" onclick="switchTab('update',this)">📝 Update</div>
     </div>
-    <div class="card">
-      <div class="card-label" style="margin-bottom:12px;">📋 Next Actions</div>
-      <div class="row"><div class="lbl">Close BOA (...7720) — no ongoing value after payoff</div></div>
-      <div class="row"><div class="lbl">Pay BOA1 in full before Jun 6, 2026 (0% promo ends)</div></div>
-      <div class="row"><div class="lbl">Contribute to 2026 Robinhood IRA ($5,000 remaining)</div></div>
-      <div class="row"><div class="lbl">Deploy Roth IRA buying power — sitting uninvested</div></div>
-      <div class="row"><div class="lbl">Decide: cancel Skill Incubator? ($396/yr)</div></div>
+
+    <div class="main">
+
+        <!-- ══ OVERVIEW ══ -->
+        <div class="panel active" id="panel-overview">
+            <div class="hero">
+                <div class="hero-eyebrow" id="nw-eyebrow">Net Worth · Loading...</div>
+                <div class="hero-nw" id="nw-hero">—</div>
+                <div class="hero-sub" id="hero-sub">Loading from Sheets...</div>
+                <div class="hero-row">
+                    <div class="hero-stat">
+                        <label>Cash</label>
+                        <div class="fig" style="color:var(--slate-l)" id="ov-cash">—</div>
+                    </div>
+                    <div class="hero-stat">
+                        <label>Crypto</label>
+                        <div class="fig" style="color:var(--amber-l)" id="ov-crypto">—</div>
+                    </div>
+                    <div class="hero-stat">
+                        <label>Investments</label>
+                        <div class="fig" style="color:var(--sage-l)" id="ov-invest">—</div>
+                    </div>
+                    <div class="hero-stat">
+                        <label>CC Debt</label>
+                        <div class="fig" style="color:var(--rust-l)" id="ov-debt">—</div>
+                    </div>
+                    <div class="hero-stat">
+                        <label>Monthly Burn</label>
+                        <div class="fig" style="color:var(--amber-l)" id="ov-monthly">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sec-label">Snapshot</div>
+            <div class="g4 mb20">
+                <div class="card">
+                    <div class="card-label">Total CC Debt</div>
+                    <div class="card-fig" style="color:var(--rust)" id="snap-debt">—</div>
+                    <div class="card-note">Across all cards</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Active Promo Cards</div>
+                    <div class="card-fig" style="color:var(--sage)" id="snap-accruing">$0</div>
+                    <div class="card-note" id="snap-accruing-note">BOA1 0% Jun · BB1 ⏰ Jul · BB2-3 safe</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Monthly Fixed</div>
+                    <div class="card-fig" style="color:var(--amber)" id="snap-monthly">—</div>
+                    <div class="card-note">Bills &amp; subscriptions</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Recoverable / yr</div>
+                    <div class="card-fig" style="color:var(--sage)">$736</div>
+                    <div class="card-note">If 3 flagged subs cut</div>
+                </div>
+            </div>
+
+            <div class="sec-label">Financial Focus</div>
+            <div class="g2">
+                <div class="card">
+                    <div class="card-label" style="margin-bottom:12px;">✅ Wins This Month</div>
+                    <div class="row">
+                        <div class="lbl" style="color:var(--sage)">
+                            <strong>Crypto.com paid off</strong>
+                             — $4,844 cleared · Set AutoPay · Consider closing
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="lbl" style="color:var(--sage)">
+                            <strong>Chase Prime Visa paid off</strong>
+                             — $970 cleared · Keep card for 5% Amazon
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="lbl" style="color:var(--sage)">
+                            <strong>BOA (...7720) paid off</strong>
+                             — $905 cleared · Cancel this card
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="lbl">
+                            <strong>BB1 payoff plan</strong>
+                             — deferred interest expires Jul 14 · ~$140/mo to clear
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-label" style="margin-bottom:12px;">📋 Next Actions</div>
+                    <div class="row">
+                        <div class="lbl">Close BOA (...7720) — no ongoing value after payoff</div>
+                    </div>
+                    <div class="row">
+                        <div class="lbl">Pay BOA1 in full before Jun 6, 2026 (0% promo ends)</div>
+                    </div>
+                    <div class="row">
+                        <div class="lbl">Contribute to 2026 Robinhood IRA ($5,000 remaining)</div>
+                    </div>
+                    <div class="row">
+                        <div class="lbl">Deploy Roth IRA buying power — sitting uninvested</div>
+                    </div>
+                    <div class="row">
+                        <div class="lbl">Decide: cancel Skill Incubator? ($396/yr)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sec-label" style="margin-top:24px;">🤖 AI Portfolio Scan</div>
+            <div class="card" style="border-left:3px solid var(--violet);">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:260px;">
+                        <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:1px;color:var(--violet);font-weight:600;margin-bottom:6px;">PORTFOLIO INTELLIGENCE</div>
+                        <div style="font-size:13px;color:var(--ink3);line-height:1.7;margin-bottom:12px;">Paste a summary of your current holdings, balances, or financial situation below and get AI-generated insights, opportunities, and action items specific to your portfolio.</div>
+                        <textarea id="ai-portfolio-input" style="width:100%;min-height:80px;padding:10px 12px;font-family:var(--font-sans);font-size:13px;color:var(--ink);background:var(--cream);border:1px solid var(--cream2);border-radius:6px;resize:vertical;outline:none;line-height:1.5;" placeholder="e.g. My net worth is $62k, crypto is $280k, I have $5k in 0% promo cards, $32k in Betterment SEP IRA, $32k Robinhood Roth IRA with $7k uninvested. What should I focus on?"></textarea>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;padding-top:28px;">
+                        <button onclick="runAIScan()" id="ai-scan-btn" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:8px 16px;background:var(--violet);color:#fff;border:none;border-radius:6px;cursor:pointer;transition:background .15s;white-space:nowrap;" onmouseover="this.style.background='#7060b0'" onmouseout="this.style.background='var(--violet)'">
+                                  ⚡ SCAN PORTFOLIO
+                                </button>
+                        <button onclick="document.getElementById('ai-portfolio-input').value='';document.getElementById('ai-result').innerHTML=''" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:8px 16px;background:var(--paper);color:var(--ink4);border:1px solid var(--cream2);border-radius:6px;cursor:pointer;">
+                                  CLEAR
+                                </button>
+                    </div>
+                </div>
+                <div id="ai-result" style="margin-top:14px;font-size:13px;color:var(--ink3);line-height:1.7;border-top:1px solid var(--cream2);padding-top:14px;display:none;"></div>
+            </div>
+        </div>
+
+        <!-- ══ ALERTS ══ -->
+        <div class="panel" id="panel-alerts">
+            <div class="sec-label">Active Flags — Prioritized</div>
+            <div class="alert sage">
+                <div class="alert-icon">✅</div>
+                <div>
+                    <div class="alert-head">Crypto.com, Chase Prime, BOA (...7720) — All Paid Off</div>
+                    Three high-APR balances cleared this month. You were paying ~$130+/month in combined interest. That cash flow is now free. Next step: close BOA (...7720) — it has no ongoing rewards value.
+                </div>
+            </div>
+            <div class="alert amber">
+                <div class="alert-icon">⏰</div>
+                <div>
+                    <div class="alert-head">Best Buy BB1 — Deferred Interest Expires Jul 14, 2026</div>
+                    Still the most urgent remaining item. Best Buy promos are DEFERRED — if the balance isn't paid in full by Jul 14, Citi back-charges all interest from day one. Pay ~$140/month to clear it safely. BB2 safe until Jan 2027, BB3 until Mar 2027.
+                </div>
+            </div>
+            <div class="alert amber">
+                <div class="alert-icon">📅</div>
+                <div>
+                    <div class="alert-head">BOA (...8769) — 0% Promo Ends Jun 6, 2026</div>
+                    About 2 months left. Pay the remaining balance before Jun 6 to avoid revert to standard BofA APR (~25%). Set a calendar reminder now.
+                </div>
+            </div>
+            <div class="alert amber">
+                <div class="alert-icon">📦</div>
+                <div>
+                    <div class="alert-head">NSA Storage — $177/mo ($2,124/yr)</div>
+                    Rate jumped $43/month (+32%). Now that high-APR debt is cleared, this is the next highest-cost line item to review. Is everything in that unit worth $177/month?
+                </div>
+            </div>
+            <div class="alert slate">
+                <div class="alert-icon">💡</div>
+                <div>
+                    <div class="alert-head">Subscription Audit — $736/yr Recoverable</div>
+                    <strong>Skill Incubator ($396/yr):</strong>
+                     Actively using it?
+                    <br>
+                    <strong>Google Workspace ($202/yr):</strong>
+                     Zoho Mail is free with custom domain.
+                    <br>
+                    <strong>Wix ($168/yr):</strong>
+                     Cheaper DJ site options exist.
+                    <br>
+                    Total: 
+                    <strong>$736/yr</strong>
+                     freed up if all three cancelled.
+                </div>
+            </div>
+            <div class="alert slate">
+                <div class="alert-icon">💳</div>
+                <div>
+                    <div class="alert-head">Credit Card Strategy — Apply for Costco Anywhere Visa</div>
+                    You're a Costco member — the Costco Anywhere Visa earns 5% at Costco gas, 4% all other gas, 3% dining, no annual fee. Best gas card available. Apply at costco.com/credit-card.
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ DEBT ══ -->
+        <div class="panel" id="panel-debt">
+            <div class="g3">
+                <div class="card">
+                    <div class="card-label">Total CC Debt</div>
+                    <div class="card-fig" style="color:var(--rust)" id="debt-total">—</div>
+                    <div class="card-note">As of last update</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Currently Accruing</div>
+                    <div class="card-fig" style="color:var(--sage)" id="debt-accruing">$0</div>
+                    <div class="card-note">All high-APR cards paid off ✓</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Payoff Strategy</div>
+                    <div class="strat-row">
+                        <button id="btn-av" class="strat-btn on" onclick="strat('avalanche')">AVALANCHE</button>
+                        <button id="btn-sb" class="strat-btn off" onclick="strat('snowball')">SNOWBALL</button>
+                    </div>
+                    <div id="strat-note" style="font-size:12px;color:var(--ink3);margin-top:8px;line-height:1.6;">Highest APR first — Crypto.com → BOA2 → Prime Visa. Saves the most interest.</div>
+                </div>
+            </div>
+
+            <div class="sec-label">All Cards — by Priority</div>
+            <div class="card mb20">
+                <div class="debt-block">
+                    <div class="debt-top">
+                        <span class="debt-name">Crypto.com Visa (Comenity)</span>
+                        <span class="debt-bal" style="color:var(--rust)" id="d-cdc">—</span>
+                    </div>
+                    <div class="debt-meta-row">
+                        <span>Due: 10th</span>
+                        <span>26.99% APR</span>
+                        <span style="color:var(--sage);font-weight:600;">AutoPay: SET ✓</span>
+                    </div>
+                    <div>
+                        <span class="badge green">✓ PAID OFF — CONSIDER CLOSING</span>
+                        <span class="badge muted">Set as card-to-cancel per strategy</span>
+                    </div>
+                    <div class="track">
+                        <div class="track-fill" id="tr-cdc" style="background:var(--sage-l);width:0%"></div>
+                    </div>
+                </div>
+                <div class="debt-block">
+                    <div class="debt-top">
+                        <span class="debt-name">Best Buy BB1 (...6761)</span>
+                        <span class="debt-bal" style="color:var(--amber)" id="d-bb1">—</span>
+                    </div>
+                    <div class="debt-meta-row">
+                        <span>Due: 14th</span>
+                        <span>AutoPay: YES</span>
+                        <span>0% — DEFERRED, expires Jul 14, 2026</span>
+                    </div>
+                    <div>
+                        <span class="badge amber">⏰ PAY IN FULL BY JUL 14 — ~$140/mo</span>
+                    </div>
+                    <div class="track">
+                        <div class="track-fill" id="tr-bb1" style="background:var(--amber-l);width:0%"></div>
+                    </div>
+                </div>
+                <div class="debt-block">
+                    <div class="debt-top">
+                        <span class="debt-name">BOA (...8769)</span>
+                        <span class="debt-bal" style="color:var(--sage)" id="d-boa1">—</span>
+                    </div>
+                    <div class="debt-meta-row">
+                        <span>Due: 3rd</span>
+                        <span>AutoPay: YES</span>
+                        <span>0% until Jun 6, 2026</span>
+                    </div>
+                    <div>
+                        <span class="badge green">✓ 0% PROMO — PAY BEFORE JUN 2026</span>
+                    </div>
+                    <div class="track">
+                        <div class="track-fill" id="tr-boa1" style="background:var(--sage-l);width:0%"></div>
+                    </div>
+                </div>
+                <div class="debt-block">
+                    <div class="debt-top">
+                        <span class="debt-name">Chase Prime Visa (...7376)</span>
+                        <span class="debt-bal" style="color:var(--rust)" id="d-pv">—</span>
+                    </div>
+                    <div class="debt-meta-row">
+                        <span>Due: Apr 4</span>
+                        <span>24.99% APR</span>
+                        <span>AutoPay: YES</span>
+                    </div>
+                    <div>
+                        <span class="badge green">✓ PAID OFF — Keep for 5% Amazon rewards</span>
+                    </div>
+                    <div class="track">
+                        <div class="track-fill" id="tr-pv" style="background:var(--sage-l);width:0%"></div>
+                    </div>
+                </div>
+                <div class="debt-block">
+                    <div class="debt-top">
+                        <span class="debt-name">BOA (...7720)</span>
+                        <span class="debt-bal" style="color:var(--amber)" id="d-boa2">—</span>
+                    </div>
+                    <div class="debt-meta-row">
+                        <span>Due: 6th</span>
+                        <span>AutoPay: YES</span>
+                        <span>Promo expired Oct 2025</span>
+                    </div>
+                    <div>
+                        <span class="badge green">✓ PAID OFF — Close this card</span>
+                        <span class="badge muted">No ongoing value · Cancel recommended</span>
+                    </div>
+                    <div class="track">
+                        <div class="track-fill" id="tr-boa2" style="background:var(--sage-l);width:0%"></div>
+                    </div>
+                </div>
+                <div class="debt-block">
+                    <div class="debt-top">
+                        <span class="debt-name">Best Buy BB2 (...6761)</span>
+                        <span class="debt-bal" style="color:var(--sage)" id="d-bb2">—</span>
+                    </div>
+                    <div class="debt-meta-row">
+                        <span>Due: 14th</span>
+                        <span>AutoPay: YES</span>
+                        <span>0% until Jan 14, 2027</span>
+                    </div>
+                    <div>
+                        <span class="badge green">✓ SAFE UNTIL JAN 2027</span>
+                    </div>
+                    <div class="track">
+                        <div class="track-fill" id="tr-bb2" style="background:var(--sage-l);width:0%"></div>
+                    </div>
+                </div>
+                <div class="debt-block">
+                    <div class="debt-top">
+                        <span class="debt-name">Best Buy BB3 (...6761)</span>
+                        <span class="debt-bal" style="color:var(--sage)" id="d-bb3">—</span>
+                    </div>
+                    <div class="debt-meta-row">
+                        <span>Due: 14th</span>
+                        <span>AutoPay: YES</span>
+                        <span>0% until Mar 16, 2027</span>
+                    </div>
+                    <div>
+                        <span class="badge green">✓ SAFE UNTIL MAR 2027</span>
+                    </div>
+                    <div class="track">
+                        <div class="track-fill" id="tr-bb3" style="background:var(--sage-l);width:0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-label" style="margin-bottom:10px;">Zero Balance Cards</div>
+                <div class="row">
+                    <div class="lbl">Venmo (...5265)</div>
+                    <div class="val" style="color:var(--sage)">$0</div>
+                    <div class="meta">Due 15th · Phone App</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">Chase Freedom (...2035)</div>
+                    <div class="val" style="color:var(--sage)">$0</div>
+                    <div class="meta">Due Apr 22</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">Sapphire Preferred (...5377)</div>
+                    <div class="val" style="color:var(--sage)">$0</div>
+                    <div class="meta">Due Apr 15</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">Southwest Plus (...1749)</div>
+                    <div class="val" style="color:var(--sage)">$0</div>
+                    <div class="meta">Due Apr 8</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">Freedom Unlimited (...0163)</div>
+                    <div class="val" style="color:var(--sage)">$0</div>
+                    <div class="meta">Due Apr 21</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">Ink Preferred (...2118)</div>
+                    <div class="val" style="color:var(--sage)">$0</div>
+                    <div class="meta">Due Apr 2</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">Ink Business Cash (...0526)</div>
+                    <div class="val" style="color:var(--sage)">$0</div>
+                    <div class="meta">Due Apr 21</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">EIDL Loan (SBA)</div>
+                    <div class="val" style="color:var(--sage)">$0</div>
+                    <div class="meta">Due 22nd</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ INVESTMENTS ══ -->
+        <div class="panel" id="panel-investments">
+            <div class="g4">
+                <div class="card">
+                    <div class="card-label">Total Investments</div>
+                    <div class="card-fig" style="color:var(--slate)" id="inv-total">—</div>
+                    <div class="card-note">Betterment + Robinhood</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Betterment</div>
+                    <div class="card-fig" style="color:#1a6b3a" id="inv-betterment">—</div>
+                    <div class="card-note">SEP IRA — Tax-Coordinated</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Robinhood</div>
+                    <div class="card-fig" style="color:#006b00" id="inv-robinhood">—</div>
+                    <div class="card-note">Roth IRA + Individual</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Cash (Chase)</div>
+                    <div class="card-fig" style="color:var(--slate)" id="inv-cash">—</div>
+                    <div class="card-note">CHK + SAV + Biz</div>
+                </div>
+            </div>
+
+            <div class="sec-label">Cash — Chase Accounts</div>
+            <div class="card mb20">
+                <div class="inv-header">
+                    <div class="inv-dot" style="background:var(--slate)"></div>
+                    <div class="inv-name">Chase Bank</div>
+                    <div class="inv-total-fig" style="color:var(--slate)" id="chase-bank-total">—</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">CPC Checking (...7382)</div>
+                    <div class="val" id="chase-chk" style="color:var(--slate)">—</div>
+                    <div class="meta">Personal checking</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">Chase Savings (...1810)</div>
+                    <div class="val" id="chase-sav1" style="color:var(--slate)">—</div>
+                    <div class="meta">Savings</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">Chase Savings (...5520)</div>
+                    <div class="val" id="chase-sav2" style="color:var(--slate)">—</div>
+                    <div class="meta">Savings</div>
+                </div>
+                <div class="row" style="border:none">
+                    <div class="lbl">Bus Complete CHK (...6783)</div>
+                    <div class="val" id="chase-biz" style="color:var(--slate)">—</div>
+                    <div class="meta">ABDJS business</div>
+                </div>
+                <div style="padding:10px 0 4px;display:flex;justify-content:space-between;border-top:1px solid var(--cream2);margin-top:4px;">
+                    <span style="font-size:11px;color:var(--ink4);">Update using the 📝 Update tab above</span>
+                    <a href="https://www.chase.com" target="_blank" class="inv-link" style="color:var(--slate);">chase.com ↗</a>
+                </div>
+            </div>
+
+            <div class="sec-label">Betterment</div>
+            <div class="card mb20">
+                <div class="inv-header">
+                    <div class="inv-dot" style="background:#1a6b3a"></div>
+                    <div class="inv-name">Betterment — Retirement</div>
+                    <div class="inv-total-fig" style="color:#1a6b3a" id="inv-bet-total">—</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">SEP IRA — Tax-Coordinated Portfolio</div>
+                    <div class="val">$31,897.98</div>
+                    <div class="meta">100% Stocks — Innovative Tech</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">Roth IRA</div>
+                    <div class="val">$0</div>
+                    <div class="meta">Not yet funded</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">Projected Balance (Mar 2054)</div>
+                    <div class="val" style="color:var(--sage)">$237,431</div>
+                    <div class="meta">Betterment Forecaster</div>
+                </div>
+                <div class="row" style="border:none">
+                    <div class="lbl">Spending Power (today's dollars)</div>
+                    <div class="val" style="color:var(--sage)">$2,704/mo</div>
+                    <div class="meta">In retirement</div>
+                </div>
+                <div style="padding:10px 0 4px;display:flex;justify-content:space-between;border-top:1px solid var(--cream2);margin-top:4px;">
+                    <span style="font-size:11px;color:var(--ink4);">Update in 📊 Current → Section D → Betterment Total</span>
+                    <a href="https://betterment.com" target="_blank" class="inv-link" style="color:#1a6b3a;">betterment.com ↗</a>
+                </div>
+            </div>
+
+            <div class="sec-label">Robinhood</div>
+            <div class="card mb20">
+                <div class="inv-header">
+                    <div class="inv-dot" style="background:#00c805"></div>
+                    <div class="inv-name">Robinhood</div>
+                    <div class="inv-total-fig" style="color:#006b00" id="inv-rh-total">—</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">Roth IRA</div>
+                    <div class="val">$29,687.65</div>
+                    <div class="meta">+$662.68 on 3/31</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">Roth IRA Buying Power</div>
+                    <div class="val" style="color:var(--amber)">$7,176.87</div>
+                    <div class="meta">⚠ Uninvested</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">Individual (taxable)</div>
+                    <div class="val">$2,586.14</div>
+                    <div class="meta">BP: $18.64</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">2025 IRA Contribution</div>
+                    <div class="val" style="color:var(--sage)">$2,000</div>
+                    <div class="meta">$5,000 until max</div>
+                </div>
+                <div class="row" style="border:none">
+                    <div class="lbl">IRA Match (3% Gold)</div>
+                    <div class="val" style="color:var(--sage)">$60</div>
+                    <div class="meta">Robinhood Gold</div>
+                </div>
+                <div style="padding:10px 0 4px;display:flex;justify-content:space-between;border-top:1px solid var(--cream2);margin-top:4px;">
+                    <span style="font-size:11px;color:var(--ink4);">Update in 📊 Current → Section D → Robinhood Total</span>
+                    <a href="https://robinhood.com" target="_blank" class="inv-link" style="color:#006b00;">robinhood.com ↗</a>
+                </div>
+            </div>
+
+            <div class="alert amber">
+                <div class="alert-icon">⚠️</div>
+                <div>
+                    <div class="alert-head">$7,177 Roth IRA buying power is sitting uninvested</div>
+                    Cash in a tax-advantaged account earns nothing. Every month idle = tax-advantaged growth lost. Consider auto-investing or selecting holdings in Robinhood.
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ EXPENSES ══ -->
+        <div class="panel" id="panel-expenses">
+            <!-- SUMMARY CARDS -->
+            <div class="g3">
+                <div class="card">
+                    <div class="card-label">Monthly Fixed</div>
+                    <div class="card-fig" style="color:var(--amber)" id="exp-monthly">—</div>
+                    <div class="card-note">All recurring bills &amp; subs</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Annual Total</div>
+                    <div class="card-fig" style="color:var(--amber)" id="exp-annual">—</div>
+                    <div class="card-note">Annualized</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">If Flagged Subs Cut</div>
+                    <div class="card-fig" style="color:var(--sage)" id="exp-savings">—</div>
+                    <div class="card-note" id="exp-savings-note">Review items</div>
+                </div>
+            </div>
+
+            <!-- TOOLBAR -->
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <button onclick="showAddExpense()" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:6px 14px;background:var(--sage);color:#fff;border:none;border-radius:6px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='var(--sage-l)'" onmouseout="this.style.background='var(--sage)'">+ ADD EXPENSE</button>
+                    <button onclick="addSectionHeader()" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:6px 14px;background:var(--paper);color:var(--ink4);border:1px solid var(--cream2);border-radius:6px;cursor:pointer;">+ SECTION</button>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink4);" id="exp-save-status"></div>
+                    <button onclick="saveExpenses()" id="exp-save-btn" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:6px 14px;background:var(--slate);color:#fff;border:none;border-radius:6px;cursor:pointer;display:none;transition:background .15s;" onmouseover="this.style.background='var(--slate-l)'" onmouseout="this.style.background='var(--slate)'">💾 SAVE TO SHEET</button>
+                    <a id="exp-sheet-link" href="https://docs.google.com/spreadsheets/d/1usc1YxAz-Idtn6ASALZOJaX6ir4ooK2zxk1ORVTxz7s/edit" target="_blank" style="font-family:var(--font-mono);font-size:10px;color:var(--ink4);text-decoration:none;letter-spacing:1px;">📊 Sheet ↗</a>
+                </div>
+            </div>
+
+            <!-- ADD EXPENSE FORM (hidden) -->
+            <div id="add-exp-form" style="display:none;background:var(--sage-bg);border:1px solid rgba(58,107,74,.2);border-radius:8px;padding:14px;margin-bottom:14px;">
+                <div style="display:grid;grid-template-columns:1fr 120px 1fr;gap:10px;margin-bottom:10px;">
+                    <div>
+                        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--ink4);margin-bottom:4px;">EXPENSE NAME</div>
+                        <input id="new-exp-name" type="text" placeholder="e.g. Netflix" style="width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
+                        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--ink4);margin-bottom:4px;">MONTHLY $</div>
+                        <input id="new-exp-amount" type="number" step="0.01" placeholder="0.00" style="width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
+                        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--ink4);margin-bottom:4px;">SECTION (optional)</div>
+                        <select id="new-exp-section" style="width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                            <option value="">— Add at bottom —</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;">
+                    <button onclick="hideAddExpense()" style="font-family:var(--font-mono);font-size:10px;padding:6px 14px;background:var(--paper);border:1px solid var(--cream2);border-radius:6px;cursor:pointer;color:var(--ink4);">Cancel</button>
+                    <button onclick="addExpense()" style="font-family:var(--font-mono);font-size:10px;padding:6px 14px;background:var(--sage);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">ADD</button>
+                </div>
+            </div>
+
+            <!-- EXPENSE TABLE -->
+            <div class="sec-label">All Expenses — click to edit · drag to reorder</div>
+            <div class="card" id="exp-table-wrap">
+                <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">Loading from Sheets...</div>
+            </div>
+        </div>
+
+        <!-- ══ HISTORY ══ -->
+        <div class="panel" id="panel-history">
+            <div class="sec-label">Net Worth Over Time</div>
+            <div class="card mb20" id="hist-wrap">
+                <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">Loading history...</div>
+            </div>
+            <div class="alert sage">
+                <div class="alert-icon">💡</div>
+                <div>
+                    <div class="alert-head">How to use History</div>
+                    Click "📅 Log Month" on the first of each month after updating balances. Each click appends one row — permanent record for month-over-month and year-over-year comparison.
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ TASKS ══ -->
+        <div class="panel" id="panel-tasks">
+            <div class="sec-label">TradFi Tasks — from HQ Brain Dump</div>
+            <div class="card mb20" id="task-list">
+                <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">Loading tasks...</div>
+            </div>
+            <div style="text-align:right;">
+                <a href="index.html" style="font-family:var(--font-mono);font-size:10px;color:var(--slate);text-decoration:none;">← Manage all tasks in HQ</a>
+            </div>
+        </div>
+
+        <!-- ══ UPDATE ══ -->
+        <div class="panel" id="panel-update">
+
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+                <div>
+                    <div class="sec-label" style="margin:0 0 4px;border:none;padding:0;">Monthly Update Form</div>
+                    <div style="font-size:13px;color:var(--ink4);">Pre-filled from your sheet. Change what moved, then save.</div>
+                </div>
+                <div style="font-family:var(--font-mono);font-size:11px;color:var(--sage);background:var(--sage-bg);border:1px solid rgba(58,107,74,.2);padding:5px 12px;border-radius:20px;" id="upd-month-label">March 2026</div>
+            </div>
+
+            <!-- QUICK LOGIN LINKS -->
+            <div class="card mb20">
+                <div class="card-label" style="margin-bottom:12px;">Quick Login Links</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <a href="https://www.chase.com" target="_blank" style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--cream);border:1px solid var(--cream2);border-radius:7px;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='var(--cream2)'" onmouseout="this.style.background='var(--cream)'">
+                        <span style="font-size:16px;">🏦</span>
+                        <div>
+                            <div style="font-size:13px;font-weight:600;color:var(--slate);">Chase</div>
+                            <div style="font-size:11px;color:var(--ink4);">Bank + all Chase CCs</div>
+                        </div>
+                    </a>
+                    <a href="https://d.comenity.net/ac/cryptocom/public/home" target="_blank" style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--cream);border:1px solid var(--rust);border-radius:7px;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='var(--rust-bg)'" onmouseout="this.style.background='var(--cream)'">
+                        <span style="font-size:16px;">💳</span>
+                        <div>
+                            <div style="font-size:13px;font-weight:600;color:var(--rust);">Crypto.com Visa</div>
+                            <div style="font-size:11px;color:var(--ink4);">Comenity Bank 🚨 Set AutoPay</div>
+                        </div>
+                    </a>
+                    <a href="https://citiretailservices.citibankonline.com/RSauth/signon?pageName=signon&siteId=PLCN_BESTBUY&langId=en_US" target="_blank" style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--cream);border:1px solid var(--cream2);border-radius:7px;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='var(--cream2)'" onmouseout="this.style.background='var(--cream)'">
+                        <span style="font-size:16px;">🛍️</span>
+                        <div>
+                            <div style="font-size:13px;font-weight:600;color:var(--amber);">Best Buy (Citi)</div>
+                            <div style="font-size:11px;color:var(--ink4);">BB1 ⏰ BB2 ✓ BB3 ✓</div>
+                        </div>
+                    </a>
+                    <a href="https://secure.bankofamerica.com/login/sign-in/signOnV2Screen.go" target="_blank" style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--cream);border:1px solid var(--cream2);border-radius:7px;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='var(--cream2)'" onmouseout="this.style.background='var(--cream)'">
+                        <span style="font-size:16px;">🏛️</span>
+                        <div>
+                            <div style="font-size:13px;font-weight:600;color:var(--amber);">Bank of America</div>
+                            <div style="font-size:11px;color:var(--ink4);">BOA1 ✓ BOA2 ⚠ verify APR</div>
+                        </div>
+                    </a>
+                    <a href="https://wwws.betterment.com/app/login" target="_blank" style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--cream);border:1px solid var(--cream2);border-radius:7px;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='var(--cream2)'" onmouseout="this.style.background='var(--cream)'">
+                        <span style="font-size:16px;">📈</span>
+                        <div>
+                            <div style="font-size:13px;font-weight:600;color:var(--sage);">Betterment</div>
+                            <div style="font-size:11px;color:var(--ink4);">SEP IRA — Tax-Coordinated</div>
+                        </div>
+                    </a>
+                    <a href="https://robinhood.com/login/" target="_blank" style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--cream);border:1px solid var(--cream2);border-radius:7px;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='var(--cream2)'" onmouseout="this.style.background='var(--cream)'">
+                        <span style="font-size:16px;">🪶</span>
+                        <div>
+                            <div style="font-size:13px;font-weight:600;color:var(--sage);">Robinhood</div>
+                            <div style="font-size:11px;color:var(--ink4);">Roth IRA + Individual</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- SNAPSHOT MONTH -->
+            <div class="card mb20">
+                <div class="card-label">Snapshot Month</div>
+                <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
+                    <input type="text" id="upd-snapshot" placeholder="e.g. April 2026" style="flex:1;font-size:14px;padding:8px 12px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);font-family:var(--font-mono);">
+                    <span style="font-size:12px;color:var(--ink4);">Update this before saving</span>
+                </div>
+            </div>
+
+            <!-- SECTION A: CHASE BANK -->
+            <div class="card mb20">
+                <div class="card-label" style="margin-bottom:14px;">A · Chase Bank Accounts</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">CPC Checking (...7382)</div>
+                        <input type="number" id="upd-chk" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--slate);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Chase Savings (...1810)</div>
+                        <input type="number" id="upd-sav1" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--slate);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Chase Savings (...5520)</div>
+                        <input type="number" id="upd-sav2" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--slate);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Bus Complete CHK (...6783)</div>
+                        <input type="number" id="upd-biz" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--slate);">
+                    </div>
+                </div>
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--cream2);display:flex;justify-content:space-between;font-size:12px;">
+                    <span style="color:var(--ink4);">Total Cash</span>
+                    <span style="color:var(--slate);font-weight:600;font-family:var(--font-mono);" id="upd-cash-total">—</span>
+                </div>
+            </div>
+
+            <!-- SECTION B: CHASE CCs -->
+            <div class="card mb20">
+                <div class="card-label" style="margin-bottom:6px;">B · Chase Credit Cards</div>
+                <div style="font-size:11px;color:var(--ink4);margin-bottom:14px;">$0 cards are shown for reference — update if a balance appears</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div>
+                        <div style="font-size:12px;color:var(--rust);margin-bottom:5px;">Prime Visa (...7376) ⚠</div>
+                        <input type="number" id="upd-prime" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--rust);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Venmo (...5265)</div>
+                        <input type="number" id="upd-venmo" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                </div>
+                <div style="margin-top:14px;padding:10px 12px;background:var(--cream);border-radius:6px;font-size:12px;color:var(--ink4);">
+                    <div style="font-weight:600;color:var(--ink3);margin-bottom:6px;">$0 Balance Cards (included in Chase total formula)</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;">
+                        <span>Freedom (...2035)</span>
+                        <span>Freedom Unlimited (...0163)</span>
+                        <span>Sapphire Preferred (...5377)</span>
+                        <span>Ink Preferred (...2118)</span>
+                        <span>Southwest Plus (...1749)</span>
+                        <span>Ink Business Cash (...0526)</span>
+                    </div>
+                    <div style="margin-top:6px;color:var(--slate);font-style:italic;">Update directly in 📊 Current tab (rows 19–24) if any get a balance</div>
+                </div>
+            </div>
+
+            <!-- SECTION C: OTHER CARDS -->
+            <div class="card mb20">
+                <div class="card-label" style="margin-bottom:14px;">
+                    C · Other Cards 
+                    <span style="font-weight:400;color:var(--amber);font-size:11px;margin-left:8px;">← most important to update</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div>
+                        <div style="font-size:12px;color:var(--rust);margin-bottom:5px;">Crypto.com Visa 🚨 NO AUTOPAY</div>
+                        <input type="number" id="upd-cdc" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--rust);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--amber);margin-bottom:5px;">Best Buy BB1 ⏰ Deferred — Jul 14</div>
+                        <input type="number" id="upd-bb1" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--amber);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Best Buy BB2 (0% Jan 2027)</div>
+                        <input type="number" id="upd-bb2" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Best Buy BB3 (0% Mar 2027)</div>
+                        <input type="number" id="upd-bb3" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">BOA (...8769) (0% Jun 2026)</div>
+                        <input type="number" id="upd-boa1" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--amber);margin-bottom:5px;">BOA (...7720) ⚠ Verify APR</div>
+                        <input type="number" id="upd-boa2" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--amber);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">EIDL Loan (SBA)</div>
+                        <input type="number" id="upd-eidl" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION D: INVESTMENTS -->
+            <div class="card mb20">
+                <div class="card-label" style="margin-bottom:14px;">D · Investments</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Betterment Total</div>
+                        <input type="number" id="upd-bet" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Robinhood Total</div>
+                        <input type="number" id="upd-rh" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--amber);margin-bottom:5px;">Crypto (optional)</div>
+                        <input type="number" id="upd-crypto" step="0.01" placeholder="0" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div style="display:flex;gap:12px;margin-bottom:12px;">
+                <button onclick="saveUpdate(false)" style="flex:1;padding:12px;font-size:13px;font-weight:600;font-family:var(--font-mono);letter-spacing:1px;background:var(--paper);border:1px solid var(--cream2);border-radius:8px;cursor:pointer;color:var(--slate);transition:background .15s;" onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background='var(--paper)'">
+                      SAVE TO SHEET
+                    </button>
+                <button onclick="saveUpdate(true)" style="flex:2;padding:12px;font-size:13px;font-weight:600;font-family:var(--font-mono);letter-spacing:1px;background:var(--sage);color:#fff;border:none;border-radius:8px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='var(--sage-l)'" onmouseout="this.style.background='var(--sage)'">
+                      SAVE + LOG MONTH →
+                    </button>
+            </div>
+            <div style="font-size:11px;color:var(--ink4);text-align:center;font-family:var(--font-mono);">
+                Save — writes values to sheet &nbsp;·&nbsp; Save + Log — writes values AND records a History row
+              </div>
+            <div id="upd-status" style="margin-top:14px;text-align:center;font-size:13px;min-height:20px;"></div>
+
+        </div>
+
     </div>
-  </div>
+    <!-- /main -->
 
-  <div class="sec-label" style="margin-top:24px;">🤖 AI Portfolio Scan</div>
-  <div class="card" style="border-left:3px solid var(--violet);">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-      <div style="flex:1;min-width:260px;">
-        <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:1px;color:var(--violet);font-weight:600;margin-bottom:6px;">PORTFOLIO INTELLIGENCE</div>
-        <div style="font-size:13px;color:var(--ink3);line-height:1.7;margin-bottom:12px;">Paste a summary of your current holdings, balances, or financial situation below and get AI-generated insights, opportunities, and action items specific to your portfolio.</div>
-        <textarea id="ai-portfolio-input" style="width:100%;min-height:80px;padding:10px 12px;font-family:var(--font-sans);font-size:13px;color:var(--ink);background:var(--cream);border:1px solid var(--cream2);border-radius:6px;resize:vertical;outline:none;line-height:1.5;" placeholder="e.g. My net worth is $62k, crypto is $280k, I have $5k in 0% promo cards, $32k in Betterment SEP IRA, $32k Robinhood Roth IRA with $7k uninvested. What should I focus on?"></textarea>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;padding-top:28px;">
-        <button onclick="runAIScan()" id="ai-scan-btn"
-          style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:8px 16px;background:var(--violet);color:#fff;border:none;border-radius:6px;cursor:pointer;transition:background .15s;white-space:nowrap;"
-          onmouseover="this.style.background='#7060b0'" onmouseout="this.style.background='var(--violet)'">
-          ⚡ SCAN PORTFOLIO
-        </button>
-        <button onclick="document.getElementById('ai-portfolio-input').value='';document.getElementById('ai-result').innerHTML=''"
-          style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:8px 16px;background:var(--paper);color:var(--ink4);border:1px solid var(--cream2);border-radius:6px;cursor:pointer;">
-          CLEAR
-        </button>
-      </div>
-    </div>
-    <div id="ai-result" style="margin-top:14px;font-size:13px;color:var(--ink3);line-height:1.7;border-top:1px solid var(--cream2);padding-top:14px;display:none;"></div>
-  </div>
-</div>
+    <script>
+    // ══════════════════════════════════════════════════════════════════════════
+    // CONFIG — update SCRIPT_URL and SHEET_ID after deployment
+    // ══════════════════════════════════════════════════════════════════════════
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzvRSoXyOv3PI-g3NkE0-oyVXd8a5h8wF9-x0UMem-evwH5lS5qLCz5Go0go-YvYtPEQA/exec';
+    const HQ_URL     = 'https://script.google.com/macros/s/AKfycbw6fGdCZnZHBfpQaHs03_3xWkuxunC08aaCoE40iLY03Q6CVcb6f5_bWYUk_3YKGH20/exec';
+    // Paste your Google Sheet ID from the URL bar (between /d/ and /edit):
+    const SHEET_ID   = '1usc1YxAz-Idtn6ASALZOJaX6ir4ooK2zxk1ORVTxz7s';
 
-<!-- ══ ALERTS ══ -->
-<div class="panel" id="panel-alerts">
-  <div class="sec-label">Active Flags — Prioritized</div>
-  <div class="alert sage"><div class="alert-icon">✅</div><div><div class="alert-head">Crypto.com, Chase Prime, BOA (...7720) — All Paid Off</div>Three high-APR balances cleared this month. You were paying ~$130+/month in combined interest. That cash flow is now free. Next step: close BOA (...7720) — it has no ongoing rewards value.</div></div>
-  <div class="alert amber"><div class="alert-icon">⏰</div><div><div class="alert-head">Best Buy BB1 — Deferred Interest Expires Jul 14, 2026</div>Still the most urgent remaining item. Best Buy promos are DEFERRED — if the balance isn't paid in full by Jul 14, Citi back-charges all interest from day one. Pay ~$140/month to clear it safely. BB2 safe until Jan 2027, BB3 until Mar 2027.</div></div>
-  <div class="alert amber"><div class="alert-icon">📅</div><div><div class="alert-head">BOA (...8769) — 0% Promo Ends Jun 6, 2026</div>About 2 months left. Pay the remaining balance before Jun 6 to avoid revert to standard BofA APR (~25%). Set a calendar reminder now.</div></div>
-  <div class="alert amber"><div class="alert-icon">📦</div><div><div class="alert-head">NSA Storage — $177/mo ($2,124/yr)</div>Rate jumped $43/month (+32%). Now that high-APR debt is cleared, this is the next highest-cost line item to review. Is everything in that unit worth $177/month?</div></div>
-  <div class="alert slate"><div class="alert-icon">💡</div><div><div class="alert-head">Subscription Audit — $736/yr Recoverable</div><strong>Skill Incubator ($396/yr):</strong> Actively using it?<br><strong>Google Workspace ($202/yr):</strong> Zoho Mail is free with custom domain.<br><strong>Wix ($168/yr):</strong> Cheaper DJ site options exist.<br>Total: <strong>$736/yr</strong> freed up if all three cancelled.</div></div>
-  <div class="alert slate"><div class="alert-icon">💳</div><div><div class="alert-head">Credit Card Strategy — Apply for Costco Anywhere Visa</div>You're a Costco member — the Costco Anywhere Visa earns 5% at Costco gas, 4% all other gas, 3% dining, no annual fee. Best gas card available. Apply at costco.com/credit-card.</div></div>
-</div>
+    // ── DEFAULTS (shown if Sheets offline) ────────────────────────────────────
+    const DEFAULTS = {
+      current: {
+        snapshot_mo:'April 2026', cash:3190, crypto:0,
+        betterment:32347, robinhood:32751, invest_total:65097,
+        monthly_exp:1980, net_worth:62422, total_debt:-5865,
+        crypto_com:4844, bb1:973, bb2:1614, bb3:2164,
+        boa1:1113, boa2:905, prime_visa:970, venmo:0,
+        chase_chk:0, chase_sav1:0, chase_sav2:0, chase_biz:0,
+        eidl:0,
+      },
+      history:[
+        {month:'Feb 2026',cash:1982,crypto:0,betterment:0,robinhood:0,invest_total:0,debt:11122,net_worth:-9140,monthly_exp:1980},
+        {month:'Mar 2026',cash:836.57,crypto:0,betterment:31897.98,robinhood:32273.79,invest_total:64171.77,debt:12618.14,net_worth:52390.20,monthly_exp:1980},
+      ],
+      expenses:[],
+    };
 
-<!-- ══ DEBT ══ -->
-<div class="panel" id="panel-debt">
-  <div class="g3">
-    <div class="card"><div class="card-label">Total CC Debt</div><div class="card-fig" style="color:var(--rust)" id="debt-total">—</div><div class="card-note">As of last update</div></div>
-    <div class="card"><div class="card-label">Currently Accruing</div><div class="card-fig" style="color:var(--sage)" id="debt-accruing">$0</div><div class="card-note">All high-APR cards paid off ✓</div></div>
-    <div class="card">
-      <div class="card-label">Payoff Strategy</div>
-      <div class="strat-row">
-        <button id="btn-av" class="strat-btn on" onclick="strat('avalanche')">AVALANCHE</button>
-        <button id="btn-sb" class="strat-btn off" onclick="strat('snowball')">SNOWBALL</button>
-      </div>
-      <div id="strat-note" style="font-size:12px;color:var(--ink3);margin-top:8px;line-height:1.6;">Highest APR first — Crypto.com → BOA2 → Prime Visa. Saves the most interest.</div>
-    </div>
-  </div>
-
-  <div class="sec-label">All Cards — by Priority</div>
-  <div class="card mb20">
-    <div class="debt-block">
-      <div class="debt-top"><span class="debt-name">Crypto.com Visa (Comenity)</span><span class="debt-bal" style="color:var(--rust)" id="d-cdc">—</span></div>
-      <div class="debt-meta-row"><span>Due: 10th</span><span>26.99% APR</span><span style="color:var(--sage);font-weight:600;">AutoPay: SET ✓</span></div>
-      <div><span class="badge green">✓ PAID OFF — CONSIDER CLOSING</span><span class="badge muted">Set as card-to-cancel per strategy</span></div>
-      <div class="track"><div class="track-fill" id="tr-cdc" style="background:var(--sage-l);width:0%"></div></div>
-    </div>
-    <div class="debt-block">
-      <div class="debt-top"><span class="debt-name">Best Buy BB1 (...6761)</span><span class="debt-bal" style="color:var(--amber)" id="d-bb1">—</span></div>
-      <div class="debt-meta-row"><span>Due: 14th</span><span>AutoPay: YES</span><span>0% — DEFERRED, expires Jul 14, 2026</span></div>
-      <div><span class="badge amber">⏰ PAY IN FULL BY JUL 14 — ~$140/mo</span></div>
-      <div class="track"><div class="track-fill" id="tr-bb1" style="background:var(--amber-l);width:0%"></div></div>
-    </div>
-    <div class="debt-block">
-      <div class="debt-top"><span class="debt-name">BOA (...8769)</span><span class="debt-bal" style="color:var(--sage)" id="d-boa1">—</span></div>
-      <div class="debt-meta-row"><span>Due: 3rd</span><span>AutoPay: YES</span><span>0% until Jun 6, 2026</span></div>
-      <div><span class="badge green">✓ 0% PROMO — PAY BEFORE JUN 2026</span></div>
-      <div class="track"><div class="track-fill" id="tr-boa1" style="background:var(--sage-l);width:0%"></div></div>
-    </div>
-    <div class="debt-block">
-      <div class="debt-top"><span class="debt-name">Chase Prime Visa (...7376)</span><span class="debt-bal" style="color:var(--rust)" id="d-pv">—</span></div>
-      <div class="debt-meta-row"><span>Due: Apr 4</span><span>24.99% APR</span><span>AutoPay: YES</span></div>
-      <div><span class="badge green">✓ PAID OFF — Keep for 5% Amazon rewards</span></div>
-      <div class="track"><div class="track-fill" id="tr-pv" style="background:var(--sage-l);width:0%"></div></div>
-    </div>
-    <div class="debt-block">
-      <div class="debt-top"><span class="debt-name">BOA (...7720)</span><span class="debt-bal" style="color:var(--amber)" id="d-boa2">—</span></div>
-      <div class="debt-meta-row"><span>Due: 6th</span><span>AutoPay: YES</span><span>Promo expired Oct 2025</span></div>
-      <div><span class="badge green">✓ PAID OFF — Close this card</span><span class="badge muted">No ongoing value · Cancel recommended</span></div>
-      <div class="track"><div class="track-fill" id="tr-boa2" style="background:var(--sage-l);width:0%"></div></div>
-    </div>
-    <div class="debt-block">
-      <div class="debt-top"><span class="debt-name">Best Buy BB2 (...6761)</span><span class="debt-bal" style="color:var(--sage)" id="d-bb2">—</span></div>
-      <div class="debt-meta-row"><span>Due: 14th</span><span>AutoPay: YES</span><span>0% until Jan 14, 2027</span></div>
-      <div><span class="badge green">✓ SAFE UNTIL JAN 2027</span></div>
-      <div class="track"><div class="track-fill" id="tr-bb2" style="background:var(--sage-l);width:0%"></div></div>
-    </div>
-    <div class="debt-block">
-      <div class="debt-top"><span class="debt-name">Best Buy BB3 (...6761)</span><span class="debt-bal" style="color:var(--sage)" id="d-bb3">—</span></div>
-      <div class="debt-meta-row"><span>Due: 14th</span><span>AutoPay: YES</span><span>0% until Mar 16, 2027</span></div>
-      <div><span class="badge green">✓ SAFE UNTIL MAR 2027</span></div>
-      <div class="track"><div class="track-fill" id="tr-bb3" style="background:var(--sage-l);width:0%"></div></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-label" style="margin-bottom:10px;">Zero Balance Cards</div>
-    <div class="row"><div class="lbl">Venmo (...5265)</div><div class="val" style="color:var(--sage)">$0</div><div class="meta">Due 15th · Phone App</div></div>
-    <div class="row"><div class="lbl">Chase Freedom (...2035)</div><div class="val" style="color:var(--sage)">$0</div><div class="meta">Due Apr 22</div></div>
-    <div class="row"><div class="lbl">Sapphire Preferred (...5377)</div><div class="val" style="color:var(--sage)">$0</div><div class="meta">Due Apr 15</div></div>
-    <div class="row"><div class="lbl">Southwest Plus (...1749)</div><div class="val" style="color:var(--sage)">$0</div><div class="meta">Due Apr 8</div></div>
-    <div class="row"><div class="lbl">Freedom Unlimited (...0163)</div><div class="val" style="color:var(--sage)">$0</div><div class="meta">Due Apr 21</div></div>
-    <div class="row"><div class="lbl">Ink Preferred (...2118)</div><div class="val" style="color:var(--sage)">$0</div><div class="meta">Due Apr 2</div></div>
-    <div class="row"><div class="lbl">Ink Business Cash (...0526)</div><div class="val" style="color:var(--sage)">$0</div><div class="meta">Due Apr 21</div></div>
-    <div class="row"><div class="lbl">EIDL Loan (SBA)</div><div class="val" style="color:var(--sage)">$0</div><div class="meta">Due 22nd</div></div>
-  </div>
-</div>
-
-<!-- ══ INVESTMENTS ══ -->
-<div class="panel" id="panel-investments">
-  <div class="g4">
-    <div class="card"><div class="card-label">Total Investments</div><div class="card-fig" style="color:var(--slate)" id="inv-total">—</div><div class="card-note">Betterment + Robinhood</div></div>
-    <div class="card"><div class="card-label">Betterment</div><div class="card-fig" style="color:#1a6b3a" id="inv-betterment">—</div><div class="card-note">SEP IRA — Tax-Coordinated</div></div>
-    <div class="card"><div class="card-label">Robinhood</div><div class="card-fig" style="color:#006b00" id="inv-robinhood">—</div><div class="card-note">Roth IRA + Individual</div></div>
-    <div class="card"><div class="card-label">Cash (Chase)</div><div class="card-fig" style="color:var(--slate)" id="inv-cash">—</div><div class="card-note">CHK + SAV + Biz</div></div>
-  </div>
-
-  <div class="sec-label">Cash — Chase Accounts</div>
-  <div class="card mb20">
-    <div class="inv-header">
-      <div class="inv-dot" style="background:var(--slate)"></div>
-      <div class="inv-name">Chase Bank</div>
-      <div class="inv-total-fig" style="color:var(--slate)" id="chase-bank-total">—</div>
-    </div>
-    <div class="row"><div class="lbl">CPC Checking (...7382)</div><div class="val" id="chase-chk" style="color:var(--slate)">—</div><div class="meta">Personal checking</div></div>
-    <div class="row"><div class="lbl">Chase Savings (...1810)</div><div class="val" id="chase-sav1" style="color:var(--slate)">—</div><div class="meta">Savings</div></div>
-    <div class="row"><div class="lbl">Chase Savings (...5520)</div><div class="val" id="chase-sav2" style="color:var(--slate)">—</div><div class="meta">Savings</div></div>
-    <div class="row" style="border:none"><div class="lbl">Bus Complete CHK (...6783)</div><div class="val" id="chase-biz" style="color:var(--slate)">—</div><div class="meta">ABDJS business</div></div>
-    <div style="padding:10px 0 4px;display:flex;justify-content:space-between;border-top:1px solid var(--cream2);margin-top:4px;">
-      <span style="font-size:11px;color:var(--ink4);">Update using the 📝 Update tab above</span>
-      <a href="https://www.chase.com" target="_blank" class="inv-link" style="color:var(--slate);">chase.com ↗</a>
-    </div>
-  </div>
-
-  <div class="sec-label">Betterment</div>
-  <div class="card mb20">
-    <div class="inv-header">
-      <div class="inv-dot" style="background:#1a6b3a"></div>
-      <div class="inv-name">Betterment — Retirement</div>
-      <div class="inv-total-fig" style="color:#1a6b3a" id="inv-bet-total">—</div>
-    </div>
-    <div class="row"><div class="lbl">SEP IRA — Tax-Coordinated Portfolio</div><div class="val">$31,897.98</div><div class="meta">100% Stocks — Innovative Tech</div></div>
-    <div class="row"><div class="lbl">Roth IRA</div><div class="val">$0</div><div class="meta">Not yet funded</div></div>
-    <div class="row"><div class="lbl">Projected Balance (Mar 2054)</div><div class="val" style="color:var(--sage)">$237,431</div><div class="meta">Betterment Forecaster</div></div>
-    <div class="row" style="border:none"><div class="lbl">Spending Power (today's dollars)</div><div class="val" style="color:var(--sage)">$2,704/mo</div><div class="meta">In retirement</div></div>
-    <div style="padding:10px 0 4px;display:flex;justify-content:space-between;border-top:1px solid var(--cream2);margin-top:4px;">
-      <span style="font-size:11px;color:var(--ink4);">Update in 📊 Current → Section D → Betterment Total</span>
-      <a href="https://betterment.com" target="_blank" class="inv-link" style="color:#1a6b3a;">betterment.com ↗</a>
-    </div>
-  </div>
-
-  <div class="sec-label">Robinhood</div>
-  <div class="card mb20">
-    <div class="inv-header">
-      <div class="inv-dot" style="background:#00c805"></div>
-      <div class="inv-name">Robinhood</div>
-      <div class="inv-total-fig" style="color:#006b00" id="inv-rh-total">—</div>
-    </div>
-    <div class="row"><div class="lbl">Roth IRA</div><div class="val">$29,687.65</div><div class="meta">+$662.68 on 3/31</div></div>
-    <div class="row"><div class="lbl">Roth IRA Buying Power</div><div class="val" style="color:var(--amber)">$7,176.87</div><div class="meta">⚠ Uninvested</div></div>
-    <div class="row"><div class="lbl">Individual (taxable)</div><div class="val">$2,586.14</div><div class="meta">BP: $18.64</div></div>
-    <div class="row"><div class="lbl">2025 IRA Contribution</div><div class="val" style="color:var(--sage)">$2,000</div><div class="meta">$5,000 until max</div></div>
-    <div class="row" style="border:none"><div class="lbl">IRA Match (3% Gold)</div><div class="val" style="color:var(--sage)">$60</div><div class="meta">Robinhood Gold</div></div>
-    <div style="padding:10px 0 4px;display:flex;justify-content:space-between;border-top:1px solid var(--cream2);margin-top:4px;">
-      <span style="font-size:11px;color:var(--ink4);">Update in 📊 Current → Section D → Robinhood Total</span>
-      <a href="https://robinhood.com" target="_blank" class="inv-link" style="color:#006b00;">robinhood.com ↗</a>
-    </div>
-  </div>
-
-  <div class="alert amber"><div class="alert-icon">⚠️</div><div><div class="alert-head">$7,177 Roth IRA buying power is sitting uninvested</div>Cash in a tax-advantaged account earns nothing. Every month idle = tax-advantaged growth lost. Consider auto-investing or selecting holdings in Robinhood.</div></div>
-</div>
-
-<!-- ══ EXPENSES ══ -->
-<div class="panel" id="panel-expenses">
-  <!-- SUMMARY CARDS -->
-  <div class="g3">
-    <div class="card"><div class="card-label">Monthly Fixed</div><div class="card-fig" style="color:var(--amber)" id="exp-monthly">—</div><div class="card-note">All recurring bills &amp; subs</div></div>
-    <div class="card"><div class="card-label">Annual Total</div><div class="card-fig" style="color:var(--amber)" id="exp-annual">—</div><div class="card-note">Annualized</div></div>
-    <div class="card"><div class="card-label">If Flagged Subs Cut</div><div class="card-fig" style="color:var(--sage)" id="exp-savings">—</div><div class="card-note" id="exp-savings-note">Review items</div></div>
-  </div>
-
-  <!-- TOOLBAR -->
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <button onclick="showAddExpense()" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:6px 14px;background:var(--sage);color:#fff;border:none;border-radius:6px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='var(--sage-l)'" onmouseout="this.style.background='var(--sage)'">+ ADD EXPENSE</button>
-      <button onclick="addSectionHeader()" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:6px 14px;background:var(--paper);color:var(--ink4);border:1px solid var(--cream2);border-radius:6px;cursor:pointer;">+ SECTION</button>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink4);" id="exp-save-status"></div>
-      <button onclick="saveExpenses()" id="exp-save-btn" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:6px 14px;background:var(--slate);color:#fff;border:none;border-radius:6px;cursor:pointer;display:none;transition:background .15s;" onmouseover="this.style.background='var(--slate-l)'" onmouseout="this.style.background='var(--slate)'">💾 SAVE TO SHEET</button>
-      <a id="exp-sheet-link" href="https://docs.google.com/spreadsheets/d/1usc1YxAz-Idtn6ASALZOJaX6ir4ooK2zxk1ORVTxz7s/edit" target="_blank" style="font-family:var(--font-mono);font-size:10px;color:var(--ink4);text-decoration:none;letter-spacing:1px;">📊 Sheet ↗</a>
-    </div>
-  </div>
-
-  <!-- ADD EXPENSE FORM (hidden) -->
-  <div id="add-exp-form" style="display:none;background:var(--sage-bg);border:1px solid rgba(58,107,74,.2);border-radius:8px;padding:14px;margin-bottom:14px;">
-    <div style="display:grid;grid-template-columns:1fr 120px 1fr;gap:10px;margin-bottom:10px;">
-      <div>
-        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--ink4);margin-bottom:4px;">EXPENSE NAME</div>
-        <input id="new-exp-name" type="text" placeholder="e.g. Netflix" style="width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
-      </div>
-      <div>
-        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--ink4);margin-bottom:4px;">MONTHLY $</div>
-        <input id="new-exp-amount" type="number" step="0.01" placeholder="0.00" style="width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
-      </div>
-      <div>
-        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--ink4);margin-bottom:4px;">SECTION (optional)</div>
-        <select id="new-exp-section" style="width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
-          <option value="">— Add at bottom —</option>
-        </select>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;">
-      <button onclick="hideAddExpense()" style="font-family:var(--font-mono);font-size:10px;padding:6px 14px;background:var(--paper);border:1px solid var(--cream2);border-radius:6px;cursor:pointer;color:var(--ink4);">Cancel</button>
-      <button onclick="addExpense()" style="font-family:var(--font-mono);font-size:10px;padding:6px 14px;background:var(--sage);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">ADD</button>
-    </div>
-  </div>
-
-  <!-- EXPENSE TABLE -->
-  <div class="sec-label">All Expenses — click to edit · drag to reorder</div>
-  <div class="card" id="exp-table-wrap">
-    <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">Loading from Sheets...</div>
-  </div>
-</div>
-
-<!-- ══ HISTORY ══ -->
-<div class="panel" id="panel-history">
-  <div class="sec-label">Net Worth Over Time</div>
-  <div class="card mb20" id="hist-wrap">
-    <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">Loading history...</div>
-  </div>
-  <div class="alert sage"><div class="alert-icon">💡</div><div><div class="alert-head">How to use History</div>Click "📅 Log Month" on the first of each month after updating balances. Each click appends one row — permanent record for month-over-month and year-over-year comparison.</div></div>
-</div>
-
-<!-- ══ TASKS ══ -->
-<div class="panel" id="panel-tasks">
-  <div class="sec-label">TradFi Tasks — from HQ Brain Dump</div>
-  <div class="card mb20" id="task-list">
-    <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">Loading tasks...</div>
-  </div>
-  <div style="text-align:right;"><a href="index.html" style="font-family:var(--font-mono);font-size:10px;color:var(--slate);text-decoration:none;">← Manage all tasks in HQ</a></div>
-</div>
-
-<!-- ══ UPDATE ══ -->
-<div class="panel" id="panel-update">
-
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-    <div>
-      <div class="sec-label" style="margin:0 0 4px;border:none;padding:0;">Monthly Update Form</div>
-      <div style="font-size:13px;color:var(--ink4);">Pre-filled from your sheet. Change what moved, then save.</div>
-    </div>
-    <div style="font-family:var(--font-mono);font-size:11px;color:var(--sage);background:var(--sage-bg);border:1px solid rgba(58,107,74,.2);padding:5px 12px;border-radius:20px;" id="upd-month-label">March 2026</div>
-  </div>
-
-  <!-- QUICK LOGIN LINKS -->
-  <div class="card mb20">
-    <div class="card-label" style="margin-bottom:12px;">Quick Login Links</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <a href="https://www.chase.com" target="_blank"
-         style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--cream);border:1px solid var(--cream2);border-radius:7px;text-decoration:none;transition:background .15s;"
-         onmouseover="this.style.background='var(--cream2)'" onmouseout="this.style.background='var(--cream)'">
-        <span style="font-size:16px;">🏦</span>
-        <div><div style="font-size:13px;font-weight:600;color:var(--slate);">Chase</div><div style="font-size:11px;color:var(--ink4);">Bank + all Chase CCs</div></div>
-      </a>
-      <a href="https://d.comenity.net/ac/cryptocom/public/home" target="_blank"
-         style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--cream);border:1px solid var(--rust);border-radius:7px;text-decoration:none;transition:background .15s;"
-         onmouseover="this.style.background='var(--rust-bg)'" onmouseout="this.style.background='var(--cream)'">
-        <span style="font-size:16px;">💳</span>
-        <div><div style="font-size:13px;font-weight:600;color:var(--rust);">Crypto.com Visa</div><div style="font-size:11px;color:var(--ink4);">Comenity Bank 🚨 Set AutoPay</div></div>
-      </a>
-      <a href="https://citiretailservices.citibankonline.com/RSauth/signon?pageName=signon&siteId=PLCN_BESTBUY&langId=en_US" target="_blank"
-         style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--cream);border:1px solid var(--cream2);border-radius:7px;text-decoration:none;transition:background .15s;"
-         onmouseover="this.style.background='var(--cream2)'" onmouseout="this.style.background='var(--cream)'">
-        <span style="font-size:16px;">🛍️</span>
-        <div><div style="font-size:13px;font-weight:600;color:var(--amber);">Best Buy (Citi)</div><div style="font-size:11px;color:var(--ink4);">BB1 ⏰ BB2 ✓ BB3 ✓</div></div>
-      </a>
-      <a href="https://secure.bankofamerica.com/login/sign-in/signOnV2Screen.go" target="_blank"
-         style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--cream);border:1px solid var(--cream2);border-radius:7px;text-decoration:none;transition:background .15s;"
-         onmouseover="this.style.background='var(--cream2)'" onmouseout="this.style.background='var(--cream)'">
-        <span style="font-size:16px;">🏛️</span>
-        <div><div style="font-size:13px;font-weight:600;color:var(--amber);">Bank of America</div><div style="font-size:11px;color:var(--ink4);">BOA1 ✓ BOA2 ⚠ verify APR</div></div>
-      </a>
-      <a href="https://wwws.betterment.com/app/login" target="_blank"
-         style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--cream);border:1px solid var(--cream2);border-radius:7px;text-decoration:none;transition:background .15s;"
-         onmouseover="this.style.background='var(--cream2)'" onmouseout="this.style.background='var(--cream)'">
-        <span style="font-size:16px;">📈</span>
-        <div><div style="font-size:13px;font-weight:600;color:var(--sage);">Betterment</div><div style="font-size:11px;color:var(--ink4);">SEP IRA — Tax-Coordinated</div></div>
-      </a>
-      <a href="https://robinhood.com/login/" target="_blank"
-         style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--cream);border:1px solid var(--cream2);border-radius:7px;text-decoration:none;transition:background .15s;"
-         onmouseover="this.style.background='var(--cream2)'" onmouseout="this.style.background='var(--cream)'">
-        <span style="font-size:16px;">🪶</span>
-        <div><div style="font-size:13px;font-weight:600;color:var(--sage);">Robinhood</div><div style="font-size:11px;color:var(--ink4);">Roth IRA + Individual</div></div>
-      </a>
-    </div>
-  </div>
-
-  <!-- SNAPSHOT MONTH -->
-  <div class="card mb20">
-    <div class="card-label">Snapshot Month</div>
-    <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
-      <input type="text" id="upd-snapshot" placeholder="e.g. April 2026"
-        style="flex:1;font-size:14px;padding:8px 12px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);font-family:var(--font-mono);">
-      <span style="font-size:12px;color:var(--ink4);">Update this before saving</span>
-    </div>
-  </div>
-
-  <!-- SECTION A: CHASE BANK -->
-  <div class="card mb20">
-    <div class="card-label" style="margin-bottom:14px;">A · Chase Bank Accounts</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div>
-        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">CPC Checking (...7382)</div>
-        <input type="number" id="upd-chk" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--slate);">
-      </div>
-      <div>
-        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Chase Savings (...1810)</div>
-        <input type="number" id="upd-sav1" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--slate);">
-      </div>
-      <div>
-        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Chase Savings (...5520)</div>
-        <input type="number" id="upd-sav2" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--slate);">
-      </div>
-      <div>
-        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Bus Complete CHK (...6783)</div>
-        <input type="number" id="upd-biz" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--slate);">
-      </div>
-    </div>
-    <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--cream2);display:flex;justify-content:space-between;font-size:12px;">
-      <span style="color:var(--ink4);">Total Cash</span>
-      <span style="color:var(--slate);font-weight:600;font-family:var(--font-mono);" id="upd-cash-total">—</span>
-    </div>
-  </div>
-
-  <!-- SECTION B: CHASE CCs -->
-  <div class="card mb20">
-    <div class="card-label" style="margin-bottom:6px;">B · Chase Credit Cards</div>
-    <div style="font-size:11px;color:var(--ink4);margin-bottom:14px;">$0 cards are shown for reference — update if a balance appears</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div>
-        <div style="font-size:12px;color:var(--rust);margin-bottom:5px;">Prime Visa (...7376) ⚠</div>
-        <input type="number" id="upd-prime" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--rust);border-radius:6px;background:var(--paper);color:var(--ink);">
-      </div>
-      <div>
-        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Venmo (...5265)</div>
-        <input type="number" id="upd-venmo" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
-      </div>
-    </div>
-    <div style="margin-top:14px;padding:10px 12px;background:var(--cream);border-radius:6px;font-size:12px;color:var(--ink4);">
-      <div style="font-weight:600;color:var(--ink3);margin-bottom:6px;">$0 Balance Cards (included in Chase total formula)</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;">
-        <span>Freedom (...2035)</span><span>Freedom Unlimited (...0163)</span>
-        <span>Sapphire Preferred (...5377)</span><span>Ink Preferred (...2118)</span>
-        <span>Southwest Plus (...1749)</span><span>Ink Business Cash (...0526)</span>
-      </div>
-      <div style="margin-top:6px;color:var(--slate);font-style:italic;">Update directly in 📊 Current tab (rows 19–24) if any get a balance</div>
-    </div>
-  </div>
-
-  <!-- SECTION C: OTHER CARDS -->
-  <div class="card mb20">
-    <div class="card-label" style="margin-bottom:14px;">C · Other Cards <span style="font-weight:400;color:var(--amber);font-size:11px;margin-left:8px;">← most important to update</span></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div>
-        <div style="font-size:12px;color:var(--rust);margin-bottom:5px;">Crypto.com Visa 🚨 NO AUTOPAY</div>
-        <input type="number" id="upd-cdc" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--rust);border-radius:6px;background:var(--paper);color:var(--ink);">
-      </div>
-      <div>
-        <div style="font-size:12px;color:var(--amber);margin-bottom:5px;">Best Buy BB1 ⏰ Deferred — Jul 14</div>
-        <input type="number" id="upd-bb1" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--amber);border-radius:6px;background:var(--paper);color:var(--ink);">
-      </div>
-      <div>
-        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Best Buy BB2 (0% Jan 2027)</div>
-        <input type="number" id="upd-bb2" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
-      </div>
-      <div>
-        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Best Buy BB3 (0% Mar 2027)</div>
-        <input type="number" id="upd-bb3" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
-      </div>
-      <div>
-        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">BOA (...8769) (0% Jun 2026)</div>
-        <input type="number" id="upd-boa1" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
-      </div>
-      <div>
-        <div style="font-size:12px;color:var(--amber);margin-bottom:5px;">BOA (...7720) ⚠ Verify APR</div>
-        <input type="number" id="upd-boa2" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--amber);border-radius:6px;background:var(--paper);color:var(--ink);">
-      </div>
-      <div>
-        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">EIDL Loan (SBA)</div>
-        <input type="number" id="upd-eidl" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
-      </div>
-    </div>
-  </div>
-
-  <!-- SECTION D: INVESTMENTS -->
-  <div class="card mb20">
-    <div class="card-label" style="margin-bottom:14px;">D · Investments</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-      <div>
-        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Betterment Total</div>
-        <input type="number" id="upd-bet" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
-      </div>
-      <div>
-        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Robinhood Total</div>
-        <input type="number" id="upd-rh" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
-      </div>
-      <div>
-        <div style="font-size:12px;color:var(--amber);margin-bottom:5px;">Crypto (optional)</div>
-        <input type="number" id="upd-crypto" step="0.01" placeholder="0" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
-      </div>
-    </div>
-  </div>
-
-  <!-- ACTION BUTTONS -->
-  <div style="display:flex;gap:12px;margin-bottom:12px;">
-    <button onclick="saveUpdate(false)"
-      style="flex:1;padding:12px;font-size:13px;font-weight:600;font-family:var(--font-mono);letter-spacing:1px;background:var(--paper);border:1px solid var(--cream2);border-radius:8px;cursor:pointer;color:var(--slate);transition:background .15s;"
-      onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background='var(--paper)'">
-      SAVE TO SHEET
-    </button>
-    <button onclick="saveUpdate(true)"
-      style="flex:2;padding:12px;font-size:13px;font-weight:600;font-family:var(--font-mono);letter-spacing:1px;background:var(--sage);color:#fff;border:none;border-radius:8px;cursor:pointer;transition:background .15s;"
-      onmouseover="this.style.background='var(--sage-l)'" onmouseout="this.style.background='var(--sage)'">
-      SAVE + LOG MONTH →
-    </button>
-  </div>
-  <div style="font-size:11px;color:var(--ink4);text-align:center;font-family:var(--font-mono);">
-    Save — writes values to sheet &nbsp;·&nbsp; Save + Log — writes values AND records a History row
-  </div>
-  <div id="upd-status" style="margin-top:14px;text-align:center;font-size:13px;min-height:20px;"></div>
-
-</div>
-
-</div><!-- /main -->
-
-<script>
-// ══════════════════════════════════════════════════════════════════════════
-// CONFIG — update SCRIPT_URL and SHEET_ID after deployment
-// ══════════════════════════════════════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzvRSoXyOv3PI-g3NkE0-oyVXd8a5h8wF9-x0UMem-evwH5lS5qLCz5Go0go-YvYtPEQA/exec';
-const HQ_URL     = 'https://script.google.com/macros/s/AKfycbw6fGdCZnZHBfpQaHs03_3xWkuxunC08aaCoE40iLY03Q6CVcb6f5_bWYUk_3YKGH20/exec';
-// Paste your Google Sheet ID from the URL bar (between /d/ and /edit):
-const SHEET_ID   = '1usc1YxAz-Idtn6ASALZOJaX6ir4ooK2zxk1ORVTxz7s';
-
-// ── DEFAULTS (shown if Sheets offline) ────────────────────────────────────
-const DEFAULTS = {
-  current: {
-    snapshot_mo:'April 2026', cash:3190, crypto:0,
-    betterment:32347, robinhood:32751, invest_total:65097,
-    monthly_exp:1980, net_worth:62422, total_debt:-5865,
-    crypto_com:4844, bb1:973, bb2:1614, bb3:2164,
-    boa1:1113, boa2:905, prime_visa:970, venmo:0,
-    chase_chk:0, chase_sav1:0, chase_sav2:0, chase_biz:0,
-    eidl:0,
-  },
-  history:[
-    {month:'Feb 2026',cash:1982,crypto:0,betterment:0,robinhood:0,invest_total:0,debt:11122,net_worth:-9140,monthly_exp:1980},
-    {month:'Mar 2026',cash:836.57,crypto:0,betterment:31897.98,robinhood:32273.79,invest_total:64171.77,debt:12618.14,net_worth:52390.20,monthly_exp:1980},
-  ],
-  expenses:[],
-};
-
-// ══════════════════════════════════════════════════════════════════════════
-function switchTab(name, el) {
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  if (el) el.classList.add('active');
-  document.getElementById('panel-' + name).classList.add('active');
-}
-
-function setConn(state, msg) {
-  const chip = document.getElementById('conn-chip');
-  chip.className = 'conn-chip ' + (state === 'ok' ? 'ok' : state === 'err' ? 'err' : '');
-  document.getElementById('conn-text').textContent = msg;
-}
-
-function fmt(n, dec = 0) {
-  if (n === null || n === undefined || n === '') return '—';
-  const v = parseFloat(n) || 0;
-  return '$' + Math.abs(v).toLocaleString('en-US', {minimumFractionDigits:dec, maximumFractionDigits:dec});
-}
-
-function setEl(id, val) {
-  const el = document.getElementById(id);
-  if (el && val != null && val !== '') el.textContent = fmt(val);
-}
-
-// ── WIRE SHEET LINKS ──────────────────────────────────────────────────────
-function wireSheetLinks() {
-  if (SHEET_ID === 'PASTE_SHEET_ID_HERE') return;
-  const url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit';
-  ['sheet-link', 'exp-sheet-link'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.href = url;
-  });
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-// LOAD DATA
-// ══════════════════════════════════════════════════════════════════════════
-async function loadData() {
-  setConn('', 'Connecting...');
-  try {
-    const r = await fetch(SCRIPT_URL + '?action=loadTradFi', {redirect:'follow'});
-    const j = await r.json();
-    if (!j.ok) throw new Error(j.error || 'Script error');
-    applyData(j.data);
-    setConn('ok', 'Live · Google Sheets');
-  } catch(e) {
-    console.warn('Sheets offline:', e.message);
-    setConn('err', 'Offline — defaults shown');
-    applyData(DEFAULTS);
-  }
-  wireSheetLinks();
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-// APPLY DATA
-// ══════════════════════════════════════════════════════════════════════════
-function applyData(d) {
-  const cur     = d.current  || {};
-  const history = d.history  || [];
-  const expenses= d.expenses || [];
-
-  const cash     = cur.cash        != null ? parseFloat(cur.cash)        : 836.57;
-  const crypto   = cur.crypto      != null ? parseFloat(cur.crypto)      : 0;
-  const bet      = cur.betterment  != null ? parseFloat(cur.betterment)  : 31897.98;
-  const rh       = cur.robinhood   != null ? parseFloat(cur.robinhood)   : 32273.79;
-  const invest   = bet + rh;
-  const monthly  = cur.monthly_exp != null ? parseFloat(cur.monthly_exp) : 1980;
-  const nw       = cur.net_worth   != null ? parseFloat(cur.net_worth)   : 52390.20;
-  const debt     = cur.total_debt  != null ? Math.abs(parseFloat(cur.total_debt)) : 5865;
-
-  // ── HERO ────────────────────────────────────────────────────────────────
-  const nwEl = document.getElementById('nw-hero');
-  nwEl.textContent = (nw < 0 ? '−' : '') + fmt(Math.abs(nw));
-  nwEl.className = 'hero-nw ' + (nw >= 0 ? 'pos' : 'neg');
-  document.getElementById('nw-eyebrow').textContent = 'Net Worth · ' + (cur.snapshot_mo || 'March 2026');
-  document.getElementById('hero-sub').textContent =
-    'Cash $' + Math.round(cash).toLocaleString() +
-    ' + Betterment $' + Math.round(bet).toLocaleString() +
-    ' + Robinhood $' + Math.round(rh).toLocaleString() +
-    (crypto > 0 ? ' + Crypto $' + Math.round(crypto).toLocaleString() : ' · Crypto excluded') +
-    ' − Debt $' + Math.round(debt).toLocaleString();
-
-  document.getElementById('ov-cash').textContent    = fmt(cash);
-  document.getElementById('ov-crypto').textContent  = crypto > 0 ? fmt(crypto) : 'TBD';
-  document.getElementById('ov-invest').textContent  = fmt(invest);
-  document.getElementById('ov-debt').textContent    = '−' + fmt(debt);
-  document.getElementById('ov-monthly').textContent = fmt(monthly);
-
-  // ── OVERVIEW CARDS ────────────────────────────────────────────────────
-  document.getElementById('snap-debt').textContent    = fmt(debt);
-  document.getElementById('snap-monthly').textContent = fmt(monthly);
-  const cc  = cur.crypto_com != null ? parseFloat(cur.crypto_com) : 0;
-  const pv  = cur.prime_visa != null ? parseFloat(cur.prime_visa) : 0;
-  const b2  = cur.boa2       != null ? parseFloat(cur.boa2)       : 0;
-  const accruing = cc + pv + b2;
-  document.getElementById('snap-accruing').textContent = accruing > 0 ? fmt(accruing)+'+' : '$0';
-  document.getElementById('snap-accruing').style.color = accruing > 0 ? 'var(--amber)' : 'var(--sage)';
-  const noteEl = document.getElementById('snap-accruing-note');
-  if(noteEl) noteEl.textContent = accruing > 0 ? 'Crypto.com + Prime + BOA2' : 'All high-APR cards paid off ✓';
-
-  // ── DEBT TAB ──────────────────────────────────────────────────────────
-  const bb1v = cur.bb1  != null ? parseFloat(cur.bb1)  : 0;
-  const bb2v = cur.bb2  != null ? parseFloat(cur.bb2)  : 0;
-  const bb3v = cur.bb3  != null ? parseFloat(cur.bb3)  : 0;
-  const b1   = cur.boa1 != null ? parseFloat(cur.boa1) : 0;
-  const tot  = cc + bb1v + bb2v + bb3v + b1 + b2 + pv;
-
-  document.getElementById('debt-total').textContent    = fmt(debt);
-  document.getElementById('debt-accruing').textContent = accruing > 0 ? fmt(accruing)+'+' : '$0';
-  document.getElementById('debt-accruing').style.color = accruing > 0 ? 'var(--amber)' : 'var(--sage)';
-
-  document.getElementById('d-cdc').textContent  = fmt(cc, 2);
-  document.getElementById('d-bb1').textContent  = fmt(bb1v, 2);
-  document.getElementById('d-bb2').textContent  = fmt(bb2v, 2);
-  document.getElementById('d-bb3').textContent  = fmt(bb3v, 2);
-  document.getElementById('d-boa1').textContent = fmt(b1, 2);
-  document.getElementById('d-boa2').textContent = fmt(b2, 2);
-  document.getElementById('d-pv').textContent   = fmt(pv, 2);
-
-  function setTrack(id, val) {
-    const el = document.getElementById(id);
-    if (el) el.style.width = Math.min(Math.round((val / tot) * 100), 100) + '%';
-  }
-  setTrack('tr-cdc', cc); setTrack('tr-bb1', bb1v); setTrack('tr-bb2', bb2v);
-  setTrack('tr-bb3', bb3v); setTrack('tr-boa1', b1); setTrack('tr-boa2', b2); setTrack('tr-pv', pv);
-
-  // ── INVESTMENTS TAB ───────────────────────────────────────────────────
-  if (invest > 0) document.getElementById('inv-total').textContent = fmt(invest);
-  document.getElementById('inv-cash').textContent = fmt(cash);
-  if (bet > 0) { document.getElementById('inv-betterment').textContent = fmt(bet); document.getElementById('inv-bet-total').textContent = fmt(bet); }
-  if (rh > 0)  { document.getElementById('inv-robinhood').textContent  = fmt(rh);  document.getElementById('inv-rh-total').textContent  = fmt(rh); }
-
-  // ── EXPENSES TAB ──────────────────────────────────────────────────────
-  document.getElementById('exp-monthly').textContent = fmt(monthly);
-  document.getElementById('exp-annual').textContent  = fmt(monthly * 12);
-  renderExpenses(expenses);
-
-  // ── HISTORY TAB ───────────────────────────────────────────────────────
-  renderHistory(history);
-
-  // ── CASH ACCOUNTS (Investments tab) ───────────────────────────────────
-  const chk  = parseFloat(cur.chase_chk)  || 286.57;
-  const sav1 = parseFloat(cur.chase_sav1) || 250;
-  const sav2 = parseFloat(cur.chase_sav2) || 200;
-  const biz  = parseFloat(cur.chase_biz)  || 100;
-  const bankTotal = chk + sav1 + sav2 + biz;
-  const setChase = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = fmt(val, 2); };
-  setChase('chase-chk',        chk);
-  setChase('chase-sav1',       sav1);
-  setChase('chase-sav2',       sav2);
-  setChase('chase-biz',        biz);
-  setChase('chase-bank-total', bankTotal);
-
-  // ── UPDATE FORM ───────────────────────────────────────────────────────
-  populateUpdateForm(cur);
-
-  // ── TASKS TAB ─────────────────────────────────────────────────────────
-  loadTasks();
-}
-
-// ── EXPENSES STATE ────────────────────────────────────────────────────────
-let _expenses = []; // live copy — modified in-place
-let _expDirty  = false;
-
-function markExpDirty() {
-  _expDirty = true;
-  const btn = document.getElementById('exp-save-btn');
-  if (btn) btn.style.display = 'inline-block';
-  const st = document.getElementById('exp-save-status');
-  if (st) { st.textContent = 'Unsaved changes'; st.style.color = 'var(--amber)'; }
-}
-
-function recalcExpSummary() {
-  let total = 0, reviewTotal = 0, reviewItems = [];
-  _expenses.forEach(e => {
-    const mo = parseFloat(e.monthly) || 0;
-    const isSec = e.name && (e.name.startsWith('\u2500') || e.name.startsWith('\u25ba'));
-    if (!isSec) {
-      total += mo;
-      if (mo === 0) { reviewTotal += 0; reviewItems.push(e.name); }
+    // ══════════════════════════════════════════════════════════════════════════
+    function switchTab(name, el) {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      if (el) el.classList.add('active');
+      document.getElementById('panel-' + name).classList.add('active');
     }
-  });
-  const mEl = document.getElementById('exp-monthly');
-  const aEl = document.getElementById('exp-annual');
-  const sEl = document.getElementById('exp-savings');
-  const snEl = document.getElementById('exp-savings-note');
-  if (mEl) mEl.textContent = fmt(total, 2);
-  if (aEl) aEl.textContent = fmt(total * 12);
-  // Recoverable: skill incubator + wix + gworkspace if present
-  const recov = _expenses.filter(e => {
-    const n = (e.name||'').toLowerCase();
-    return n.includes('skill incubator') || n.includes('wix') || n.includes('workspace');
-  }).reduce((s,e) => s + (parseFloat(e.monthly)||0)*12, 0);
-  if (sEl) sEl.textContent = recov > 0 ? fmt(recov)+'/yr' : '—';
-  if (snEl && recov > 0) snEl.textContent = 'If Skill Incubator + Wix + GWorkspace cut';
-}
 
-// ── RENDER EXPENSES (editable) ────────────────────────────────────────────
-function renderExpenses(expenses) {
-  if (expenses) _expenses = expenses.map(e => ({...e})); // fresh copy on load
-  const wrap = document.getElementById('exp-table-wrap');
-  if (!_expenses.length) {
-    wrap.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No expenses yet. Click + ADD EXPENSE to get started.</div>';
-    return;
-  }
+    function setConn(state, msg) {
+      const chip = document.getElementById('conn-chip');
+      chip.className = 'conn-chip ' + (state === 'ok' ? 'ok' : state === 'err' ? 'err' : '');
+      document.getElementById('conn-text').textContent = msg;
+    }
 
-  // Populate section selector in add form
-  const sel = document.getElementById('new-exp-section');
-  if (sel) {
-    const sections = _expenses.filter(e => e.name && (e.name.startsWith('\u2500') || e.name.startsWith('\u25ba')));
-    sel.innerHTML = '<option value="">— Add at bottom —</option>' +
-      sections.map((s,i) => {
-        const label = s.name.replace(/^[\u2500\u25ba]+\s*/,'').replace(/\s*[\u2500\u25ba]+$/,'').trim();
-        return '<option value="' + _expenses.indexOf(s) + '">' + label + '</option>';
+    function fmt(n, dec = 0) {
+      if (n === null || n === undefined || n === '') return '—';
+      const v = parseFloat(n) || 0;
+      return '$' + Math.abs(v).toLocaleString('en-US', {minimumFractionDigits:dec, maximumFractionDigits:dec});
+    }
+
+    function setEl(id, val) {
+      const el = document.getElementById(id);
+      if (el && val != null && val !== '') el.textContent = fmt(val);
+    }
+
+    // ── WIRE SHEET LINKS ──────────────────────────────────────────────────────
+    function wireSheetLinks() {
+      if (SHEET_ID === 'PASTE_SHEET_ID_HERE') return;
+      const url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit';
+      ['sheet-link', 'exp-sheet-link'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.href = url;
+      });
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // LOAD DATA
+    // ══════════════════════════════════════════════════════════════════════════
+    async function loadData() {
+      setConn('', 'Connecting...');
+      try {
+        const r = await fetch(SCRIPT_URL + '?action=loadTradFi', {redirect:'follow'});
+        const j = await r.json();
+        if (!j.ok) throw new Error(j.error || 'Script error');
+        applyData(j.data);
+        setConn('ok', 'Live · Google Sheets');
+      } catch(e) {
+        console.warn('Sheets offline:', e.message);
+        setConn('err', 'Offline — defaults shown');
+        applyData(DEFAULTS);
+      }
+      wireSheetLinks();
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // APPLY DATA
+    // ══════════════════════════════════════════════════════════════════════════
+    function applyData(d) {
+      const cur     = d.current  || {};
+      const history = d.history  || [];
+      const expenses= d.expenses || [];
+
+      const cash     = cur.cash        != null ? parseFloat(cur.cash)        : 836.57;
+      const crypto   = cur.crypto      != null ? parseFloat(cur.crypto)      : 0;
+      const bet      = cur.betterment  != null ? parseFloat(cur.betterment)  : 31897.98;
+      const rh       = cur.robinhood   != null ? parseFloat(cur.robinhood)   : 32273.79;
+      const invest   = bet + rh;
+      const monthly  = cur.monthly_exp != null ? parseFloat(cur.monthly_exp) : 1980;
+      const nw       = cur.net_worth   != null ? parseFloat(cur.net_worth)   : 52390.20;
+      const debt     = cur.total_debt  != null ? Math.abs(parseFloat(cur.total_debt)) : 5865;
+
+      // ── HERO ────────────────────────────────────────────────────────────────
+      const nwEl = document.getElementById('nw-hero');
+      nwEl.textContent = (nw < 0 ? '−' : '') + fmt(Math.abs(nw));
+      nwEl.className = 'hero-nw ' + (nw >= 0 ? 'pos' : 'neg');
+      document.getElementById('nw-eyebrow').textContent = 'Net Worth · ' + (cur.snapshot_mo || 'March 2026');
+      document.getElementById('hero-sub').textContent =
+        'Cash $' + Math.round(cash).toLocaleString() +
+        ' + Betterment $' + Math.round(bet).toLocaleString() +
+        ' + Robinhood $' + Math.round(rh).toLocaleString() +
+        (crypto > 0 ? ' + Crypto $' + Math.round(crypto).toLocaleString() : ' · Crypto excluded') +
+        ' − Debt $' + Math.round(debt).toLocaleString();
+
+      document.getElementById('ov-cash').textContent    = fmt(cash);
+      document.getElementById('ov-crypto').textContent  = crypto > 0 ? fmt(crypto) : 'TBD';
+      document.getElementById('ov-invest').textContent  = fmt(invest);
+      document.getElementById('ov-debt').textContent    = '−' + fmt(debt);
+      document.getElementById('ov-monthly').textContent = fmt(monthly);
+
+      // ── OVERVIEW CARDS ────────────────────────────────────────────────────
+      document.getElementById('snap-debt').textContent    = fmt(debt);
+      document.getElementById('snap-monthly').textContent = fmt(monthly);
+      const cc  = cur.crypto_com != null ? parseFloat(cur.crypto_com) : 0;
+      const pv  = cur.prime_visa != null ? parseFloat(cur.prime_visa) : 0;
+      const b2  = cur.boa2       != null ? parseFloat(cur.boa2)       : 0;
+      const accruing = cc + pv + b2;
+      document.getElementById('snap-accruing').textContent = accruing > 0 ? fmt(accruing)+'+' : '$0';
+      document.getElementById('snap-accruing').style.color = accruing > 0 ? 'var(--amber)' : 'var(--sage)';
+      const noteEl = document.getElementById('snap-accruing-note');
+      if(noteEl) noteEl.textContent = accruing > 0 ? 'Crypto.com + Prime + BOA2' : 'All high-APR cards paid off ✓';
+
+      // ── DEBT TAB ──────────────────────────────────────────────────────────
+      const bb1v = cur.bb1  != null ? parseFloat(cur.bb1)  : 0;
+      const bb2v = cur.bb2  != null ? parseFloat(cur.bb2)  : 0;
+      const bb3v = cur.bb3  != null ? parseFloat(cur.bb3)  : 0;
+      const b1   = cur.boa1 != null ? parseFloat(cur.boa1) : 0;
+      const tot  = cc + bb1v + bb2v + bb3v + b1 + b2 + pv;
+
+      document.getElementById('debt-total').textContent    = fmt(debt);
+      document.getElementById('debt-accruing').textContent = accruing > 0 ? fmt(accruing)+'+' : '$0';
+      document.getElementById('debt-accruing').style.color = accruing > 0 ? 'var(--amber)' : 'var(--sage)';
+
+      document.getElementById('d-cdc').textContent  = fmt(cc, 2);
+      document.getElementById('d-bb1').textContent  = fmt(bb1v, 2);
+      document.getElementById('d-bb2').textContent  = fmt(bb2v, 2);
+      document.getElementById('d-bb3').textContent  = fmt(bb3v, 2);
+      document.getElementById('d-boa1').textContent = fmt(b1, 2);
+      document.getElementById('d-boa2').textContent = fmt(b2, 2);
+      document.getElementById('d-pv').textContent   = fmt(pv, 2);
+
+      function setTrack(id, val) {
+        const el = document.getElementById(id);
+        if (el) el.style.width = Math.min(Math.round((val / tot) * 100), 100) + '%';
+      }
+      setTrack('tr-cdc', cc); setTrack('tr-bb1', bb1v); setTrack('tr-bb2', bb2v);
+      setTrack('tr-bb3', bb3v); setTrack('tr-boa1', b1); setTrack('tr-boa2', b2); setTrack('tr-pv', pv);
+
+      // ── INVESTMENTS TAB ───────────────────────────────────────────────────
+      if (invest > 0) document.getElementById('inv-total').textContent = fmt(invest);
+      document.getElementById('inv-cash').textContent = fmt(cash);
+      if (bet > 0) { document.getElementById('inv-betterment').textContent = fmt(bet); document.getElementById('inv-bet-total').textContent = fmt(bet); }
+      if (rh > 0)  { document.getElementById('inv-robinhood').textContent  = fmt(rh);  document.getElementById('inv-rh-total').textContent  = fmt(rh); }
+
+      // ── EXPENSES TAB ──────────────────────────────────────────────────────
+      document.getElementById('exp-monthly').textContent = fmt(monthly);
+      document.getElementById('exp-annual').textContent  = fmt(monthly * 12);
+      renderExpenses(expenses);
+
+      // ── HISTORY TAB ───────────────────────────────────────────────────────
+      renderHistory(history);
+
+      // ── CASH ACCOUNTS (Investments tab) ───────────────────────────────────
+      const chk  = parseFloat(cur.chase_chk)  || 286.57;
+      const sav1 = parseFloat(cur.chase_sav1) || 250;
+      const sav2 = parseFloat(cur.chase_sav2) || 200;
+      const biz  = parseFloat(cur.chase_biz)  || 100;
+      const bankTotal = chk + sav1 + sav2 + biz;
+      const setChase = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = fmt(val, 2); };
+      setChase('chase-chk',        chk);
+      setChase('chase-sav1',       sav1);
+      setChase('chase-sav2',       sav2);
+      setChase('chase-biz',        biz);
+      setChase('chase-bank-total', bankTotal);
+
+      // ── UPDATE FORM ───────────────────────────────────────────────────────
+      populateUpdateForm(cur);
+
+      // ── TASKS TAB ─────────────────────────────────────────────────────────
+      loadTasks();
+    }
+
+    // ── EXPENSES STATE ────────────────────────────────────────────────────────
+    let _expenses = []; // live copy — modified in-place
+    let _expDirty  = false;
+
+    function markExpDirty() {
+      _expDirty = true;
+      const btn = document.getElementById('exp-save-btn');
+      if (btn) btn.style.display = 'inline-block';
+      const st = document.getElementById('exp-save-status');
+      if (st) { st.textContent = 'Unsaved changes'; st.style.color = 'var(--amber)'; }
+    }
+
+    function recalcExpSummary() {
+      let total = 0, reviewTotal = 0, reviewItems = [];
+      _expenses.forEach(e => {
+        const mo = parseFloat(e.monthly) || 0;
+        const isSec = e.name && (e.name.startsWith('\u2500') || e.name.startsWith('\u25ba'));
+        if (!isSec) {
+          total += mo;
+          if (mo === 0) { reviewTotal += 0; reviewItems.push(e.name); }
+        }
+      });
+      const mEl = document.getElementById('exp-monthly');
+      const aEl = document.getElementById('exp-annual');
+      const sEl = document.getElementById('exp-savings');
+      const snEl = document.getElementById('exp-savings-note');
+      if (mEl) mEl.textContent = fmt(total, 2);
+      if (aEl) aEl.textContent = fmt(total * 12);
+      // Recoverable: skill incubator + wix + gworkspace if present
+      const recov = _expenses.filter(e => {
+        const n = (e.name||'').toLowerCase();
+        return n.includes('skill incubator') || n.includes('wix') || n.includes('workspace');
+      }).reduce((s,e) => s + (parseFloat(e.monthly)||0)*12, 0);
+      if (sEl) sEl.textContent = recov > 0 ? fmt(recov)+'/yr' : '—';
+      if (snEl && recov > 0) snEl.textContent = 'If Skill Incubator + Wix + GWorkspace cut';
+    }
+
+    // ── RENDER EXPENSES (editable) ────────────────────────────────────────────
+    function renderExpenses(expenses) {
+      if (expenses) _expenses = expenses.map(e => ({...e})); // fresh copy on load
+      const wrap = document.getElementById('exp-table-wrap');
+      if (!_expenses.length) {
+        wrap.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No expenses yet. Click + ADD EXPENSE to get started.</div>';
+        return;
+      }
+
+      // Populate section selector in add form
+      const sel = document.getElementById('new-exp-section');
+      if (sel) {
+        const sections = _expenses.filter(e => e.name && (e.name.startsWith('\u2500') || e.name.startsWith('\u25ba')));
+        sel.innerHTML = '<option value="">— Add at bottom —</option>' +
+          sections.map((s,i) => {
+            const label = s.name.replace(/^[\u2500\u25ba]+\s*/,'').replace(/\s*[\u2500\u25ba]+$/,'').trim();
+            return '<option value="' + _expenses.indexOf(s) + '">' + label + '</option>';
+          }).join('');
+      }
+
+      let totalMo = 0;
+      const rows = _expenses.map((e, idx) => {
+        const mo = parseFloat(e.monthly) || 0;
+        const isSec = e.name && (e.name.startsWith('\u2500') || e.name.startsWith('\u25ba'));
+        const isRev = !isSec && mo === 0;
+        if (!isSec) totalMo += mo;
+
+        if (isSec) {
+          const label = e.name.replace(/^[\u2500\u25ba]+\s*/,'').replace(/\s*[\u2500\u25ba]+$/,'').trim();
+          return '<tr data-idx="' + idx + '" class="exp-sec-row">' +
+            '<td colspan="4" style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);padding:12px 0 4px;border-bottom:1px solid var(--cream2);font-weight:700;">' +
+            label +
+            '<button onclick="deleteExpense(' + idx + ')" title="Delete section" style="float:right;background:none;border:none;cursor:pointer;color:var(--ink5);font-size:11px;padding:0 2px;" onmouseover="this.style.color=\'var(--rust)\'" onmouseout="this.style.color=\'var(--ink5)\'">✕</button>' +
+            '</td></tr>';
+        }
+
+        return '<tr data-idx="' + idx + '" style="' + (isRev ? 'background:var(--amber-bg);' : '') + '">' +
+          '<td style="padding:6px 0;border-bottom:1px solid var(--cream2);">' +
+            '<input type="text" value="' + (e.name||'').replace(/"/g,'&quot;') + '" ' +
+            'onchange="updateExpName(' + idx + ',this.value)" ' +
+            'style="font-size:13px;color:' + (isRev?'var(--amber)':'var(--ink3)') + ';background:transparent;border:none;border-bottom:1px dashed transparent;width:100%;outline:none;padding:1px 2px;" ' +
+            'onfocus="this.style.borderBottomColor=\'var(--slate)\'" onblur="this.style.borderBottomColor=\'transparent\'">' +
+          '</td>' +
+          '<td style="padding:6px 0;border-bottom:1px solid var(--cream2);text-align:right;width:110px;">' +
+            '<input type="number" value="' + (mo||'') + '" step="0.01" min="0" ' +
+            'onchange="updateExpAmount(' + idx + ',this.value)" ' +
+            'style="font-family:var(--font-mono);font-size:12px;color:var(--amber);font-weight:600;background:transparent;border:none;border-bottom:1px dashed transparent;width:90px;text-align:right;outline:none;padding:1px 2px;" ' +
+            'onfocus="this.style.borderBottomColor=\'var(--slate)\'" onblur="this.style.borderBottomColor=\'transparent\'">' +
+          '</td>' +
+          '<td style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:right;padding:6px 0;border-bottom:1px solid var(--cream2);width:80px;">' +
+            (mo > 0 ? fmt(mo*12, 0) : '—') +
+          '</td>' +
+          '<td style="padding:6px 0;border-bottom:1px solid var(--cream2);width:28px;text-align:center;">' +
+            '<button onclick="deleteExpense(' + idx + ')" title="Remove" style="background:none;border:none;cursor:pointer;color:var(--ink5);font-size:13px;line-height:1;padding:2px 4px;" ' +
+            'onmouseover="this.style.color=\'var(--rust)\'" onmouseout="this.style.color=\'var(--ink5)\'">✕</button>' +
+          '</td></tr>';
       }).join('');
-  }
 
-  let totalMo = 0;
-  const rows = _expenses.map((e, idx) => {
-    const mo = parseFloat(e.monthly) || 0;
-    const isSec = e.name && (e.name.startsWith('\u2500') || e.name.startsWith('\u25ba'));
-    const isRev = !isSec && mo === 0;
-    if (!isSec) totalMo += mo;
+      wrap.innerHTML =
+        '<table style="width:100%;border-collapse:collapse;">' +
+        '<thead><tr>' +
+        '<th style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:5px 0 9px;text-align:left;border-bottom:1px solid var(--cream2);">Expense <span style="font-weight:400;opacity:.6;">(click to edit)</span></th>' +
+        '<th style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:5px 0 9px;text-align:right;border-bottom:1px solid var(--cream2);">Monthly $</th>' +
+        '<th style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:5px 0 9px;text-align:right;border-bottom:1px solid var(--cream2);">Annual</th>' +
+        '<th style="border-bottom:1px solid var(--cream2);"></th>' +
+        '</tr></thead><tbody>' + rows + '</tbody>' +
+        '<tfoot><tr>' +
+        '<td style="font-weight:700;font-size:13px;color:var(--ink);padding:11px 0 4px;border-top:2px solid var(--cream3);">TOTAL</td>' +
+        '<td style="font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--amber);text-align:right;padding:11px 0 4px;border-top:2px solid var(--cream3);">' + fmt(totalMo, 2) + '</td>' +
+        '<td style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--amber);text-align:right;padding:11px 0 4px;border-top:2px solid var(--cream3);">' + fmt(totalMo*12) + '/yr</td>' +
+        '<td style="border-top:2px solid var(--cream3);"></td>' +
+        '</tr></tfoot></table>';
 
-    if (isSec) {
-      const label = e.name.replace(/^[\u2500\u25ba]+\s*/,'').replace(/\s*[\u2500\u25ba]+$/,'').trim();
-      return '<tr data-idx="' + idx + '" class="exp-sec-row">' +
-        '<td colspan="4" style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);padding:12px 0 4px;border-bottom:1px solid var(--cream2);font-weight:700;">' +
-        label +
-        '<button onclick="deleteExpense(' + idx + ')" title="Delete section" style="float:right;background:none;border:none;cursor:pointer;color:var(--ink5);font-size:11px;padding:0 2px;" onmouseover="this.style.color='var(--rust)'" onmouseout="this.style.color='var(--ink5)'">✕</button>' +
-        '</td></tr>';
+      recalcExpSummary();
     }
 
-    return '<tr data-idx="' + idx + '" style="' + (isRev ? 'background:var(--amber-bg);' : '') + '">' +
-      '<td style="padding:6px 0;border-bottom:1px solid var(--cream2);">' +
-        '<input type="text" value="' + (e.name||'').replace(/"/g,'&quot;') + '" ' +
-        'onchange="updateExpName(' + idx + ',this.value)" ' +
-        'style="font-size:13px;color:' + (isRev?'var(--amber)':'var(--ink3)') + ';background:transparent;border:none;border-bottom:1px dashed transparent;width:100%;outline:none;padding:1px 2px;" ' +
-        'onfocus="this.style.borderBottomColor='var(--slate)'" onblur="this.style.borderBottomColor='transparent'">' +
-      '</td>' +
-      '<td style="padding:6px 0;border-bottom:1px solid var(--cream2);text-align:right;width:110px;">' +
-        '<input type="number" value="' + (mo||'') + '" step="0.01" min="0" ' +
-        'onchange="updateExpAmount(' + idx + ',this.value)" ' +
-        'style="font-family:var(--font-mono);font-size:12px;color:var(--amber);font-weight:600;background:transparent;border:none;border-bottom:1px dashed transparent;width:90px;text-align:right;outline:none;padding:1px 2px;" ' +
-        'onfocus="this.style.borderBottomColor='var(--slate)'" onblur="this.style.borderBottomColor='transparent'">' +
-      '</td>' +
-      '<td style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:right;padding:6px 0;border-bottom:1px solid var(--cream2);width:80px;">' +
-        (mo > 0 ? fmt(mo*12, 0) : '—') +
-      '</td>' +
-      '<td style="padding:6px 0;border-bottom:1px solid var(--cream2);width:28px;text-align:center;">' +
-        '<button onclick="deleteExpense(' + idx + ')" title="Remove" style="background:none;border:none;cursor:pointer;color:var(--ink5);font-size:13px;line-height:1;padding:2px 4px;" ' +
-        'onmouseover="this.style.color='var(--rust)'" onmouseout="this.style.color='var(--ink5)'">✕</button>' +
-      '</td></tr>';
-  }).join('');
-
-  wrap.innerHTML =
-    '<table style="width:100%;border-collapse:collapse;">' +
-    '<thead><tr>' +
-    '<th style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:5px 0 9px;text-align:left;border-bottom:1px solid var(--cream2);">Expense <span style="font-weight:400;opacity:.6;">(click to edit)</span></th>' +
-    '<th style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:5px 0 9px;text-align:right;border-bottom:1px solid var(--cream2);">Monthly $</th>' +
-    '<th style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:5px 0 9px;text-align:right;border-bottom:1px solid var(--cream2);">Annual</th>' +
-    '<th style="border-bottom:1px solid var(--cream2);"></th>' +
-    '</tr></thead><tbody>' + rows + '</tbody>' +
-    '<tfoot><tr>' +
-    '<td style="font-weight:700;font-size:13px;color:var(--ink);padding:11px 0 4px;border-top:2px solid var(--cream3);">TOTAL</td>' +
-    '<td style="font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--amber);text-align:right;padding:11px 0 4px;border-top:2px solid var(--cream3);">' + fmt(totalMo, 2) + '</td>' +
-    '<td style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--amber);text-align:right;padding:11px 0 4px;border-top:2px solid var(--cream3);">' + fmt(totalMo*12) + '/yr</td>' +
-    '<td style="border-top:2px solid var(--cream3);"></td>' +
-    '</tr></tfoot></table>';
-
-  recalcExpSummary();
-}
-
-// ── EXPENSE EDIT HANDLERS ────────────────────────────────────────────────
-function updateExpName(idx, val) {
-  if (_expenses[idx]) { _expenses[idx].name = val; markExpDirty(); recalcExpSummary(); }
-}
-function updateExpAmount(idx, val) {
-  if (_expenses[idx]) {
-    _expenses[idx].monthly = parseFloat(val) || 0;
-    _expenses[idx].annual  = (_expenses[idx].monthly) * 12;
-    markExpDirty();
-    // Re-render to update the annual column display
-    renderExpenses(null);
-  }
-}
-function deleteExpense(idx) {
-  _expenses.splice(idx, 1);
-  markExpDirty();
-  renderExpenses(null);
-}
-
-// ── ADD EXPENSE ────────────────────────────────────────────────────────────
-function showAddExpense() { document.getElementById('add-exp-form').style.display='block'; document.getElementById('new-exp-name').focus(); }
-function hideAddExpense() { document.getElementById('add-exp-form').style.display='none'; }
-
-function addExpense() {
-  const name   = document.getElementById('new-exp-name').value.trim();
-  const amount = parseFloat(document.getElementById('new-exp-amount').value) || 0;
-  const secIdx = document.getElementById('new-exp-section').value;
-  if (!name) { document.getElementById('new-exp-name').style.borderColor='var(--rust)'; setTimeout(()=>document.getElementById('new-exp-name').style.borderColor='',1500); return; }
-  const newExp = {name, monthly: amount, annual: amount * 12};
-  if (secIdx !== '') {
-    // Insert after the section header and its items (before next section)
-    const si = parseInt(secIdx);
-    let insertAt = si + 1;
-    while (insertAt < _expenses.length) {
-      const n = _expenses[insertAt].name || '';
-      if (n.startsWith('\u2500') || n.startsWith('\u25ba')) break;
-      insertAt++;
+    // ── EXPENSE EDIT HANDLERS ────────────────────────────────────────────────
+    function updateExpName(idx, val) {
+      if (_expenses[idx]) { _expenses[idx].name = val; markExpDirty(); recalcExpSummary(); }
     }
-    _expenses.splice(insertAt, 0, newExp);
-  } else {
-    _expenses.push(newExp);
-  }
-  document.getElementById('new-exp-name').value = '';
-  document.getElementById('new-exp-amount').value = '';
-  hideAddExpense();
-  markExpDirty();
-  renderExpenses(null);
-}
+    function updateExpAmount(idx, val) {
+      if (_expenses[idx]) {
+        _expenses[idx].monthly = parseFloat(val) || 0;
+        _expenses[idx].annual  = (_expenses[idx].monthly) * 12;
+        markExpDirty();
+        // Re-render to update the annual column display
+        renderExpenses(null);
+      }
+    }
+    function deleteExpense(idx) {
+      _expenses.splice(idx, 1);
+      markExpDirty();
+      renderExpenses(null);
+    }
 
-function addSectionHeader() {
-  const name = window.prompt('Section name (e.g. PERSONAL, CRYPTO, ABDJS):');
-  if (!name) return;
-  const header = '\u2500\u2500\u2500 ' + name.toUpperCase() + ' \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500';
-  _expenses.push({name: header, monthly: 0, annual: 0});
-  markExpDirty();
-  renderExpenses(null);
-}
+    // ── ADD EXPENSE ────────────────────────────────────────────────────────────
+    function showAddExpense() { document.getElementById('add-exp-form').style.display='block'; document.getElementById('new-exp-name').focus(); }
+    function hideAddExpense() { document.getElementById('add-exp-form').style.display='none'; }
 
-// ── SAVE EXPENSES TO SHEET ────────────────────────────────────────────────
-async function saveExpenses() {
-  const btn = document.getElementById('exp-save-btn');
-  const st  = document.getElementById('exp-save-status');
-  if (btn) { btn.textContent = 'Saving...'; btn.disabled = true; }
-  try {
-    const r = await fetch(SCRIPT_URL, {
-      method:'POST', redirect:'follow',
-      headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify({action:'saveExpenses', data:{expenses: _expenses}})
+    function addExpense() {
+      const name   = document.getElementById('new-exp-name').value.trim();
+      const amount = parseFloat(document.getElementById('new-exp-amount').value) || 0;
+      const secIdx = document.getElementById('new-exp-section').value;
+      if (!name) { document.getElementById('new-exp-name').style.borderColor='var(--rust)'; setTimeout(()=>document.getElementById('new-exp-name').style.borderColor='',1500); return; }
+      const newExp = {name, monthly: amount, annual: amount * 12};
+      if (secIdx !== '') {
+        // Insert after the section header and its items (before next section)
+        const si = parseInt(secIdx);
+        let insertAt = si + 1;
+        while (insertAt < _expenses.length) {
+          const n = _expenses[insertAt].name || '';
+          if (n.startsWith('\u2500') || n.startsWith('\u25ba')) break;
+          insertAt++;
+        }
+        _expenses.splice(insertAt, 0, newExp);
+      } else {
+        _expenses.push(newExp);
+      }
+      document.getElementById('new-exp-name').value = '';
+      document.getElementById('new-exp-amount').value = '';
+      hideAddExpense();
+      markExpDirty();
+      renderExpenses(null);
+    }
+
+    function addSectionHeader() {
+      const name = window.prompt('Section name (e.g. PERSONAL, CRYPTO, ABDJS):');
+      if (!name) return;
+      const header = '\u2500\u2500\u2500 ' + name.toUpperCase() + ' \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500';
+      _expenses.push({name: header, monthly: 0, annual: 0});
+      markExpDirty();
+      renderExpenses(null);
+    }
+
+    // ── SAVE EXPENSES TO SHEET ────────────────────────────────────────────────
+    async function saveExpenses() {
+      const btn = document.getElementById('exp-save-btn');
+      const st  = document.getElementById('exp-save-status');
+      if (btn) { btn.textContent = 'Saving...'; btn.disabled = true; }
+      try {
+        const r = await fetch(SCRIPT_URL, {
+          method:'POST', redirect:'follow',
+          headers:{'Content-Type':'text/plain'},
+          body: JSON.stringify({action:'saveExpenses', data:{expenses: _expenses}})
+        });
+        const j = await r.json();
+        if (!j.ok) throw new Error(j.error || 'Save failed');
+        _expDirty = false;
+        if (btn) { btn.style.display = 'none'; btn.textContent = '💾 SAVE TO SHEET'; btn.disabled = false; }
+        if (st) { st.textContent = '✓ Saved to sheet'; st.style.color = 'var(--sage)'; setTimeout(()=>{ if(st) st.textContent=''; }, 3000); }
+        // Reload to confirm sheet values
+        loadData();
+      } catch(e) {
+        if (btn) { btn.textContent = '💾 SAVE TO SHEET'; btn.disabled = false; }
+        if (st) { st.textContent = '✗ Save failed: ' + e.message; st.style.color = 'var(--rust)'; }
+      }
+    }
+
+    // ── RENDER HISTORY ────────────────────────────────────────────────────────
+    function renderHistory(history) {
+      const wrap = document.getElementById('hist-wrap');
+      if (!history || !history.length) {
+        wrap.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No history yet — click "📅 Log Month" to start.</div>';
+        return;
+      }
+      const rows = [...history].reverse().map(r => {
+        const nw = r.net_worth;
+        const cls = nw >= 0 ? 'pos' : 'neg';
+        return '<tr>' +
+          '<td>' + r.month + '</td>' +
+          '<td>' + fmt(r.cash) + '</td>' +
+          '<td>' + (r.crypto > 0 ? fmt(r.crypto) : '\u2014') + '</td>' +
+          '<td>' + (r.betterment > 0 ? fmt(r.betterment) : '\u2014') + '</td>' +
+          '<td>' + (r.robinhood > 0 ? fmt(r.robinhood) : '\u2014') + '</td>' +
+          '<td>' + (r.invest_total > 0 ? fmt(r.invest_total) : '\u2014') + '</td>' +
+          '<td>' + fmt(r.debt) + '</td>' +
+          '<td class="' + cls + '">' + (nw < 0 ? '\u2212' : '') + fmt(Math.abs(nw)) + '</td>' +
+          '<td>' + fmt(r.monthly_exp) + '</td>' +
+          '</tr>';
+      }).join('');
+      wrap.innerHTML =
+        '<table class="hist-table"><thead><tr>' +
+        ['Month','Cash','Crypto','Betterment','Robinhood','Invest','Debt','Net Worth','Mo. Exp.']
+          .map(h => '<th>' + h + '</th>').join('') +
+        '</tr></thead><tbody>' + rows + '</tbody></table>';
+    }
+
+    // ── TASKS ─────────────────────────────────────────────────────────────────
+    async function loadTasks() {
+      try {
+        const r = await fetch(HQ_URL + '?action=load', {redirect:'follow'});
+        const j = await r.json();
+        if (!j.ok || !j.data) return;
+        const tasks = (j.data.rows || []).filter(t => t.area === 'TradFi' && !t.done);
+        const el = document.getElementById('task-list');
+        if (!tasks.length) {
+          el.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No open TradFi tasks. Add in HQ → RAM Dump.</div>';
+          return;
+        }
+        const pc = {'Do Now':'background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-l)',
+                     'This Week':'background:var(--slate-bg);color:var(--slate);border:1px solid var(--slate-l)',
+                     'Someday':'background:var(--cream2);color:var(--ink4)'};
+        el.innerHTML = tasks.map(t =>
+          '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--cream2);">' +
+          '<div style="width:15px;height:15px;border:1.5px solid var(--cream3);border-radius:4px;flex-shrink:0;"></div>' +
+          '<div style="font-size:13px;flex:1;">' + t.item + '</div>' +
+          '<span style="font-family:var(--font-mono);font-size:9px;padding:2px 7px;border-radius:10px;flex-shrink:0;' + (pc[t.priority] || pc['Someday']) + '">' + (t.priority || '—') + '</span>' +
+          '</div>'
+        ).join('');
+      } catch(e) { /* silent */ }
+    }
+
+    // ── DEBT STRATEGY TOGGLE ──────────────────────────────────────────────────
+    function strat(type) {
+      document.getElementById('btn-av').className = 'strat-btn ' + (type==='avalanche' ? 'on' : 'off');
+      document.getElementById('btn-sb').className = 'strat-btn ' + (type==='snowball'  ? 'on' : 'off');
+      document.getElementById('strat-note').textContent = type === 'avalanche'
+        ? 'Highest APR first — Crypto.com (26.99%) → BOA2 (verify%) → Prime Visa (24.99%). Saves the most interest.'
+        : 'Smallest balance first — BB1 ($973) → Prime Visa ($970) → BOA2 ($905). Builds momentum fastest.';
+    }
+
+    // ── LOG MONTH ─────────────────────────────────────────────────────────────
+    async function logMonth() {
+      const btn = document.getElementById('log-btn');
+      btn.textContent = 'Logging...'; btn.disabled = true;
+      try {
+        const r = await fetch(SCRIPT_URL, {
+          method:'POST', redirect:'follow',
+          headers:{'Content-Type':'text/plain'},
+          body: JSON.stringify({action:'logMonth'})
+        });
+        const j = await r.json();
+        if (!j.ok) {
+          alert('\u26a0 ' + j.error);
+        } else {
+          const nw = j.net_worth;
+          alert('\u2705 ' + j.logged + ' logged to History!\n\n' +
+            'Net Worth: ' + (nw < 0 ? '\u2212' : '') + '$' + Math.abs(nw).toLocaleString('en-US', {maximumFractionDigits:0}) + '\n' +
+            'Total Debt: $' + (j.debt || 0).toLocaleString('en-US', {maximumFractionDigits:0}));
+          loadData();
+        }
+      } catch(e) {
+        alert('Failed: ' + e.message);
+      } finally {
+        btn.textContent = '\uD83D\uDCC5 Log Month'; btn.disabled = false;
+      }
+    }
+
+    // ── POPULATE UPDATE FORM ─────────────────────────────────────────────────
+    function populateUpdateForm(cur) {
+      if (!cur) return;
+      const set = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = parseFloat(val) || 0; };
+      const snap = cur.snapshot_mo || 'March 2026';
+      const snapEl = document.getElementById('upd-snapshot');
+      if (snapEl) snapEl.value = snap;
+      const lbl = document.getElementById('upd-month-label');
+      if (lbl) lbl.textContent = snap;
+      // Chase bank
+      set('upd-chk',  cur.chase_chk  || 286.57);
+      set('upd-sav1', cur.chase_sav1 || 250);
+      set('upd-sav2', cur.chase_sav2 || 200);
+      set('upd-biz',  cur.chase_biz  || 100);
+      // Chase CCs
+      set('upd-prime', cur.prime_visa != null ? cur.prime_visa : 0);
+      set('upd-venmo', cur.venmo      || 0);
+      // Other cards
+      set('upd-cdc',  cur.crypto_com != null ? cur.crypto_com : 0);
+      set('upd-bb1',  cur.bb1  != null ? cur.bb1  : 0);
+      set('upd-bb2',  cur.bb2  != null ? cur.bb2  : 0);
+      set('upd-bb3',  cur.bb3  != null ? cur.bb3  : 0);
+      set('upd-boa1', cur.boa1 != null ? cur.boa1 : 0);
+      set('upd-boa2', cur.boa2 != null ? cur.boa2 : 0);
+      set('upd-eidl', cur.eidl       || 0);
+      // Investments
+      set('upd-bet',    cur.betterment || 31897.98);
+      set('upd-rh',     cur.robinhood  || 32273.79);
+      set('upd-crypto', cur.crypto     || 0);
+      // Live cash total
+      updateCashTotal();
+    }
+
+    function updateCashTotal() {
+      const ids = ['upd-chk','upd-sav1','upd-sav2','upd-biz'];
+      const total = ids.reduce((sum, id) => {
+        const el = document.getElementById(id);
+        return sum + (parseFloat(el && el.value) || 0);
+      }, 0);
+      const el = document.getElementById('upd-cash-total');
+      if (el) el.textContent = '$' + total.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+    }
+
+    // Wire live cash total update
+    ['upd-chk','upd-sav1','upd-sav2','upd-biz'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', updateCashTotal);
     });
-    const j = await r.json();
-    if (!j.ok) throw new Error(j.error || 'Save failed');
-    _expDirty = false;
-    if (btn) { btn.style.display = 'none'; btn.textContent = '💾 SAVE TO SHEET'; btn.disabled = false; }
-    if (st) { st.textContent = '✓ Saved to sheet'; st.style.color = 'var(--sage)'; setTimeout(()=>{ if(st) st.textContent=''; }, 3000); }
-    // Reload to confirm sheet values
+
+    // ── SAVE UPDATE ───────────────────────────────────────────────────────────
+    async function saveUpdate(andLog) {
+      const get = id => { const el = document.getElementById(id); return el ? (parseFloat(el.value) || 0) : 0; };
+      const getText = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+      const status = document.getElementById('upd-status');
+
+      const snap = getText('upd-snapshot');
+      if (!snap) { status.textContent = '⚠ Please enter a Snapshot Month before saving.'; status.style.color = 'var(--amber)'; return; }
+
+      const data = {
+        snapshot_mo: snap,
+        chase_chk:   get('upd-chk'),
+        chase_sav1:  get('upd-sav1'),
+        chase_sav2:  get('upd-sav2'),
+        chase_biz:   get('upd-biz'),
+        prime_visa:  get('upd-prime'),
+        venmo:       get('upd-venmo'),
+        crypto_com:  get('upd-cdc'),
+        bb1:         get('upd-bb1'),
+        bb2:         get('upd-bb2'),
+        bb3:         get('upd-bb3'),
+        boa1:        get('upd-boa1'),
+        boa2:        get('upd-boa2'),
+        eidl:        get('upd-eidl'),
+        betterment:  get('upd-bet'),
+        rh_total:    get('upd-rh'),
+        crypto:      get('upd-crypto'),
+        monthly_exp: 1980,
+      };
+
+      status.textContent = 'Saving to sheet...';
+      status.style.color = 'var(--ink4)';
+
+      try {
+        // Step 1: Save values to sheet
+        const r1 = await fetch(SCRIPT_URL, {
+          method:'POST', redirect:'follow',
+          headers:{'Content-Type':'text/plain'},
+          body: JSON.stringify({action:'saveCurrent', data})
+        });
+        const j1 = await r1.json();
+        if (!j1.ok) throw new Error(j1.error || 'Save failed');
+
+        if (!andLog) {
+          status.textContent = '✅ Saved to sheet — ' + snap;
+          status.style.color = 'var(--sage)';
+          loadData();
+          return;
+        }
+
+        // Step 2: Log month
+        status.textContent = 'Logging month...';
+        const r2 = await fetch(SCRIPT_URL, {
+          method:'POST', redirect:'follow',
+          headers:{'Content-Type':'text/plain'},
+          body: JSON.stringify({action:'logMonth'})
+        });
+        const j2 = await r2.json();
+        if (!j2.ok) throw new Error(j2.error || 'Log failed');
+
+        const nw = j2.net_worth;
+        status.innerHTML = '✅ ' + j2.logged + ' saved + logged!&nbsp; Net Worth: ' +
+          (nw < 0 ? '−' : '') + '$' + Math.abs(nw).toLocaleString('en-US', {maximumFractionDigits:0});
+        status.style.color = 'var(--sage)';
+        loadData();
+
+      } catch(e) {
+        status.textContent = '❌ ' + e.message;
+        status.style.color = 'var(--rust)';
+      }
+    }
+
+    // ── AI PORTFOLIO SCAN ────────────────────────────────────────────────────
+    async function runAIScan() {
+      const input = document.getElementById('ai-portfolio-input');
+      const result = document.getElementById('ai-result');
+      const btn = document.getElementById('ai-scan-btn');
+      const text = input ? input.value.trim() : '';
+      if (!text) { input.style.borderColor='var(--rust)'; setTimeout(()=>input.style.borderColor='',1500); return; }
+      btn.textContent = '⚡ Scanning...'; btn.disabled = true;
+      result.style.display = 'block';
+      result.innerHTML = '<div style="color:var(--ink4);font-family:var(--font-mono);font-size:11px;">Analyzing your portfolio...</div>';
+
+      // Build context-aware prompt
+      const cashEl  = document.getElementById('ov-cash');
+      const investEl = document.getElementById('ov-invest');
+      const debtEl  = document.getElementById('ov-debt');
+      const nwEl    = document.getElementById('nw-hero');
+      const context = [
+        cashEl   ? 'Cash: ' + cashEl.textContent   : '',
+        investEl ? 'Investments: ' + investEl.textContent : '',
+        debtEl   ? 'Debt: ' + debtEl.textContent   : '',
+        nwEl     ? 'Net Worth: ' + nwEl.textContent : '',
+      ].filter(Boolean).join(' · ');
+
+      const prompt = context
+        ? 'My current financial snapshot: ' + context + '. Additional context: ' + text + '\n\nAs a personal finance assistant, give me 3-5 specific, actionable insights and next steps. Be concise and direct — no generic advice. Focus on opportunities, risks, and prioritization.'
+        : text + '\n\nAs a personal finance assistant, give me 3-5 specific, actionable insights and next steps. Be concise and direct — no generic advice.';
+
+      try {
+        const resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 1000,
+            messages: [{role:'user', content: prompt}]
+          })
+        });
+        const data = await resp.json();
+        const reply = data.content && data.content[0] ? data.content[0].text : 'No response received.';
+        // Format the reply — convert markdown bullets to HTML
+        const formatted = reply
+          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+          .replace(/^#{1,3}\s+(.+)$/gm, '<div style="font-weight:600;color:var(--slate);margin:12px 0 4px;">$1</div>')
+          .replace(/^[•\-\*]\s+(.+)$/gm, '<div style="padding:3px 0 3px 16px;border-left:2px solid var(--violet-l);margin:4px 0;">$1</div>')
+          .replace(/^\d+\.\s+(.+)$/gm, '<div style="padding:3px 0 3px 16px;border-left:2px solid var(--violet-l);margin:4px 0;">$1</div>')
+          .replace(/\n\n/g, '<br>')
+          .replace(/\n/g, ' ');
+        result.innerHTML = '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--violet);margin-bottom:10px;">AI ANALYSIS · claude-sonnet</div>' + formatted;
+      } catch(e) {
+        result.innerHTML = '<div style="color:var(--rust);">Scan failed: ' + e.message + '. Check connection.</div>';
+      } finally {
+        btn.textContent = '⚡ SCAN PORTFOLIO'; btn.disabled = false;
+      }
+    }
+
+    // ── BOOT ──────────────────────────────────────────────────────────────────
     loadData();
-  } catch(e) {
-    if (btn) { btn.textContent = '💾 SAVE TO SHEET'; btn.disabled = false; }
-    if (st) { st.textContent = '✗ Save failed: ' + e.message; st.style.color = 'var(--rust)'; }
-  }
-}
-
-// ── RENDER HISTORY ────────────────────────────────────────────────────────
-function renderHistory(history) {
-  const wrap = document.getElementById('hist-wrap');
-  if (!history || !history.length) {
-    wrap.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No history yet — click "📅 Log Month" to start.</div>';
-    return;
-  }
-  const rows = [...history].reverse().map(r => {
-    const nw = r.net_worth;
-    const cls = nw >= 0 ? 'pos' : 'neg';
-    return '<tr>' +
-      '<td>' + r.month + '</td>' +
-      '<td>' + fmt(r.cash) + '</td>' +
-      '<td>' + (r.crypto > 0 ? fmt(r.crypto) : '\u2014') + '</td>' +
-      '<td>' + (r.betterment > 0 ? fmt(r.betterment) : '\u2014') + '</td>' +
-      '<td>' + (r.robinhood > 0 ? fmt(r.robinhood) : '\u2014') + '</td>' +
-      '<td>' + (r.invest_total > 0 ? fmt(r.invest_total) : '\u2014') + '</td>' +
-      '<td>' + fmt(r.debt) + '</td>' +
-      '<td class="' + cls + '">' + (nw < 0 ? '\u2212' : '') + fmt(Math.abs(nw)) + '</td>' +
-      '<td>' + fmt(r.monthly_exp) + '</td>' +
-      '</tr>';
-  }).join('');
-  wrap.innerHTML =
-    '<table class="hist-table"><thead><tr>' +
-    ['Month','Cash','Crypto','Betterment','Robinhood','Invest','Debt','Net Worth','Mo. Exp.']
-      .map(h => '<th>' + h + '</th>').join('') +
-    '</tr></thead><tbody>' + rows + '</tbody></table>';
-}
-
-// ── TASKS ─────────────────────────────────────────────────────────────────
-async function loadTasks() {
-  try {
-    const r = await fetch(HQ_URL + '?action=load', {redirect:'follow'});
-    const j = await r.json();
-    if (!j.ok || !j.data) return;
-    const tasks = (j.data.rows || []).filter(t => t.area === 'TradFi' && !t.done);
-    const el = document.getElementById('task-list');
-    if (!tasks.length) {
-      el.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No open TradFi tasks. Add in HQ → RAM Dump.</div>';
-      return;
-    }
-    const pc = {'Do Now':'background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-l)',
-                 'This Week':'background:var(--slate-bg);color:var(--slate);border:1px solid var(--slate-l)',
-                 'Someday':'background:var(--cream2);color:var(--ink4)'};
-    el.innerHTML = tasks.map(t =>
-      '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--cream2);">' +
-      '<div style="width:15px;height:15px;border:1.5px solid var(--cream3);border-radius:4px;flex-shrink:0;"></div>' +
-      '<div style="font-size:13px;flex:1;">' + t.item + '</div>' +
-      '<span style="font-family:var(--font-mono);font-size:9px;padding:2px 7px;border-radius:10px;flex-shrink:0;' + (pc[t.priority] || pc['Someday']) + '">' + (t.priority || '—') + '</span>' +
-      '</div>'
-    ).join('');
-  } catch(e) { /* silent */ }
-}
-
-// ── DEBT STRATEGY TOGGLE ──────────────────────────────────────────────────
-function strat(type) {
-  document.getElementById('btn-av').className = 'strat-btn ' + (type==='avalanche' ? 'on' : 'off');
-  document.getElementById('btn-sb').className = 'strat-btn ' + (type==='snowball'  ? 'on' : 'off');
-  document.getElementById('strat-note').textContent = type === 'avalanche'
-    ? 'Highest APR first — Crypto.com (26.99%) → BOA2 (verify%) → Prime Visa (24.99%). Saves the most interest.'
-    : 'Smallest balance first — BB1 ($973) → Prime Visa ($970) → BOA2 ($905). Builds momentum fastest.';
-}
-
-// ── LOG MONTH ─────────────────────────────────────────────────────────────
-async function logMonth() {
-  const btn = document.getElementById('log-btn');
-  btn.textContent = 'Logging...'; btn.disabled = true;
-  try {
-    const r = await fetch(SCRIPT_URL, {
-      method:'POST', redirect:'follow',
-      headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify({action:'logMonth'})
-    });
-    const j = await r.json();
-    if (!j.ok) {
-      alert('\u26a0 ' + j.error);
-    } else {
-      const nw = j.net_worth;
-      alert('\u2705 ' + j.logged + ' logged to History!\n\n' +
-        'Net Worth: ' + (nw < 0 ? '\u2212' : '') + '$' + Math.abs(nw).toLocaleString('en-US', {maximumFractionDigits:0}) + '\n' +
-        'Total Debt: $' + (j.debt || 0).toLocaleString('en-US', {maximumFractionDigits:0}));
-      loadData();
-    }
-  } catch(e) {
-    alert('Failed: ' + e.message);
-  } finally {
-    btn.textContent = '\uD83D\uDCC5 Log Month'; btn.disabled = false;
-  }
-}
-
-// ── POPULATE UPDATE FORM ─────────────────────────────────────────────────
-function populateUpdateForm(cur) {
-  if (!cur) return;
-  const set = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = parseFloat(val) || 0; };
-  const snap = cur.snapshot_mo || 'March 2026';
-  const snapEl = document.getElementById('upd-snapshot');
-  if (snapEl) snapEl.value = snap;
-  const lbl = document.getElementById('upd-month-label');
-  if (lbl) lbl.textContent = snap;
-  // Chase bank
-  set('upd-chk',  cur.chase_chk  || 286.57);
-  set('upd-sav1', cur.chase_sav1 || 250);
-  set('upd-sav2', cur.chase_sav2 || 200);
-  set('upd-biz',  cur.chase_biz  || 100);
-  // Chase CCs
-  set('upd-prime', cur.prime_visa != null ? cur.prime_visa : 0);
-  set('upd-venmo', cur.venmo      || 0);
-  // Other cards
-  set('upd-cdc',  cur.crypto_com != null ? cur.crypto_com : 0);
-  set('upd-bb1',  cur.bb1  != null ? cur.bb1  : 0);
-  set('upd-bb2',  cur.bb2  != null ? cur.bb2  : 0);
-  set('upd-bb3',  cur.bb3  != null ? cur.bb3  : 0);
-  set('upd-boa1', cur.boa1 != null ? cur.boa1 : 0);
-  set('upd-boa2', cur.boa2 != null ? cur.boa2 : 0);
-  set('upd-eidl', cur.eidl       || 0);
-  // Investments
-  set('upd-bet',    cur.betterment || 31897.98);
-  set('upd-rh',     cur.robinhood  || 32273.79);
-  set('upd-crypto', cur.crypto     || 0);
-  // Live cash total
-  updateCashTotal();
-}
-
-function updateCashTotal() {
-  const ids = ['upd-chk','upd-sav1','upd-sav2','upd-biz'];
-  const total = ids.reduce((sum, id) => {
-    const el = document.getElementById(id);
-    return sum + (parseFloat(el && el.value) || 0);
-  }, 0);
-  const el = document.getElementById('upd-cash-total');
-  if (el) el.textContent = '$' + total.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-}
-
-// Wire live cash total update
-['upd-chk','upd-sav1','upd-sav2','upd-biz'].forEach(id => {
-  const el = document.getElementById(id);
-  if (el) el.addEventListener('input', updateCashTotal);
-});
-
-// ── SAVE UPDATE ───────────────────────────────────────────────────────────
-async function saveUpdate(andLog) {
-  const get = id => { const el = document.getElementById(id); return el ? (parseFloat(el.value) || 0) : 0; };
-  const getText = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-  const status = document.getElementById('upd-status');
-
-  const snap = getText('upd-snapshot');
-  if (!snap) { status.textContent = '⚠ Please enter a Snapshot Month before saving.'; status.style.color = 'var(--amber)'; return; }
-
-  const data = {
-    snapshot_mo: snap,
-    chase_chk:   get('upd-chk'),
-    chase_sav1:  get('upd-sav1'),
-    chase_sav2:  get('upd-sav2'),
-    chase_biz:   get('upd-biz'),
-    prime_visa:  get('upd-prime'),
-    venmo:       get('upd-venmo'),
-    crypto_com:  get('upd-cdc'),
-    bb1:         get('upd-bb1'),
-    bb2:         get('upd-bb2'),
-    bb3:         get('upd-bb3'),
-    boa1:        get('upd-boa1'),
-    boa2:        get('upd-boa2'),
-    eidl:        get('upd-eidl'),
-    betterment:  get('upd-bet'),
-    rh_total:    get('upd-rh'),
-    crypto:      get('upd-crypto'),
-    monthly_exp: 1980,
-  };
-
-  status.textContent = 'Saving to sheet...';
-  status.style.color = 'var(--ink4)';
-
-  try {
-    // Step 1: Save values to sheet
-    const r1 = await fetch(SCRIPT_URL, {
-      method:'POST', redirect:'follow',
-      headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify({action:'saveCurrent', data})
-    });
-    const j1 = await r1.json();
-    if (!j1.ok) throw new Error(j1.error || 'Save failed');
-
-    if (!andLog) {
-      status.textContent = '✅ Saved to sheet — ' + snap;
-      status.style.color = 'var(--sage)';
-      loadData();
-      return;
-    }
-
-    // Step 2: Log month
-    status.textContent = 'Logging month...';
-    const r2 = await fetch(SCRIPT_URL, {
-      method:'POST', redirect:'follow',
-      headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify({action:'logMonth'})
-    });
-    const j2 = await r2.json();
-    if (!j2.ok) throw new Error(j2.error || 'Log failed');
-
-    const nw = j2.net_worth;
-    status.innerHTML = '✅ ' + j2.logged + ' saved + logged!&nbsp; Net Worth: ' +
-      (nw < 0 ? '−' : '') + '$' + Math.abs(nw).toLocaleString('en-US', {maximumFractionDigits:0});
-    status.style.color = 'var(--sage)';
-    loadData();
-
-  } catch(e) {
-    status.textContent = '❌ ' + e.message;
-    status.style.color = 'var(--rust)';
-  }
-}
-
-// ── AI PORTFOLIO SCAN ────────────────────────────────────────────────────
-async function runAIScan() {
-  const input = document.getElementById('ai-portfolio-input');
-  const result = document.getElementById('ai-result');
-  const btn = document.getElementById('ai-scan-btn');
-  const text = input ? input.value.trim() : '';
-  if (!text) { input.style.borderColor='var(--rust)'; setTimeout(()=>input.style.borderColor='',1500); return; }
-  btn.textContent = '⚡ Scanning...'; btn.disabled = true;
-  result.style.display = 'block';
-  result.innerHTML = '<div style="color:var(--ink4);font-family:var(--font-mono);font-size:11px;">Analyzing your portfolio...</div>';
-
-  // Build context-aware prompt
-  const cashEl  = document.getElementById('ov-cash');
-  const investEl = document.getElementById('ov-invest');
-  const debtEl  = document.getElementById('ov-debt');
-  const nwEl    = document.getElementById('nw-hero');
-  const context = [
-    cashEl   ? 'Cash: ' + cashEl.textContent   : '',
-    investEl ? 'Investments: ' + investEl.textContent : '',
-    debtEl   ? 'Debt: ' + debtEl.textContent   : '',
-    nwEl     ? 'Net Worth: ' + nwEl.textContent : '',
-  ].filter(Boolean).join(' · ');
-
-  const prompt = context
-    ? 'My current financial snapshot: ' + context + '. Additional context: ' + text + '\n\nAs a personal finance assistant, give me 3-5 specific, actionable insights and next steps. Be concise and direct — no generic advice. Focus on opportunities, risks, and prioritization.'
-    : text + '\n\nAs a personal finance assistant, give me 3-5 specific, actionable insights and next steps. Be concise and direct — no generic advice.';
-
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{role:'user', content: prompt}]
-      })
-    });
-    const data = await resp.json();
-    const reply = data.content && data.content[0] ? data.content[0].text : 'No response received.';
-    // Format the reply — convert markdown bullets to HTML
-    const formatted = reply
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/^#{1,3}\s+(.+)$/gm, '<div style="font-weight:600;color:var(--slate);margin:12px 0 4px;">$1</div>')
-      .replace(/^[•\-\*]\s+(.+)$/gm, '<div style="padding:3px 0 3px 16px;border-left:2px solid var(--violet-l);margin:4px 0;">$1</div>')
-      .replace(/^\d+\.\s+(.+)$/gm, '<div style="padding:3px 0 3px 16px;border-left:2px solid var(--violet-l);margin:4px 0;">$1</div>')
-      .replace(/\n\n/g, '<br>')
-      .replace(/\n/g, ' ');
-    result.innerHTML = '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--violet);margin-bottom:10px;">AI ANALYSIS · claude-sonnet</div>' + formatted;
-  } catch(e) {
-    result.innerHTML = '<div style="color:var(--rust);">Scan failed: ' + e.message + '. Check connection.</div>';
-  } finally {
-    btn.textContent = '⚡ SCAN PORTFOLIO'; btn.disabled = false;
-  }
-}
-
-// ── BOOT ──────────────────────────────────────────────────────────────────
-loadData();
-</script>
+    </script>
 </body>
 </html>
