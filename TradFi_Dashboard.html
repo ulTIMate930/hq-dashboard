@@ -789,17 +789,18 @@
 
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
                 <button onclick="showAddCard()" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:6px 14px;background:var(--slate);color:#fff;border:none;border-radius:6px;cursor:pointer;">+ ADD CARD</button>
-                <div style="font-family:var(--font-mono);font-size:9px;color:var(--ink4);">Last-4 only · full numbers belong in your password manager</div>
+                <div style="font-family:var(--font-mono);font-size:9px;color:var(--ink4);">Last-4 only · full numbers belong in your password manager · click any card below to edit it</div>
             </div>
 
-            <!-- ADD CARD FORM (hidden) -->
+            <!-- ADD / EDIT CARD FORM (hidden) -->
             <div id="add-card-form" style="display:none;background:var(--slate-bg);border:1px solid rgba(45,74,107,.2);border-radius:8px;padding:14px;margin-bottom:14px;">
+                <div id="add-card-form-title" style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--slate);margin-bottom:10px;letter-spacing:.5px;">Add Card</div>
                 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px;">
                     <div><div class="ac-lbl">Last-4</div><input id="nc-last4" type="text" maxlength="6" class="ac-in"></div>
                     <div><div class="ac-lbl">Issuer</div><input id="nc-issuer" type="text" class="ac-in"></div>
                     <div><div class="ac-lbl">Network</div><input id="nc-network" type="text" class="ac-in"></div>
                     <div><div class="ac-lbl">Product</div><input id="nc-product" type="text" class="ac-in"></div>
-                    <div><div class="ac-lbl">Status</div><select id="nc-status" class="ac-in"><option>Active</option><option>Dormant</option><option>Promo</option><option>Cancelled</option></select></div>
+                    <div><div class="ac-lbl">Status</div><select id="nc-status" class="ac-in"><option>Active</option><option>Inactive</option><option>Dormant</option><option>Promo</option><option>Expired</option><option>Cancelled</option></select></div>
                     <div><div class="ac-lbl">Intent</div><input id="nc-intent" type="text" placeholder="Keep / Cancel / Review" class="ac-in"></div>
                     <div><div class="ac-lbl">Balance</div><input id="nc-balance" type="number" step="0.01" class="ac-in"></div>
                     <div><div class="ac-lbl">Credit Limit</div><input id="nc-limit" type="number" step="1" class="ac-in"></div>
@@ -811,7 +812,7 @@
                 <div style="margin-bottom:10px;"><div class="ac-lbl">Notes</div><input id="nc-notes" type="text" class="ac-in" style="width:100%;"></div>
                 <div style="display:flex;gap:8px;justify-content:flex-end;">
                     <button onclick="hideAddCard()" style="font-family:var(--font-mono);font-size:10px;padding:6px 14px;background:var(--paper);border:1px solid var(--cream2);border-radius:6px;cursor:pointer;color:var(--ink4);">Cancel</button>
-                    <button onclick="saveCard()" style="font-family:var(--font-mono);font-size:10px;padding:6px 14px;background:var(--slate);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">SAVE CARD</button>
+                    <button id="add-card-save-btn" onclick="saveCard()" style="font-family:var(--font-mono);font-size:10px;padding:6px 14px;background:var(--slate);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">SAVE CARD</button>
                 </div>
                 <div id="nc-status-msg" style="font-family:var(--font-mono);font-size:10px;margin-top:8px;text-align:right;"></div>
             </div>
@@ -953,6 +954,10 @@
                         <input type="number" id="upd-prime" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--rust);border-radius:6px;background:var(--paper);color:var(--ink);">
                     </div>
                     <div>
+                        <div style="font-size:12px;color:var(--amber);margin-bottom:5px;">Freedom Flex (...7733) — 0% promo</div>
+                        <input type="number" id="upd-flex" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--amber);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
                         <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Venmo (...5265)</div>
                         <input type="number" id="upd-venmo" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
                     </div>
@@ -1019,6 +1024,10 @@
                     <div>
                         <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">EIDL Loan (SBA)</div>
                         <input type="number" id="upd-eidl" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">ether.fi Cash borrow (DeFi)</div>
+                        <input type="number" id="upd-etherfi" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
                     </div>
                 </div>
             </div>
@@ -1568,10 +1577,11 @@
       seen.forEach(status => {
         html += '<div class="card-status-grp">' + status + ' (' + groups[status].length + ')</div>';
         groups[status].forEach(c => {
+          const idx = _cards.indexOf(c);
           const bal = parseFloat(c.balance) || 0;
           const balColor = bal > 0 ? 'var(--rust)' : 'var(--sage)';
           const promo = c.promo_end ? ' · promo ends ' + c.promo_end : '';
-          html += '<div class="card-reg-row">' +
+          html += '<div class="card-reg-row" style="cursor:pointer;" onclick="editCard(' + idx + ')" title="Click to edit">' +
             '<span class="c4">…' + (c.last4||'') + '</span>' +
             '<span><strong>' + (c.product||'') + '</strong> <span style="color:var(--ink4);font-size:11px;">' + (c.issuer||'') + '</span>' +
               (c.notes ? '<br><span style="font-size:10px;color:var(--ink4);">' + c.notes + '</span>' : '') + '</span>' +
@@ -1584,8 +1594,43 @@
       wrap.innerHTML = html;
     }
 
-    function showAddCard() { document.getElementById('add-card-form').style.display='block'; document.getElementById('nc-last4').focus(); }
-    function hideAddCard() { document.getElementById('add-card-form').style.display='none'; }
+    let _editingIdx = null;
+    const NC_FIELDS = ['nc-last4','nc-issuer','nc-network','nc-product','nc-intent','nc-balance','nc-limit','nc-apr','nc-rewards','nc-promo','nc-open','nc-notes'];
+
+    function showAddCard() {
+      _editingIdx = null;
+      NC_FIELDS.forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+      document.getElementById('nc-status').value = 'Active';
+      document.getElementById('add-card-form-title').textContent = 'Add Card';
+      document.getElementById('add-card-save-btn').textContent = 'SAVE CARD';
+      document.getElementById('add-card-form').style.display = 'block';
+      document.getElementById('nc-last4').focus();
+    }
+    function hideAddCard() { document.getElementById('add-card-form').style.display='none'; _editingIdx = null; }
+
+    function editCard(idx) {
+      const c = _cards[idx];
+      if (!c) return;
+      _editingIdx = idx;
+      document.getElementById('nc-last4').value   = c.last4 || '';
+      document.getElementById('nc-issuer').value  = c.issuer || '';
+      document.getElementById('nc-network').value = c.network || '';
+      document.getElementById('nc-product').value = c.product || '';
+      document.getElementById('nc-status').value  = c.status || 'Active';
+      document.getElementById('nc-intent').value  = c.intent || '';
+      document.getElementById('nc-balance').value = c.balance || 0;
+      document.getElementById('nc-limit').value   = c.limit || '';
+      document.getElementById('nc-apr').value     = c.apr || '';
+      document.getElementById('nc-rewards').value = c.rewards || '';
+      document.getElementById('nc-promo').value   = c.promo_end || '';
+      document.getElementById('nc-open').value    = c.open_date || '';
+      document.getElementById('nc-notes').value   = c.notes || '';
+      document.getElementById('add-card-form-title').textContent = 'Edit Card — …' + (c.last4 || '');
+      document.getElementById('add-card-save-btn').textContent = 'UPDATE CARD';
+      const form = document.getElementById('add-card-form');
+      form.style.display = 'block';
+      form.scrollIntoView({behavior:'smooth', block:'center'});
+    }
 
     async function saveCard() {
       const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
@@ -1606,7 +1651,6 @@
         const j = await r.json();
         if (!j.ok) throw new Error(j.error || 'Save failed');
         msg.textContent = '✓ ' + (j.added ? 'Added' : 'Updated'); msg.style.color='var(--sage)';
-        ['nc-last4','nc-issuer','nc-network','nc-product','nc-intent','nc-balance','nc-limit','nc-apr','nc-rewards','nc-promo','nc-open','nc-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
         setTimeout(() => { hideAddCard(); msg.textContent=''; loadCards(); }, 1000);
       } catch(e) { msg.textContent = '✗ ' + e.message; msg.style.color='var(--rust)'; }
     }
@@ -1722,6 +1766,7 @@
       set('upd-biz',  cur.chase_biz  || 100);
       // Chase CCs
       set('upd-prime', cur.prime_visa != null ? cur.prime_visa : 0);
+      set('upd-flex',  cur.freedom_flex != null ? cur.freedom_flex : 0);
       set('upd-venmo', cur.venmo      || 0);
       set('upd-freedom',     cur.freedom            || 0);
       set('upd-freedom-unl', cur.freedom_unlimited  || 0);
@@ -1737,6 +1782,7 @@
       set('upd-boa1', cur.boa1 != null ? cur.boa1 : 0);
       set('upd-boa2', cur.boa2 != null ? cur.boa2 : 0);
       set('upd-eidl', cur.eidl       || 0);
+      set('upd-etherfi', cur.etherfi || 0);
       // Investments
       set('upd-bet',    cur.betterment || 31897.98);
       set('upd-rh',     cur.robinhood  || 32273.79);
@@ -1777,6 +1823,7 @@
         chase_sav2:  get('upd-sav2'),
         chase_biz:   get('upd-biz'),
         prime_visa:  get('upd-prime'),
+        freedom_flex: get('upd-flex'),
         venmo:       get('upd-venmo'),
         freedom:            get('upd-freedom'),
         freedom_unlimited:  get('upd-freedom-unl'),
@@ -1785,16 +1832,19 @@
         southwest_plus:     get('upd-southwest'),
         ink_business_cash:  get('upd-ink-biz'),
         crypto_com:  get('upd-cdc'),
+        // monthly_exp intentionally omitted -- it's now a live formula in
+        // the sheet (sums the ⚙️ Config expense table), so we never want
+        // the Update tab to overwrite it with a stale number.
         bb1:         get('upd-bb1'),
         bb2:         get('upd-bb2'),
         bb3:         get('upd-bb3'),
         boa1:        get('upd-boa1'),
         boa2:        get('upd-boa2'),
         eidl:        get('upd-eidl'),
+        etherfi:     get('upd-etherfi'),
         betterment:  get('upd-bet'),
         rh_total:    get('upd-rh'),
         crypto:      get('upd-crypto'),
-        monthly_exp: 1980,
       };
 
       status.textContent = 'Saving to sheet...';
