@@ -956,17 +956,31 @@
                         <input type="number" id="upd-venmo" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
                     </div>
                 </div>
-                <div style="margin-top:14px;padding:10px 12px;background:var(--cream);border-radius:6px;font-size:12px;color:var(--ink4);">
-                    <div style="font-weight:600;color:var(--ink3);margin-bottom:6px;">$0 Balance Cards (included in Chase total formula)</div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;">
-                        <span>Freedom (...2035)</span>
-                        <span>Freedom Unlimited (...0163)</span>
-                        <span>Sapphire Preferred (...5377)</span>
-                        <span>Ink Preferred (...2118)</span>
-                        <span>Southwest Plus (...1749)</span>
-                        <span>Ink Business Cash (...0526)</span>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Freedom (...2035)</div>
+                        <input type="number" id="upd-freedom" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
                     </div>
-                    <div style="margin-top:6px;color:var(--slate);font-style:italic;">Update directly in 📊 Current tab (rows 19–24) if any get a balance</div>
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Freedom Unlimited (...0163)</div>
+                        <input type="number" id="upd-freedom-unl" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Sapphire Preferred (...5377)</div>
+                        <input type="number" id="upd-sapphire" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Ink Preferred (...2118)</div>
+                        <input type="number" id="upd-ink-pref" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Southwest Plus (...1749)</div>
+                        <input type="number" id="upd-southwest" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--ink4);margin-bottom:5px;">Ink Business Cash (...0526)</div>
+                        <input type="number" id="upd-ink-biz" step="0.01" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--cream2);border-radius:6px;background:var(--paper);color:var(--ink);">
+                    </div>
                 </div>
             </div>
 
@@ -1058,13 +1072,15 @@
     // ── DEFAULTS (shown if Sheets offline) ────────────────────────────────────
     const DEFAULTS = {
       current: {
-        snapshot_mo:'June 2026', cash:798.74, crypto:7770.93,
+        snapshot_mo:'June 2026', cash:2883.31, crypto:7770.93,
         betterment:36469.37, robinhood:40709.17, invest_total:77178.54,
-        monthly_exp:1980, net_worth:67614.68, total_debt:-18133.53,
+        monthly_exp:1980, net_worth:69208.52, total_debt:-18624.26,
         crypto_com:4031.99, bb1:823.25, bb2:1614.39, bb3:2163.99,
-        boa1:1064.84, boa2:0, prime_visa:1172.49, venmo:0,
-        freedom_flex:3999.75, etherfi:2970.65,
-        chase_chk:498.74, chase_sav1:100, chase_sav2:100, chase_biz:100,
+        boa1:1064.84, boa2:0, prime_visa:1025.12, venmo:0,
+        freedom_flex:4704.27, etherfi:2970.65,
+        freedom:0, sapphire_preferred:-1.24, southwest_plus:0,
+        freedom_unlimited:0, ink_preferred:188, ink_business_cash:39,
+        chase_chk:498.31, chase_sav1:100, chase_sav2:100, chase_biz:2185,
         eidl:0,
       },
       history:[
@@ -1700,6 +1716,12 @@
       // Chase CCs
       set('upd-prime', cur.prime_visa != null ? cur.prime_visa : 0);
       set('upd-venmo', cur.venmo      || 0);
+      set('upd-freedom',     cur.freedom            || 0);
+      set('upd-freedom-unl', cur.freedom_unlimited  || 0);
+      set('upd-sapphire',    cur.sapphire_preferred || 0);
+      set('upd-ink-pref',    cur.ink_preferred      || 0);
+      set('upd-southwest',   cur.southwest_plus     || 0);
+      set('upd-ink-biz',     cur.ink_business_cash  || 0);
       // Other cards
       set('upd-cdc',  cur.crypto_com != null ? cur.crypto_com : 0);
       set('upd-bb1',  cur.bb1  != null ? cur.bb1  : 0);
@@ -1749,6 +1771,12 @@
         chase_biz:   get('upd-biz'),
         prime_visa:  get('upd-prime'),
         venmo:       get('upd-venmo'),
+        freedom:            get('upd-freedom'),
+        freedom_unlimited:  get('upd-freedom-unl'),
+        sapphire_preferred: get('upd-sapphire'),
+        ink_preferred:      get('upd-ink-pref'),
+        southwest_plus:     get('upd-southwest'),
+        ink_business_cash:  get('upd-ink-biz'),
         crypto_com:  get('upd-cdc'),
         bb1:         get('upd-bb1'),
         bb2:         get('upd-bb2'),
