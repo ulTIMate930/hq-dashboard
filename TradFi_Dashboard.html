@@ -105,7 +105,8 @@
     .nav-strip { background:rgba(12,16,32,0.6); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
         border-bottom:1px solid var(--glass-border); padding:0 22px; display:flex; overflow-x:auto; }
     .nav-tab { padding:14px 16px; font-family:var(--font-mono); font-size:10px; letter-spacing:1.5px;
-        text-transform:uppercase; color:var(--ink4); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; transition:all .15s; }
+        text-transform:uppercase; color:var(--ink4); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; transition:all .15s;
+        display:inline-flex; align-items:center; line-height:1; }
     .nav-tab:hover { color:var(--ink2); }
     .nav-tab.active { color:var(--ink); border-bottom-color:var(--violet); }
     .badge-cnt { background:var(--coral); color:#1a0606; font-size:9px; font-weight:700; padding:1px 6px; border-radius:8px; margin-left:5px; vertical-align:middle; }
@@ -1471,6 +1472,11 @@
         wrap.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink4);text-align:center;padding:20px;">No history yet — click "📅 Log Month" to start.</div>';
         return;
       }
+      const loggedFmt = iso => {
+        if (!iso) return '\u2014';
+        const d = new Date(iso);
+        return isNaN(d) ? '\u2014' : d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+      };
       const rows = [...history].reverse().map(r => {
         const nw = r.net_worth;
         const cls = nw >= 0 ? 'pos' : 'neg';
@@ -1484,11 +1490,12 @@
           '<td>' + fmt(r.debt) + '</td>' +
           '<td class="' + cls + '">' + (nw < 0 ? '\u2212' : '') + fmt(Math.abs(nw)) + '</td>' +
           '<td>' + fmt(r.monthly_exp) + '</td>' +
+          '<td>' + loggedFmt(r.logged_on) + '</td>' +
           '</tr>';
       }).join('');
       wrap.innerHTML =
         '<table class="hist-table"><thead><tr>' +
-        ['Month','Cash','Crypto','Betterment','Robinhood','Invest','Debt','Net Worth','Mo. Exp.']
+        ['Month','Cash','Crypto','Betterment','Robinhood','Invest','Debt','Net Worth','Mo. Exp.','Logged']
           .map(h => '<th>' + h + '</th>').join('') +
         '</tr></thead><tbody>' + rows + '</tbody></table>';
     }
